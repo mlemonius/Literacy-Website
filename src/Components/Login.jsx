@@ -16,7 +16,7 @@ const Login = (props) => {
 
   return (
     <section className="login">
-      <div className="loginContainer">
+      <div className="loginContainer" style={{ marginTop: "10%" }}>
         {hasAccount ? <h1>Log In</h1> : <h1>Sign Up</h1>}
         <label>Email</label>
         <input

@@ -7,6 +7,7 @@ import Info from "../Components/Info";
 import Cards from "../Components/Cards";
 import Footer from "../Components/Footer";
 import { Divider } from "@material-ui/core";
+import "../Styles/landingPage.css";
 
 class LandingPage extends Component {
   render() {

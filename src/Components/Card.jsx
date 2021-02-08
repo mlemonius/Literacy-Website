@@ -2,6 +2,7 @@ import React from "react";
 import "../Styles/card.css";
 
 const Card = (props) => {
+  var keyId = 0;
   return (
     <div className="card text-center shadow">
       <div className="overflow">
@@ -11,7 +12,7 @@ const Card = (props) => {
         <h4 className="card-title">{props.header}</h4>
         <ul className="list-unstyled card-text text-secodary">
           {props.content.map((item) => (
-            <li>{item}</li>
+            <li key={keyId++}>{item}</li>
           ))}
         </ul>
         <div>

@@ -4,6 +4,7 @@ import PersonIcon from "@material-ui/icons/Person";
 import ChatBubbleOutlineIcon from "@material-ui/icons/ChatBubbleOutline";
 import LibraryBooksIcon from "@material-ui/icons/LibraryBooks";
 import { Link } from "react-router-dom";
+import "../Styles/navbar.css";
 
 class Navbar extends Component {
   state = {};
@@ -16,36 +17,15 @@ class Navbar extends Component {
           </Link>
 
           <Link to="/library">
-            <LibraryBooksIcon
-              style={{
-                color: "white",
-                position: "absolute",
-                top: 20,
-                right: 170,
-              }}
-            />
+            <LibraryBooksIcon className="library-icon" />
           </Link>
 
           <Link to="/chatroom">
-            <ChatBubbleOutlineIcon
-              style={{
-                color: "white",
-                position: "absolute",
-                top: 20,
-                right: 100,
-              }}
-            />
+            <ChatBubbleOutlineIcon className="chatroom-icon" />
           </Link>
 
           <Link to="/login">
-            <PersonIcon
-              style={{
-                color: "white",
-                position: "absolute",
-                top: 20,
-                right: 30,
-              }}
-            />
+            <PersonIcon className="profile-icon" />
           </Link>
         </Toolbar>
       </AppBar>
