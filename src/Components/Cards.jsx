@@ -10,11 +10,12 @@ class Cards extends Component {
       list: ["lorem ipsum", "lorem ipsum", "lorem ipsum", "lorem ipsum"],
     };
   }
+
   render() {
     return (
-      <div className="container-fluid d-flex justify-content-center">
-        <div className="row">
-          <div className="col-md-4">
+      <div className="container-fluid d-flex d-sm-flex d-md-inline-flex justify-content-center">
+        <div className="row cards-row">
+          <div className="col-md-6 col-sm-6 col-xs-12">
             <Card
               imgsrc={children}
               header="Plan 1"
@@ -22,7 +23,7 @@ class Cards extends Component {
               price="$49"
             />
           </div>
-          <div className="col-md-4">
+          <div className="col-md-6 col-sm-6 col-xs-12">
             <Card
               imgsrc={children}
               header="Plan 2"
@@ -30,14 +31,14 @@ class Cards extends Component {
               price="$89"
             />
           </div>
-          <div className="col-md-4">
+          {/* <div className="col-md-4 col-sm-6 col-xs-12">
             <Card
               imgsrc={children}
               header="Plan 3"
               content={this.state.list}
               price="$109"
             />
-          </div>
+          </div> */}
         </div>
       </div>
     );
