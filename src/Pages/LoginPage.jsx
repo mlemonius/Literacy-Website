@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from "react";
 // import fire from "../fire";
 import Login from "../Components/Login";
-import Hero from "../Components/Hero";
+import SignUpForm from "../Components/SignUpForm";
 import "../Styles/login.css";
 
 function LoginPage() {
+  const [clicked, setClicked] = useState(false); //debug
   const [user, setUser] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -23,6 +24,7 @@ function LoginPage() {
   };
 
   const handleLogin = () => {
+    setClicked(true);
     clearErrors();
 
     //   fire
@@ -43,6 +45,7 @@ function LoginPage() {
   };
 
   const handleSignup = () => {
+    setClicked(true);
     clearErrors();
 
     //   fire
@@ -62,6 +65,7 @@ function LoginPage() {
   };
 
   const handleLogout = () => {
+    setClicked(false);
     // fire.auth().signOut();
     console.log("Log out");
   };
@@ -83,10 +87,12 @@ function LoginPage() {
 
   return (
     <div className="LoginPage">
-      {user ? (
-        <Hero handleLogout={handleLogout} />
+      {/* {user ? ( */}
+      {clicked ? (
+        <SignUpForm handleLogout={handleLogout} />
       ) : (
         <Login
+          clicked={clicked} //debug
           email={email}
           setEmail={setEmail}
           password={password}

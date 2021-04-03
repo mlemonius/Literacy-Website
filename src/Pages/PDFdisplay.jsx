@@ -122,7 +122,7 @@ class PDFdisplay extends Component {
               onClick={this.goToPrevPage}
               style={{ maxWidth: 75, marginLeft: "5%" }}
             >
-              Prev
+              Back
             </Button>
             <Button
               variant="outlined"
@@ -131,8 +131,9 @@ class PDFdisplay extends Component {
               onClick={this.goToNextPage}
               style={{ maxWidth: 75, marginLeft: "5%" }}
             >
-              Next
+              Next Page
             </Button>
+            {/* Put the arrow here! */}
           </span>
         </div>
       </div>
