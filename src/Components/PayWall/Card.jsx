@@ -1,5 +1,5 @@
 import React from "react";
-import "../Styles/card.css";
+import "../../Styles/card.css";
 
 const Card = (props) => {
   var keyId = 0;

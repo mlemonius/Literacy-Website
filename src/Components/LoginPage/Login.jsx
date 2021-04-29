@@ -1,4 +1,5 @@
 import React from "react";
+import { Link } from "react-router-dom";
 
 const Login = (props) => {
   const {
@@ -7,9 +8,6 @@ const Login = (props) => {
     password,
     setPassword,
     handleLogin,
-    handleSignup,
-    hasAccount,
-    setHasAccount,
     emailError,
     passwordError,
   } = props;
@@ -17,7 +15,7 @@ const Login = (props) => {
   return (
     <section className="login">
       <div className="loginContainer" style={{ marginTop: "10%" }}>
-        {hasAccount ? <h1>Log In</h1> : <h1>Sign Up</h1>}
+        <h1>Log In</h1>
         <label>Email</label>
         <input
           type="text"
@@ -38,23 +36,13 @@ const Login = (props) => {
         <p className="errorMsg">{passwordError}</p>
 
         <div className="btnContainer">
-          {hasAccount ? (
-            <>
-              <button onClick={handleLogin}>Log In</button>
-              <p>
-                Not a Member yet?
-                <span onClick={() => setHasAccount(!hasAccount)}>Sign Up</span>
-              </p>
-            </>
-          ) : (
-            <>
-              <button onClick={handleSignup}>Sign Up</button>
-              <p>
-                Have an Account?
-                <span onClick={() => setHasAccount(!hasAccount)}>Log In</span>
-              </p>
-            </>
-          )}
+          <button onClick={handleLogin}>Log In</button>
+          <p>
+            Not a Member yet?
+            <span>
+              <Link to="/signup">Sign Up</Link>
+            </span>
+          </p>
         </div>
       </div>
     </section>

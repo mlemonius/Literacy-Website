@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 import Card from "./Card";
-import "../Styles/card.css";
-import children from "../Data/children.jpg";
+import "../../Styles/card.css";
+import children from "../../Data/children.jpg";
 
 class Cards extends Component {
   constructor(props) {

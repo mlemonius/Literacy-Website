@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from "react";
 // import fire from "../fire";
-import Login from "../Components/Login";
-import SignUpForm from "../Components/SignUpForm";
-import "../Styles/login.css";
+import Login from "./Login";
+// import SignUpForm from "../SignupPage/SignUpForm";
+import "../../Styles/login.css";
 
 function LoginPage() {
   const [clicked, setClicked] = useState(false); //debug
@@ -89,7 +89,8 @@ function LoginPage() {
     <div className="LoginPage">
       {/* {user ? ( */}
       {clicked ? (
-        <SignUpForm handleLogout={handleLogout} />
+        // <SignUpForm handleLogout={handleLogout} />
+        <></>
       ) : (
         <Login
           clicked={clicked} //debug

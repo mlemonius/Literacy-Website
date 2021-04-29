@@ -11,7 +11,7 @@ import {
   DialogActions,
   Button,
 } from "@material-ui/core";
-import "../Styles/readpal.css";
+import "../../Styles/childProfileForm.css";
 import { withRouter } from "react-router-dom";
 
 const ages = ["7", "8", "9"];
@@ -29,7 +29,7 @@ const animals = [
   "Bird",
 ];
 
-class SignUpForm extends Component {
+class ChildProfileForm extends Component {
   state = {
     age: "",
     color: "",
@@ -75,7 +75,7 @@ class SignUpForm extends Component {
         animal: this.state.animal,
       };
       console.log(info); //send info to backend!
-      return this.props.history.push("/signup-done");
+      return this.props.history.push("/congrats");
     } else {
       this.handleClickOpen();
     }
@@ -161,4 +161,4 @@ class SignUpForm extends Component {
   }
 }
 
-export default withRouter(SignUpForm);
+export default withRouter(ChildProfileForm);

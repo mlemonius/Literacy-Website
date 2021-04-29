@@ -8,7 +8,7 @@ import {
   Button,
   Container,
 } from "@material-ui/core";
-import "../Styles/landingPage.css";
+import "../../Styles/landingPage.css";
 
 class Info extends Component {
   state = {};
@@ -23,7 +23,7 @@ class Info extends Component {
             Lorem ipsum dolor sit amet, consectetur adipiscing elit.
           </Typography>
         </Container>
-        <Grid container spacing={3}>
+        {/* <Grid container spacing={3}>
           <Grid key="0" id="col-1" item>
             <Card
               className="info-card"
@@ -67,7 +67,7 @@ class Info extends Component {
               </CardActions>
             </Card>
           </Grid>
-        </Grid>
+        </Grid> */}
       </div>
     );
   }

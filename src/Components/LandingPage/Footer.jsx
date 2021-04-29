@@ -1,6 +1,6 @@
 import React from "react";
-import Info from "../Data/footerInfo";
-import "../Styles/landingPage.css";
+import Info from "../../Data/footerInfo";
+import "../../Styles/landingPage.css";
 
 const Footer = () => {
   return (

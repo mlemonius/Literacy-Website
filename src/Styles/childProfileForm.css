@@ -76,21 +76,6 @@
     text-align: center;
     padding: 25px;
   }
-
-  .MuiTypography-root.readpal-congrat-header {
-    font-size: 35px;
-    color: teal;
-  }
-
-  .MuiTypography-root.readpal-congrat-text {
-    font-size: 28px;
-    margin-bottom: 30px;
-  }
-
-  .MuiTypography-root.readpal-greetings-text {
-    font-size: 20px;
-    margin: 50px;
-  }
 }
 
 .readpal-container {
@@ -117,19 +102,4 @@
   margin: auto;
   text-align: center;
   padding: 25px;
-}
-
-.MuiTypography-root.readpal-congrat-header {
-  font-size: 35px;
-  color: teal;
-}
-
-.MuiTypography-root.readpal-congrat-text {
-  font-size: 28px;
-  margin-bottom: 30px;
-}
-
-.MuiTypography-root.readpal-greetings-text {
-  font-size: 20px;
-  margin: 50px;
 }

@@ -168,11 +168,11 @@
 }
 
 /* Info block */
-.Info-block {
+/* .Info-block {
   width: 60%;
   margin: auto;
   padding: 10px;
-  padding-top: 7%;
+  padding-top: 3%;
 }
 .page-title {
   font-size: 60px;
@@ -180,15 +180,21 @@
 .header-container {
   margin: 20px;
   text-align: center;
-}
-#col-1 {
+} */
+/* #col-1 {
   width: 50%;
 }
 #col-2 {
   width: 50%;
-}
+} */
 
 /* Footer block */
+/* .main-footer {
+  position: fixed;
+  bottom: 0;
+  width: 100%;
+}
+
 .footer-middle {
   background: #282828;
   padding-top: 3rem;
@@ -211,4 +217,25 @@
 
 .footer-right-block ul li:hover {
   color: rgb(172, 172, 172);
+} */
+
+/* Login button */
+
+.landing-page-login {
+  margin: auto;
+  text-align: center;
+}
+
+.landing-page-button {
+  border: none;
+  outline: none;
+  width: 170px;
+  margin-left: 25%;
+  margin-right: 25%;
+  padding: 15px 0;
+  color: #fff;
+  font-size: 16px;
+  letter-spacing: 1px;
+  background: black;
+  cursor: pointer;
 }

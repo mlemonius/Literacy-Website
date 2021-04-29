@@ -10,7 +10,7 @@ import {
   DialogActions,
   Button,
 } from "@material-ui/core";
-import "../Styles/checkupPage.css";
+import "../../Styles/checkupPage.css";
 import { withRouter } from "react-router-dom";
 
 class Checkup extends Component {
@@ -47,17 +47,18 @@ class Checkup extends Component {
   };
 
   handleSubmit = () => {
-    // if (this.state.valid) {
-    //   const info = {
-    //     age: this.state.age,
-    //     color: this.state.color,
-    //     animal: this.state.animal,
-    //   };
-    //   console.log(info); //send info to backend!
-    //   return this.props.history.push("/signup-done");
-    // } else {
-    this.handleClickOpen();
-    // }
+    if (this.state.valid) {
+      // const info = {
+      //   age: this.state.age,
+      //   color: this.state.color,
+      //   animal: this.state.animal,
+      // };
+      // console.log(info); //send info to backend!
+      this.props.setAsked(true);
+      return this.props.history.push("/signup");
+    } else {
+      this.handleClickOpen();
+    }
   };
 
   render() {
@@ -71,7 +72,11 @@ class Checkup extends Component {
         </Typography>
         <form>
           <Grid container style={{ paddingTop: 15 }}>
-            <Grid item xs={12} style={{ paddingBottom: 10 }}>
+            <Grid
+              item
+              xs={12}
+              style={{ paddingBottom: 10, margin: 30, fontSize: 30 }}
+            >
               I have a child between 7 - 9 years of age who is interested in
               ReadPal
               <Checkbox
@@ -81,7 +86,11 @@ class Checkup extends Component {
                 onChange={this.handleQuestion1}
               />
             </Grid>
-            <Grid item xs={12} style={{ paddingBottom: 10 }}>
+            <Grid
+              item
+              xs={12}
+              style={{ paddingBottom: 30, margin: 30, fontSize: 30 }}
+            >
               I am the parent, legal guardian or educational organization of
               that child
               <Checkbox
@@ -93,7 +102,9 @@ class Checkup extends Component {
             </Grid>
           </Grid>
         </form>
-        <button onClick={this.handleSubmit}>Submit</button>
+        <button onClick={this.handleSubmit} id="proceed-btn">
+          Proceed
+        </button>
         <Dialog
           open={this.state.open}
           onClose={this.handleClose}

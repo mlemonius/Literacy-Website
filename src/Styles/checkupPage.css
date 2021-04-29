@@ -76,6 +76,7 @@
 }
 
 .sec-checkup-container {
+  text-align: center;
   margin: auto;
 }
 
@@ -89,4 +90,9 @@
 
 .MuiTypography-root.sec-checkup-header {
   font-size: 40px;
+}
+
+#proceed-btn {
+  width: 200px;
+  font-size: 25px;
 }
