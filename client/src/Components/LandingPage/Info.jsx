@@ -45,7 +45,6 @@ class Info extends Component {
               </CardActions>
             </Card>
           </Grid>
-
           <Grid key="1" id="col-2" item>
             <Card
               className="info-card"
