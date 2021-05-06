@@ -1,10 +1,17 @@
 import SignUpForm from "./ChildProfileForm";
 import CheckupPage from "./CheckupPage";
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { useHistory } from "react-router-dom";
-// import fire from "../fire";
 import Signup from "./Signup";
 import "../../Styles/signup.css";
+import {
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogContentText,
+  DialogActions,
+  Button,
+} from "@material-ui/core";
 
 function SignupPage() {
   const history = useHistory();
@@ -25,6 +32,8 @@ function SignupPage() {
   const [emailError, setEmailError] = useState("");
   const [passwordError, setPasswordError] = useState("");
   const [hasAccount, setHasAccount] = useState("");
+  const [checked, setChecked] = useState(false);
+  const [open, setOpen] = useState(false);
 
   const clearInputs = () => {
     setEmail("");
@@ -36,47 +45,34 @@ function SignupPage() {
     setPasswordError("");
   };
 
-  const handleSignup = () => {
-    setClicked(true);
-    clearErrors();
-    history.push("/email-confirmation");
+  const handleClickOpen = () => {
+    // this.setState({ open: true });
+    setOpen(true);
+  };
 
-    //   fire
-    //     .auth()
-    //     .createUserWithEmailAndPassword(email, password)
-    //     .catch((err) => {
-    //       switch (err.code) {
-    //         case "auth/email-already-in-use":
-    //         case "auth/invalid-email":
-    //           setEmailError(err.message);
-    //           break;
-    //         case "auth/weak-password":
-    //           setPasswordError(err.message);
-    //           break;
-    //       }
-    //     });
+  const handleClose = () => {
+    // this.setState({ open: false });
+    setOpen(false);
+  };
+
+  const handleChecked = (value) => {
+    setChecked(value);
+  };
+
+  const handleSignup = () => {
+    if (checked) {
+      setClicked(true);
+      clearErrors();
+      history.push("/email-confirmation");
+    } else {
+      handleClickOpen();
+    }
   };
 
   const handleLogout = () => {
     setClicked(false);
-    // fire.auth().signOut();
     console.log("Log out");
   };
-
-  const authListener = () => {
-    //   fire.auth().onAuthStateChanged((user) => {
-    //     if (user) {
-    //       clearInputs();
-    //       setUser(user);
-    //     } else {
-    //       setUser("");
-    //     }
-    //   });
-  };
-
-  useEffect(() => {
-    authListener();
-  });
 
   return (
     <div className="SignupPage">
@@ -107,8 +103,28 @@ function SignupPage() {
           countryError={countryError}
           emailError={emailError}
           passwordError={passwordError}
+          checked={checked}
+          setChecked={setChecked}
         />
       )}
+      <Dialog
+        open={open}
+        onClose={handleClose}
+        aria-labelledby="alert-dialog-title"
+        aria-describedby="alert-dialog-description"
+      >
+        <DialogTitle id="alert-dialog-title">Forget anything?</DialogTitle>
+        <DialogContent>
+          <DialogContentText id="alert-dialog-description">
+            Please Agree the Terms and Services!
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleClose} color="primary" autoFocus>
+            Close
+          </Button>
+        </DialogActions>
+      </Dialog>
     </div>
   );
 }
