@@ -10,22 +10,23 @@ const passportLocalmongoose = require("passport-local-mongoose");
 const GoogleStrategy = require('passport-google-oauth20').Strategy;
 const findOrCreate = require('mongoose-findorcreate');
 import User from "../database/userModel.js";
-const Auth = require("two-step-auth");
+import Otp from "../database/otpModel.js";
+const {Auth} = require("two-step-auth");
 
 const router = express.Router();
 
-router.get("/", (req, res) => {
-  res.render("home");
-})// change it
+// router.get("/", (req, res) => {
+//   res.render("home");
+// })// change it
 
 
-router.get("/login", (req, res) => {
-  res.render("Login");
-})  // change it
+// router.get("/login", (req, res) => {
+//   res.render("Login");
+// })  // change it
 
-router.get("/register", (req, res) => {
-  res.render("Register");
-})// change it
+// router.get("/register", (req, res) => {
+//   res.render("Register");
+// })// change it
 
 
 // router.get("/auth/google", passport.authenticate("google", {
@@ -39,65 +40,104 @@ router.get("/register", (req, res) => {
 //   }));
 
 
-router.post("/register", async (req, res) => {
-  const {firstname, lastname, organization, country, email, password} = req.body;
-  const result = await Auth(email, "Readpal");
-  if(result.success == true){
-    const newUser = new User({username: email, firstName: firstname, lastName: lastname, organization: organization, country: country});
-    User.register(newUser, password, (err, user) => {
-      // console.log(user._id);
-      if (err) {
+router.post("/server/register",(req, res) => {
+  const {firstname, lastname, organization, country, email, password, otp} = req.body;
+  // const result = await Auth(email, "Readpal");
+  Otp.findOne({email: email, otp: otp}, (err, foundOtp) =>{        //find otp and email 
+    if(foundOtp){                                                       // if the sent otp and the otp in the database matches, create a new user
+      const newUser = new User({username: email, firstName: firstname, lastName: lastname, organization: organization, country: country});
+      User.register(newUser, password, (err, user) => {
+        // console.log(user._id);
+        if (err) {
+          console.log(err);
+          // res.redirect("/register"); // change it
+        } else {
+          req.login(user, function(err) {
+            if (err) {
+              return next(err);
+            } else {
+              // res.redirect('/secrets'); // change it
+              res.json({message: "success", userID: user._id});
+            }
+          });
+        }
+      });
+      Otp.deleteOne({email: foundOtp.email}, (err)=>{                 //After successfully created a new user, delete the otp    
         console.log(err);
-        res.redirect("/register"); // change it
-      } else {
-        req.login(user, function(err) {
-          if (err) {
-            return next(err);
-          } else {
-            res.redirect('/secrets'); // change it
-            // res.json({user: user, otp: result.OTP});
+      })
+    }else{
+      res.json({message: "invalid"});
+    }
+  })
+})
+
+router.post("/server/verify", async (req,res)=>{
+  try {
+    const result = await Auth(req.body.email, "ReadPal");
+    if(result.success == true){
+      Otp.findOne({ email: req.body.email}, (err, foundOtp) => {    //check if the email exists in the database 
+         if(err){
+            console.log(err);
+         } else{  // the email exists ( which means this is not the first time the user requests a otp)
+          if(foundOtp == null){
+            const newOtp = new Otp({email: req.body.email, otp: result.OTP});
+            newOtp.save();
+          }else{
+            foundOtp.otp = result.OTP;   // add new otp to the document
+            foundOtp.save();
           }
-        });
-      }
-      
-    });
-  }else{
-    res.send("Email is invalid");
+           
+         }
+      });
+      res.json({message: 'success'});
+    }else{
+      res.json({message: "invalid"});
+    }
+  } catch (error) {
+    console.log(error);
   }
-
 })
 
-// router.post("/otp", async (req,res)=>{
-//   const result = await Auth(req.body.email, "ReadPal");
-//   if(result.success == true){
-//     res.send(result.OTP);
-//   }else{
-//     res.send("Email is invalid");
-//   }
-// })
 
-router.post('/login', passport.authenticate('local', {successRedirect: '/secrets', failureRedirect: '/'}, (req,res)=>{   // change it
-  res.json(req.user)
-}));
+// router.post('/server/login', passport.authenticate('local', (req,res)=>{   // change it
+// //   User.findOne({ username: req.user.username}, (err, foundUser) => {    
+// //     if(err){
+// //        console.log(err);
+// //        res.json({message: "invalid"})
+// //     } else{  
+// //       res.json({message: "success", userID: foundUser._id});
+// //     }
+// //  });
+// res.json({message: "success"});
+// }));
 
-router.get("/logout", (req, res) => {
+router.post('/server/login',
+  passport.authenticate('local'),
+  function(req, res) {
+    res.json({userID: req.user._id});
+  });
+
+router.get("/server/logout", (req, res) => {
   req.logout();
-  res.redirect('/');// change it
+  res.json({message: "success"});
 })
 
-router.post("/:userID/profile", (req,res)=>{ 
+router.post("/server/:userID/profile", (req,res)=>{ 
   const userID = req.params.userID;
   const {age, color, animal} = req.body;     
   User.findById({_id: userID}, (err,  foundUser) => {
      if(err){
          console.log(`Error: ` + err)
+         res.json({message: "invalid"});
      } else{
        if(!foundUser){
-           console.log("message")
+          res.json({message: "invalid"});
+          //  console.log("message")
        } else{
           const childProfile = { age: age, color: color, animal: animal};
           foundUser.profiles.push(childProfile);
           foundUser.save();
+          res.json({message: "success"});
           //res.json(foundUser);
        }
      }
@@ -106,11 +146,11 @@ router.post("/:userID/profile", (req,res)=>{
 
 
 
-router.get("/secrets", (req, res) => {
-  if (req.isAuthenticated()) {
-    res.render("secrets");
-  } else {
-    res.redirect("/login");
-  }
-})// change it
+// router.get("/secrets", (req, res) => {
+//   if (req.isAuthenticated()) {
+//     res.render("secrets");
+//   } else {
+//     res.redirect("/login");
+//   }
+// })// change it
 export default router;

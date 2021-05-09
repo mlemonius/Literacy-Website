@@ -10,12 +10,16 @@ const passport = require("passport");
 const passportLocalmongoose = require("passport-local-mongoose");
 const GoogleStrategy = require('passport-google-oauth20').Strategy;
 const findOrCreate = require('mongoose-findorcreate');
+const path = require('path'); 
 import userRouter from "./routes/user.js";
 import User from "./database/userModel.js";
+
 const app = express();
 
 app.set('view engine', 'ejs');
-app.use(bodyParser.urlencoded({extended: true}));
+app.use(bodyParser.urlencoded({extended: true})); 
+// app.use(express.urlencoded({extended: true})); 
+// app.use(express.json());   
 app.use(express.static("public"));
 
 app.use(session({
@@ -62,8 +66,10 @@ passport.deserializeUser(function(id, done) {
 // ));
 
 app.use("/", userRouter);
-
-
+// app.use(express.static(path.join(__dirname, '../build')))
+// app.get('*', (req, res) => {
+//     res.sendFile(path.join(__dirname, '../build'))
+// })
 let port = process.env.PORT;
 if (port == null || port == "") {
   port = 5000;
