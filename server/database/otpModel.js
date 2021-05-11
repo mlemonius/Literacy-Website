@@ -10,9 +10,5 @@ const otpSchema = new mongoose.Schema({
   email:{type: String, unique: true},
   otp: String
 });
-
-// userSchema.plugin(passportLocalmongoose);
-// userSchema.plugin(findOrCreate);
-
 const Otp = new mongoose.model("Otp", otpSchema);
 export default Otp;

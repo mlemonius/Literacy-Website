@@ -10,16 +10,16 @@ const passport = require("passport");
 const passportLocalmongoose = require("passport-local-mongoose");
 const GoogleStrategy = require('passport-google-oauth20').Strategy;
 const findOrCreate = require('mongoose-findorcreate');
-const path = require('path'); 
+const path = require('path');
 import userRouter from "./routes/user.js";
 import User from "./database/userModel.js";
 
 const app = express();
 
 app.set('view engine', 'ejs');
-app.use(bodyParser.urlencoded({extended: true})); 
-// app.use(express.urlencoded({extended: true})); 
-// app.use(express.json());   
+app.use(bodyParser.urlencoded({extended: true}));
+// app.use(express.urlencoded({extended: true}));
+//app.use(express.json());
 app.use(express.static("public"));
 
 app.use(session({
