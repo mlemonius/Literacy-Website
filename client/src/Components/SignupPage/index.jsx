@@ -12,46 +12,30 @@ import {
   DialogActions,
   Button,
 } from "@material-ui/core";
+import axios from "axios";
+import qs from "qs";
+import { signup } from "../../actions/credentialActions";
+import { connect } from "react-redux";
+import { bindActionCreators } from "redux";
 
-function SignupPage() {
+function SignupPage(props) {
   const history = useHistory();
 
-  const [clicked, setClicked] = useState(false); //debug
   const [asked, setAsked] = useState(false);
-  const [user, setUser] = useState("");
   const [firstname, setFirstname] = useState("");
   const [lastname, setLastname] = useState("");
   const [organization, setOrganization] = useState("");
   const [country, setCountry] = useState("");
-  const [email, setEmail] = useState("");
+  const [otp, setOtp] = useState("");
   const [password, setPassword] = useState("");
-  const [firstnameError, setFirstnameError] = useState("");
-  const [lastnameError, setLastnameError] = useState("");
-  const [organizationError, setOrganizationError] = useState("");
-  const [countryError, setCountryError] = useState("");
-  const [emailError, setEmailError] = useState("");
-  const [passwordError, setPasswordError] = useState("");
-  const [hasAccount, setHasAccount] = useState("");
   const [checked, setChecked] = useState(false);
   const [open, setOpen] = useState(false);
 
-  const clearInputs = () => {
-    setEmail("");
-    setPassword("");
-  };
-
-  const clearErrors = () => {
-    setEmailError("");
-    setPasswordError("");
-  };
-
   const handleClickOpen = () => {
-    // this.setState({ open: true });
     setOpen(true);
   };
 
   const handleClose = () => {
-    // this.setState({ open: false });
     setOpen(false);
   };
 
@@ -61,48 +45,63 @@ function SignupPage() {
 
   const handleSignup = () => {
     if (checked) {
-      setClicked(true);
-      clearErrors();
-      history.push("/email-confirmation");
+      const cred = {
+        otp: otp,
+        email: props.email,
+        password: password,
+        firstname: firstname,
+        lastname: lastname,
+        organization: organization,
+        country: country,
+      };
+
+      axios({
+        method: "post",
+        url: "https://secure-bastion-85489.herokuapp.com/server/register",
+        data: qs.stringify(cred),
+        headers: {
+          "content-type": "application/x-www-form-urlencoded;charset=utf-8",
+        },
+      }).then((response) => {
+        console.log(response);
+        if (response.status === 200) {
+          if (response.data.message === "success") {
+            props.signup(response.data.userID, props.email);
+            history.push("/child-profile-form");
+          } else {
+            // this.setState({ valid: false });
+          }
+        } else {
+        }
+      });
     } else {
       handleClickOpen();
     }
   };
 
   const handleLogout = () => {
-    setClicked(false);
     console.log("Log out");
   };
 
   return (
     <div className="SignupPage">
-      {/* {user ? ( */}
       {!asked ? (
         <CheckupPage setAsked={setAsked} />
       ) : (
         <Signup
-          clicked={clicked} //debug
           firstname={firstname}
           lastname={lastname}
           organization={organization}
           country={country}
-          email={email}
+          otp={otp}
           password={password}
+          setOtp={setOtp}
           setLastname={setLastname}
           setFirstname={setFirstname}
           setOrganization={setOrganization}
           setCountry={setCountry}
-          setEmail={setEmail}
           setPassword={setPassword}
           handleSignup={handleSignup}
-          hasAccount={hasAccount}
-          setHasAccount={setHasAccount}
-          firstnameError={firstnameError}
-          lastnameError={lastnameError}
-          organizationError={organizationError}
-          countryError={countryError}
-          emailError={emailError}
-          passwordError={passwordError}
           checked={checked}
           setChecked={setChecked}
         />
@@ -129,4 +128,19 @@ function SignupPage() {
   );
 }
 
-export default SignupPage;
+const mapStateToProps = (state) => {
+  return {
+    email: state.userInfo.email,
+  };
+};
+
+const mapDispatchToProps = (dispatch) => {
+  return bindActionCreators(
+    {
+      signup,
+    },
+    dispatch
+  );
+};
+
+export default connect(mapStateToProps, mapDispatchToProps)(SignupPage);

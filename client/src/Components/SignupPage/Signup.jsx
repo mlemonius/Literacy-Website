@@ -1,16 +1,46 @@
 import { React, Component } from "react";
-import { Link } from "react-router-dom";
-import { Checkbox } from "@material-ui/core";
-import { render } from "@testing-library/react";
+import { Checkbox, Button } from "@material-ui/core";
+import axios from "axios";
 
 class Signup extends Component {
   state = {};
+
+  resendCode = () => {
+    axios.get("").then((response) => {});
+  };
 
   render() {
     return (
       <section className="signup">
         <div className="signupContainer" style={{ marginTop: "10%" }}>
           <h1>Sign Up</h1>
+
+          <label>Enter the OTP code we sent you via email</label>
+          <input
+            type="text"
+            autoFocus
+            required
+            placeholder="6 digit code"
+            value={this.props.otp}
+            onChange={(e) => this.props.setOtp(e.target.value)}
+          />
+          <Button
+            variant="contained"
+            style={{ width: 130, margin: 10 }}
+            onClick={this.resendCode}
+          >
+            Resend Code
+          </Button>
+
+          <label>Password</label>
+          <input
+            type="password"
+            required
+            value={this.props.password}
+            onChange={(e) => this.props.setPassword(e.target.value)}
+          />
+          <p className="errorMsg">{this.props.passwordError}</p>
+
           <label>First Name</label>
           <input
             type="text"
@@ -33,6 +63,7 @@ class Signup extends Component {
           <label>Organization</label>
           <input
             type="text"
+            placeholder="optional"
             value={this.props.organization}
             onChange={(e) => this.props.setOrganization(e.target.value)}
           />
@@ -47,23 +78,14 @@ class Signup extends Component {
           />
           <p className="errorMsg">{this.props.countryError}</p>
 
-          <label>Email Address</label>
+          {/* <label>Email Address</label>
           <input
             type="text"
             required
             value={this.props.email}
             onChange={(e) => this.props.setEmail(e.target.value)}
           />
-          <p className="errorMsg">{this.props.emailError}</p>
-
-          <label>Password</label>
-          <input
-            type="password"
-            required
-            value={this.props.password}
-            onChange={(e) => this.props.setPassword(e.target.value)}
-          />
-          <p className="errorMsg">{this.props.passwordError}</p>
+          <p className="errorMsg">{this.props.emailError}</p> */}
 
           <div>
             <p style={{ fontSize: 22, display: "inline-block" }}>
