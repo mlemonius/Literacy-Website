@@ -6,6 +6,7 @@ import SignupPage from "./Components/SignupPage/";
 import ChildProfileForm from "./Components/SignupPage/ChildProfileForm";
 import CongratsPage from "./Components/CongratsPage/";
 import EmailConfirm from "./Components/SignupPage/EmailConfirm";
+import ForgotPassword from "./Components/ForgotPasswordPage";
 
 const Main = () => {
   return (
@@ -15,7 +16,7 @@ const Main = () => {
       <Route path="/child-profile-form" exact component={ChildProfileForm} />
       <Route path="/congrats" exact component={CongratsPage} />
       <Route path="/email-confirmation" exact component={EmailConfirm} />
-
+      <Route path="/forgot-password" exact component={ForgotPassword} />
       <Route path="/" exact component={LandingPage} />
       {/* <Route path="/chatroom" component={Chatroom} /> */}
       {/* <Route path="/pdfview" component={PDFdisplay} /> */}
