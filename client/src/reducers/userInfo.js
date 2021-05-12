@@ -1,19 +1,33 @@
 const initial = {
   userID: "",
   email: "",
+  yourChildren: [],
+  friends: [],
 };
 
-const credential = (state = initial, action) => {
+const userInfo = (state = initial, action) => {
   switch (action.type) {
     case "LOGIN":
       return {
+        ...state,
         userID: action.payload.userID,
         email: action.payload.email,
       };
     case "SIGNUP":
       return {
+        ...state,
         userID: action.payload.userID,
         email: action.payload.email,
+      };
+    case "SETEMAIL":
+      return {
+        ...state,
+        email: action.payload,
+      };
+    case "SETNEWPROFILE":
+      return {
+        ...state,
+        yourChildren: [...state.yourChildren, action.payload],
       };
     case "LOGOUT":
       return initial;
@@ -23,4 +37,4 @@ const credential = (state = initial, action) => {
   }
 };
 
-export default credential;
+export default userInfo;

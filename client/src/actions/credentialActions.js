@@ -23,3 +23,17 @@ export const logout = () => {
     type: "LOGIN",
   };
 };
+
+export const changeEmail = (email) => {
+  return {
+    type: "SETEMAIL",
+    payload: email,
+  };
+};
+
+export const setNewProfile = (profile) => {
+  return {
+    type: "SETNEWPROFILE",
+    payload: profile,
+  };
+};
