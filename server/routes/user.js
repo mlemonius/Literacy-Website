@@ -38,34 +38,43 @@ router.get("/register", (req, res) => {
 //     successRedirect: "/secrets"
 //   }));
 
-router.post("/server/verify", async (req, res) => {
-  try {
-    const result = await Auth(req.body.email, "ReadPal");
-    if (result.success == true) {
-      Otp.findOne({email: req.body.email}, (err, foundOtp) => { //check if the email exists in the database
-      // console.log(foundOtp);
-        if (err) {
-          console.log(err);
-        } else {          // first time requests otp
-          if (foundOtp == null) {
-            const newOtp = new Otp({
-              email: req.body.email,
-              otp: result.OTP
-            });
-            newOtp.save();
-          } else { // the email exists ( which means this is not the first time the user requests a otp)
-            foundOtp.otp = result.OTP; // update new otp to the document
-            foundOtp.save();
-          }
+router.post("/server/verify", (req, res) => {
+
+    User.findOne({username: req.body.email}, (err, foundUser) =>{
+      if(err){
+        console.log(err);
+      }else {
+        if (foundUser == null) {
+          Auth(req.body.email, "ReadPal").then(result =>{
+            if (result.success == true) {
+              Otp.findOne({email: req.body.email}, (err, foundOtp) => { //check if the email exists in the database
+              // console.log(foundOtp);
+                if (err) {
+                  console.log(err);
+                } else {          // first time requests otp
+                  if (foundOtp == null) {
+                    const newOtp = new Otp({
+                      email: req.body.email,
+                      otp: result.OTP
+                    });
+                    newOtp.save();
+                  } else { // the email exists ( which means this is not the first time the user requests a otp)
+                    foundOtp.otp = result.OTP; // update new otp to the document
+                    foundOtp.save();
+                  }
+                }
+              });
+              res.json({message: "success"});
+            } else {
+              res.json({message: "invalid"});
+            }
+          });
+        }else{
+          res.json({message: "match"})
+
         }
-      });
-      res.json({message: 'success'});
-    } else {
-      res.json({message: "invalid"});
-    }
-  } catch (error) {
-    console.log(error);
-  }
+      }
+    })
 })
 
 router.post("/server/register", (req, res) => {
@@ -205,7 +214,7 @@ router.patch("/server/reset", (req, res) => {
         console.log(err);
       }else{
         if(foundOtp == null){
-          res.json({message: "invalid", userID: null})
+          res.json({message: "invalid"})
         }else{                                               // if valid, find that user to set up the new password (given by user)
           User.findOne({username: foundOtp.email}, (err, foundUser) =>{
             if (err) {
@@ -216,7 +225,7 @@ router.patch("/server/reset", (req, res) => {
                   console.log(err);
                 }else {
                   foundUser.save();
-                  res.json({message: "success", userID: user._id});
+                  res.json({message: "success"});
                 }
               })
             }

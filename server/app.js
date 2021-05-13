@@ -66,10 +66,10 @@ passport.deserializeUser(function(id, done) {
 // ));
 
 app.use("/", userRouter);
-// app.use(express.static(path.join(__dirname, '../build')))
-// app.get('*', (req, res) => {
-//     res.sendFile(path.join(__dirname, '../build'))
-// })
+app.use(express.static(path.join(__dirname, '../build')))
+app.get('*', (req, res) => {
+    res.sendFile(path.join(__dirname, '../build'))
+})
 let port = process.env.PORT;
 if (port == null || port == "") {
   port = 5000;
