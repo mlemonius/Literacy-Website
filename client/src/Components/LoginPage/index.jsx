@@ -52,7 +52,8 @@ class LoginPage extends Component {
   handleLogin = () => {
     axios({
       method: "post",
-      url: "https://secure-bastion-85489.herokuapp.com/server/login",
+      // url: "https://secure-bastion-85489.herokuapp.com/server/login",
+      url: "/server/login",
       data: qs.stringify({
         username: this.state.email,
         password: this.state.password,

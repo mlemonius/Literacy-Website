@@ -49,7 +49,8 @@ class ForgotPassword extends Component {
     if (this.state.validStep1) {
       axios({
         method: "post",
-        url: "https://secure-bastion-85489.herokuapp.com/server/forgot",
+        // url: "https://secure-bastion-85489.herokuapp.com/server/forgot",
+        url: "/server/forgot",
         data: qs.stringify({
           email: this.state.email,
         }),
@@ -76,7 +77,8 @@ class ForgotPassword extends Component {
     if (this.state.validStep2) {
       axios({
         method: "patch",
-        url: "https://secure-bastion-85489.herokuapp.com/server/reset",
+        // url: "https://secure-bastion-85489.herokuapp.com/server/reset",
+        url: "/server/reset",
         data: qs.stringify({
           otp: this.state.otp,
           password: this.state.password,

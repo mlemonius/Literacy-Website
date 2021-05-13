@@ -57,7 +57,8 @@ function SignupPage(props) {
 
       axios({
         method: "post",
-        url: "https://secure-bastion-85489.herokuapp.com/server/register",
+        // url: "https://secure-bastion-85489.herokuapp.com/server/register",
+        url: "/server/register",
         data: qs.stringify(cred),
         headers: {
           "content-type": "application/x-www-form-urlencoded;charset=utf-8",
