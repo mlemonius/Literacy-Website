@@ -1,113 +1,121 @@
-import React, { useState, useEffect } from "react";
-// import fire from "../fire";
+import React, { Component } from "react";
 import Login from "./Login";
 // import SignUpForm from "../SignupPage/SignUpForm";
 import "../../Styles/login.css";
+import axios from "axios";
+import qs from "qs";
+import { login } from "../../actions/credentialActions";
+import { connect } from "react-redux";
+import { bindActionCreators } from "redux";
 
-function LoginPage() {
-  const [clicked, setClicked] = useState(false); //debug
-  const [user, setUser] = useState("");
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [emailError, setEmailError] = useState("");
-  const [passwordError, setPasswordError] = useState("");
-  const [hasAccount, setHasAccount] = useState("");
-
-  const clearInputs = () => {
-    setEmail("");
-    setPassword("");
+class LoginPage extends Component {
+  state = {
+    email: "",
+    password: "",
+    valid: false,
   };
 
-  const clearErrors = () => {
-    setEmailError("");
-    setPasswordError("");
+  setEmail = (value) => {
+    if (this.validateEmail(value)) this.setState({ email: value, valid: true });
+    else this.setState({ email: value, valid: false });
   };
 
-  const handleLogin = () => {
-    setClicked(true);
-    clearErrors();
-
-    //   fire
-    //     .auth()
-    //     .signInWithEmailAndPassword(email, password)
-    //     .catch((err) => {
-    //       switch (err.code) {
-    //         case "auth/invalid-email":
-    //         case "auth/user-disabled":
-    //         case "auth/user-not-found":
-    //           setEmailError(err.message);
-    //           break;
-    //         case "auth/wrong-password":
-    //           setPasswordError(err.message);
-    //           break;
-    //       }
-    //     });
+  setPassword = (value) => {
+    if (value !== "" && this.validateEmail(this.state.email))
+      this.setState({ password: value, valid: true });
+    else this.setState({ password: value, valid: false });
   };
 
-  const handleSignup = () => {
-    setClicked(true);
-    clearErrors();
-
-    //   fire
-    //     .auth()
-    //     .createUserWithEmailAndPassword(email, password)
-    //     .catch((err) => {
-    //       switch (err.code) {
-    //         case "auth/email-already-in-use":
-    //         case "auth/invalid-email":
-    //           setEmailError(err.message);
-    //           break;
-    //         case "auth/weak-password":
-    //           setPasswordError(err.message);
-    //           break;
-    //       }
-    //     });
+  clearInputs = () => {
+    this.setState({
+      email: "",
+      password: "",
+    });
   };
 
-  const handleLogout = () => {
-    setClicked(false);
-    // fire.auth().signOut();
+  validateEmail = () => {
+    if (/^[a-zA-Z0-9]+@(?:[a-zA-Z0-9]+\.)+[A-Za-z]+$/.test(this.state.email)) {
+      return true;
+    } else {
+      return false;
+    }
+  };
+
+  validatePassword = (pw) => {
+    if (pw.length >= 8) {
+      return true;
+    } else {
+      return false;
+    }
+  };
+
+  handleLogin = () => {
+    axios({
+      method: "post",
+      // url: "https://secure-bastion-85489.herokuapp.com/server/login",
+      url: "/server/login",
+      data: qs.stringify({
+        username: this.state.email,
+        password: this.state.password,
+      }),
+      headers: {
+        "content-type": "application/x-www-form-urlencoded;charset=utf-8",
+      },
+    }).then((response) => {
+      console.log(response);
+      if (response.status === 200) {
+        if (response.data.message === "success") {
+          this.props.login(response.data.userID, this.state.email);
+          this.props.history.push("/");
+          console.log(this.props.userID);
+        } else {
+          // this.setState({ valid: false });
+        }
+      } else {
+      }
+    });
+  };
+
+  setValid = (value) => {
+    this.setState({ valid: value });
+  };
+
+  handleLogout = () => {
+    axios.post("", {}).then((response) => {});
     console.log("Log out");
   };
 
-  const authListener = () => {
-    //   fire.auth().onAuthStateChanged((user) => {
-    //     if (user) {
-    //       clearInputs();
-    //       setUser(user);
-    //     } else {
-    //       setUser("");
-    //     }
-    //   });
-  };
-
-  useEffect(() => {
-    authListener();
-  });
-
-  return (
-    <div className="LoginPage">
-      {/* {user ? ( */}
-      {clicked ? (
-        // <SignUpForm handleLogout={handleLogout} />
-        <></>
-      ) : (
+  render() {
+    return (
+      <div className="LoginPage">
         <Login
-          clicked={clicked} //debug
-          email={email}
-          setEmail={setEmail}
-          password={password}
-          setPassword={setPassword}
-          handleLogin={handleLogin}
-          handleSignup={handleSignup}
-          hasAccount={hasAccount}
-          setHasAccount={setHasAccount}
-          emailError={emailError}
-          passwordError={passwordError}
+          email={this.state.email}
+          setEmail={this.setEmail}
+          password={this.state.password}
+          setPassword={this.setPassword}
+          handleLogin={this.handleLogin}
+          validateEmail={this.validateEmail}
+          valid={this.state.valid}
+          setValid={this.setValid}
         />
-      )}
-    </div>
-  );
+      </div>
+    );
+  }
 }
 
-export default LoginPage;
+const mapStateToProps = (state) => {
+  return {
+    userID: state.userInfo.userID,
+  };
+};
+
+const mapDispatchToProps = (dispatch) => {
+  return bindActionCreators(
+    {
+      login,
+    },
+    dispatch
+  );
+};
+
+export default connect(mapStateToProps, mapDispatchToProps)(LoginPage);
