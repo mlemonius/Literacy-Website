@@ -13,6 +13,11 @@ import {
 } from "@material-ui/core";
 import "../../Styles/childProfileForm.css";
 import { withRouter } from "react-router-dom";
+import axios from "axios";
+import qs from "qs";
+import { setNewProfile } from "../../actions/credentialActions";
+import { connect } from "react-redux";
+import { bindActionCreators } from "redux";
 
 const ages = ["7", "8", "9"];
 const colors = ["Blue", "Red", "Green", "Pink", "Purple", "Orange", "Yellow"];
@@ -74,8 +79,23 @@ class ChildProfileForm extends Component {
         color: this.state.color,
         animal: this.state.animal,
       };
-      console.log(info); //send info to backend!
-      return this.props.history.push("/congrats");
+      // console.log(info); //send info to backend!
+
+      axios({
+        method: "post",
+        // url: `https://secure-bastion-85489.herokuapp.com/server/${this.props.userID}/profile`,
+        url: `/server/${this.props.userID}/profile`,
+        data: qs.stringify(info),
+        headers: {
+          "content-type": "application/x-www-form-urlencoded;charset=utf-8",
+        },
+      }).then((response) => {
+        if ((response.data.message = "success")) {
+          this.props.setNewProfile(response.data.profileID);
+          this.props.history.push("/congrats");
+        } else {
+        }
+      });
     } else {
       this.handleClickOpen();
     }
@@ -161,4 +181,22 @@ class ChildProfileForm extends Component {
   }
 }
 
-export default withRouter(ChildProfileForm);
+const mapStateToProps = (state) => {
+  return {
+    userID: state.userInfo.userID,
+  };
+};
+
+const mapDispatchToProps = (dispatch) => {
+  return bindActionCreators(
+    {
+      setNewProfile,
+    },
+    dispatch
+  );
+};
+
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(withRouter(ChildProfileForm));
