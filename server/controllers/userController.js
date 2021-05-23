@@ -7,11 +7,26 @@ const mongoose = require("mongoose");
 const session = require("express-session");
 const passport = require("passport");
 const passportLocalmongoose = require("passport-local-mongoose");
+// Load the AWS SDK for Node.js
+const  AWS = require('aws-sdk');
 // const GoogleStrategy = require('passport-google-oauth20').Strategy;
 // const findOrCreate = require('mongoose-findorcreate');
 import User from "../models/userModel.js";
 import Otp from "../models/otpModel.js";
 const {Auth} = require("two-step-auth");
+
+
+// Set the region 
+// AWS.config.update({region: 'REGION'});
+
+// Create S3 service object
+const s3 = new AWS.S3({apiVersion: '2006-03-01'});
+
+// Create the parameters for calling listObjects
+
+
+// Call S3 to obtain a list of the objects in the bucket
+
 
 const router = express.Router();
 
@@ -212,10 +227,30 @@ const resetPassword = (req, res) => {
 
 const returnProfiles = (req, res) => {
   const userID = req.params.userID;
+  const imagesList = [];
   User.findById({ _id: userID })
-    .then((foundUser) => {
-      res.json({ message: "success", profiles: foundUser.profiles });
-    })
+  .then((foundUser) => {
+      foundUser.profiles.forEach((profile, index, profilesList) => {
+        const bucketParams = {
+          Bucket : 'library.stories',
+          Key : `profileImages/${profile.animal.toLowerCase()}_-_${profile.color.toLowerCase()}1024_1.jpg`
+        };
+         s3.getObject(bucketParams, function (err, data) {
+          if (err) {
+            console.log("Error", err);
+          } else {
+            const image = Buffer.from(data.Body).toString('base64');
+            // console.log(image);
+            imagesList.push(image);
+            if(index === profilesList.length - 1){
+              // console.log(imagesList.length);
+              res.json({ message: "success", profiles: foundUser.profiles, images: imagesList });
+            }
+          }
+        });
+
+      });
+  })
     .catch((err) => {
       res.json({ message: "invalid", profiles: null });
     });
@@ -225,5 +260,10 @@ const userLogout = (req, res) => {
      req.logout();
      res.json({ message: "success"});
 }
+
+// const getProfilesImgs = (req, res) => {
+//   const {}
+// }
+
 
 export {verifyEmailForSignup, userSignup, userLogin, addProfile, returnProfiles, verifyEmailForReset, resetPassword, userLogout}

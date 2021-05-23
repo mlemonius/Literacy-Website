@@ -13,20 +13,31 @@ const userRouter = express.Router();
 //     successRedirect: "/secrets"
 //   }));
 
-userRouter.post("/server/verify", verifyEmailForSignup)
 
-userRouter.post("/server/register", userSignup)
+/*-----------------------User Authentication-----------------------------------*/
 
-userRouter.post('/server/login', userLogin)
+userRouter.post("/verify", verifyEmailForSignup)
 
-userRouter.post("/server/:userID/profile", addProfile)
+userRouter.post("/register", userSignup)
 
-userRouter.get("/server/:userID/profiles", returnProfiles)
+userRouter.post('/login', userLogin)
 
-userRouter.post("/server/forgot", verifyEmailForReset)
+userRouter.post("/forgot", verifyEmailForReset)
 
-userRouter.patch("/server/reset", resetPassword)
+userRouter.patch("/reset", resetPassword)
 
-userRouter.get("/server/logout", userLogout)
+userRouter.get("/logout", userLogout)
+
+
+/*-----------------------User Profile CRUD Operations-----------------------------------*/
+
+userRouter.post("/:userID/profile", addProfile)
+
+userRouter.get("/:userID/profiles", returnProfiles)
+
+// userRouter.get("/profiles/images")
+
+
+
 
 export default userRouter;

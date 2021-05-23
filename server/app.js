@@ -75,7 +75,9 @@ passport.deserializeUser(function (id, done) {
 
 
 // let __dirname = path.resolve();
-app.use("/", userRouter);
+app.use("/server/user", userRouter);
+// app.use("/server/library")
+
 // app.use(express.static(path.join(__dirname, "build")));
 
 // app.get("/*", (req, res) => {
