@@ -73,6 +73,7 @@ button {
   border: 1px solid rgba(20, 20, 20, 0.1);
   color: black;
   letter-spacing: 1px;
+  margin-bottom: 5px;
 }
 
 .signup .signupContainer .btnContainer {
@@ -103,4 +104,9 @@ button {
 .signup .signupContainer .errorMsg {
   color: red;
   font-size: 16px;
+}
+
+.signup #country-dropdown {
+  height: 35px;
+  margin-bottom: 20px;
 }
