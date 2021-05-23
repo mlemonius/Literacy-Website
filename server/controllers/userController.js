@@ -252,7 +252,7 @@ const returnProfiles = (req, res) => {
       });
   })
     .catch((err) => {
-      res.json({ message: "invalid", profiles: null });
+      res.json({ message: "invalid", profiles: null, images: null });
     });
 }
 
