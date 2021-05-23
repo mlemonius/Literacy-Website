@@ -3,7 +3,7 @@ import CheckupPage from "./CheckupPage";
 import React, { useState } from "react";
 import { useHistory } from "react-router-dom";
 import Signup from "./Signup";
-import "../../Styles/signup.css";
+import "./signup.css";
 import {
   Dialog,
   DialogTitle,

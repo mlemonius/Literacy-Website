@@ -1,7 +1,7 @@
 /* Mobiles size */
 
 @media only screen and (min-device-width: 375px) and (max-device-width: 767px) and (-webkit-min-device-pixel-ratio: 2) {
-  .readpal-container {
+  .sec-checkup-container {
     margin: auto;
   }
 
@@ -13,12 +13,8 @@
     width: 100%;
   }
 
-  .MuiTypography-root.readpal-header {
+  .MuiTypography-root.sec-checkup-header {
     font-size: 45px;
-  }
-
-  .MuiTypography-root.greetings-header {
-    font-size: 20px;
   }
 }
 
@@ -26,7 +22,7 @@
 /* Tablets size */
 
 @media only screen and (min-device-width: 768px) and (max-device-width: 1024px) and (-webkit-min-device-pixel-ratio: 2) {
-  .readpal-container {
+  .sec-checkup-container {
     margin: auto;
   }
 
@@ -38,12 +34,8 @@
     width: 50%;
   }
 
-  .MuiTypography-root.readpal-header {
+  .MuiTypography-root.sec-checkup-header {
     font-size: 35px;
-  }
-
-  .MuiTypography-root.greetings-header {
-    font-size: 20px;
   }
 }
 
@@ -51,7 +43,7 @@
 /* Desktops size */
 
 @media only screen and (min-width: 1025px) and (-webkit-min-device-pixel-ratio: 2) {
-  .readpal-container {
+  .sec-checkup-container {
     margin: auto;
   }
 
@@ -63,7 +55,7 @@
     margin: auto;
   }
 
-  .MuiTypography-root.readpal-header {
+  .MuiTypography-root.sec-checkup-header {
     font-size: 40px;
   }
 
@@ -71,14 +63,14 @@
     font-size: 20px;
   }
 
-  .profile-done-block {
-    margin: auto;
-    text-align: center;
-    padding: 25px;
+  .MuiTypography-root.sec-checkup-congrat-header {
+    font-size: 35px;
+    color: teal;
   }
 }
 
-.readpal-container {
+.sec-checkup-container {
+  text-align: center;
   margin: auto;
 }
 
@@ -90,16 +82,11 @@
   margin: auto;
 }
 
-.MuiTypography-root.readpal-header {
+.MuiTypography-root.sec-checkup-header {
   font-size: 40px;
 }
 
-.MuiTypography-root.greetings-header {
-  font-size: 20px;
-}
-
-.profile-done-block {
-  margin: auto;
-  text-align: center;
-  padding: 25px;
+#proceed-btn {
+  width: 200px;
+  font-size: 25px;
 }

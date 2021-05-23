@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 import Login from "./Login";
 // import SignUpForm from "../SignupPage/SignUpForm";
-import "../../Styles/login.css";
+import "./login.css";
 import axios from "axios";
 import qs from "qs";
 import { login } from "../../actions/credentialActions";

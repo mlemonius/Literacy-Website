@@ -5,9 +5,9 @@ import axios from "axios";
 class Signup extends Component {
   state = {};
 
-  resendCode = () => {
-    axios.get("").then((response) => {});
-  };
+  // resendCode = () => {
+  //   axios.get("").then((response) => {});
+  // };
 
   render() {
     return (
@@ -24,13 +24,13 @@ class Signup extends Component {
             value={this.props.otp}
             onChange={(e) => this.props.setOtp(e.target.value)}
           />
-          <Button
+          {/* <Button
             variant="contained"
             style={{ width: 130, margin: 10 }}
             onClick={this.resendCode}
           >
             Resend Code
-          </Button>
+          </Button> */}
 
           <label>Password</label>
           <input

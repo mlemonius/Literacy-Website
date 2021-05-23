@@ -7,7 +7,7 @@ import {
   DialogActions,
   Button,
 } from "@material-ui/core";
-import "../../Styles/forgotPassword.css";
+import "./forgotPassword.css";
 import axios from "axios";
 import qs from "qs";
 

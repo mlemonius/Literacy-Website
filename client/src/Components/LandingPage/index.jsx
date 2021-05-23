@@ -3,7 +3,7 @@ import React, { Component } from "react";
 import Info from "./Info";
 import Footer from "./Footer";
 import ArrowDownwardIcon from "@material-ui/icons/ArrowDownward";
-import "../../Styles/landingPage.css";
+import "./landingPage.css";
 import { Link } from "react-router-dom";
 
 class LandingPage extends Component {

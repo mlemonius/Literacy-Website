@@ -11,7 +11,7 @@ import {
   DialogActions,
   Button,
 } from "@material-ui/core";
-import "../../Styles/childProfileForm.css";
+import "./childProfileForm.css";
 import { withRouter } from "react-router-dom";
 import axios from "axios";
 import qs from "qs";
@@ -91,7 +91,12 @@ class ChildProfileForm extends Component {
         },
       }).then((response) => {
         if ((response.data.message = "success")) {
-          this.props.setNewProfile(response.data.profileID);
+          this.props.setNewProfile(
+            response.data.profileID,
+            this.state.color,
+            this.state.animal,
+            this.state.age
+          );
           this.props.history.push("/congrats");
         } else {
         }

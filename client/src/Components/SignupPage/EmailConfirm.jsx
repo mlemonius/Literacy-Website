@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import "../../Styles/emailConfirm.css";
+import "./emailConfirm.css";
 import axios from "axios";
 import qs from "qs";
 import { changeEmail } from "../../actions/credentialActions";
