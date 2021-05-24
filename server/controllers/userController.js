@@ -8,34 +8,39 @@ const session = require("express-session")
 const passport = require("passport")
 const passportLocalmongoose = require("passport-local-mongoose")
 // Load the AWS SDK for Node.js
-const  AWS = require('aws-sdk')
+const AWS = require('aws-sdk')
 // const GoogleStrategy = require('passport-google-oauth20').Strategy;
 // const findOrCreate = require('mongoose-findorcreate');
 import User from "../models/userModel.js"
 import Otp from "../models/otpModel.js"
 const {Auth} = require("two-step-auth")
 
-const s3 = new AWS.S3({apiVersion: '2006-03-01'})
+const s3 = new AWS.S3({
+  apiVersion: '2006-03-01'
+})
 const router = express.Router()
 
 const userLogin = (req, res, next) => {
-     passport.authenticate('local', (err, user, info) => {
-          if (err) {
-            return next(err); // will generate a 500 error
-          }
-          if (!user) {
-            return res.json({message: "invalid", userID: null})
-          }
-          req.login(user, loginErr => {
-            if (loginErr) {
-              return next(loginErr);
-            }
-            return res.json({
-              message: "success",
-              userID: req.user._id
-            })
-          })
-        })(req, res, next);
+  passport.authenticate('local', (err, user, info) => {
+    if (err) {
+      return next(err); // will generate a 500 error
+    }
+    if (!user) {
+      return res.json({
+        message: "invalid",
+        userID: null
+      })
+    }
+    req.login(user, loginErr => {
+      if (loginErr) {
+        return next(loginErr);
+      }
+      return res.json({
+        message: "success",
+        userID: req.user._id
+      })
+    })
+  })(req, res, next);
 }
 
 // const userSignup = (req, res) => {
@@ -74,30 +79,46 @@ const userLogin = (req, res, next) => {
 //}
 
 const userSignup = async (req, res) => {
-  const {firstname, lastname, organization, country, email, password, otp} = req.body
-  try{
-    const foundOtp = await Otp.findOneAndDelete({email: email,otp: otp})
-    if (foundOtp) { // if the sent otp and the otp in the database matches, create a new user
-      const newUser = new User({
-        username: email,
-        firstName: firstname,
-        lastName: lastname,
-        organization: organization,
-        country: country
-      });
-      const user = await User.register(newUser, password)
-          req.login(user, (err) => {
-            if (err) {
-              return next(err)
-            } else {
-              res.json({message: "success", userID: user._id})
-            }
-          })
-    }else {
-      res.json({message: "invalid"})
-    }
-  }catch(err){
-    console.log(err);
+  const {
+    firstname,
+    lastname,
+    organization,
+    country,
+    email,
+    password,
+    otp
+  } = req.body
+  const foundOtp = await Otp.findOneAndDelete({
+    email: email,
+    otp: otp
+  }).catch(err => {
+    console.log("Finding Otp error when signing up: " + err)
+  })
+  if (foundOtp) { // if the sent otp and the otp in the database matches, create a new user
+    const newUser = new User({
+      username: email,
+      firstName: firstname,
+      lastName: lastname,
+      organization: organization,
+      country: country
+    });
+    const user = await User.register(newUser, password).catch(err => {
+      console.log("Registering user error: " + err)
+    })
+    req.login(user, (err) => {
+      if (err) {
+        return next(err)
+      } else {
+        res.json({
+          message: "success",
+          userID: user._id
+        })
+      }
+    })
+  } else {
+    res.json({
+      message: "invalid"
+    })
   }
 }
 
@@ -140,30 +161,43 @@ const userSignup = async (req, res) => {
 
 
 const verifyEmailForSignup = async (req, res) => {
-  try{
-    const foundUser = await User.findOne({username: req.body.email})
-    console.log(foundUser)
-        if (foundUser == null) {
-          
-          const result = await Auth(req.body.email, "ReadPal")
-          if (result.success == true) {
-            const foundOtp = await Otp.findOne({email: req.body.email})
-            if (foundOtp == null) {
-              const newOtp = new Otp({email: req.body.email,otp: result.OTP})
-              newOtp.save()
-            } else { // the email exists ( which means this is not the first time the user requests a otp)
-              foundOtp.otp = result.OTP // update new otp to the document
-              foundOtp.save()
-            }
-            res.json({message: "success"})
-          }else{
-            res.json({message: "invalid"})
-          }
-        }else{
-          res.json({message: "match"})
-        }
-  }catch(err){
-    console.log(err)
+  const foundUser = await User.findOne({
+    username: req.body.email
+  }).catch(err => {
+    console.log("Finding user error: " + err)
+  })
+  if (foundUser == null) {
+    const result = await Auth(req.body.email, "ReadPal").catch(err => {
+      console.log("Sending Otp error when verifying email for signup: " + err)
+    })
+    if (result.success == true) {
+      const foundOtp = await Otp.findOne({
+        email: req.body.email
+      }).catch(err => {
+        console.log("Finding Otp error: " + err)
+      })
+      if (foundOtp == null) {
+        const newOtp = new Otp({
+          email: req.body.email,
+          otp: result.OTP
+        })
+        newOtp.save()
+      } else { // the email exists ( which means this is not the first time the user requests a otp)
+        foundOtp.otp = result.OTP // update new otp to the document
+        foundOtp.save()
+      }
+      res.json({
+        message: "success"
+      })
+    } else {
+      res.json({
+        message: "invalid"
+      })
+    }
+  } else {
+    res.json({
+      message: "match"
+    })
   }
 }
 
@@ -208,33 +242,58 @@ const verifyEmailForSignup = async (req, res) => {
 //   });
 // }
 
-const addProfile = async (req, res) =>{
+const addProfile = async (req, res) => {
   const userID = req.params.userID
-  const {age,color,animal} = req.body
+  const {
+    age,
+    color,
+    animal
+  } = req.body
 
   try {
-    const foundUser = await User.findById({_id: userID})
+    const foundUser = await User.findById({
+      _id: userID
+    }).catch(err => {
+      console.log("Finding user error when adding profile: " + err)
+    })
     if (foundUser == null) {
-      res.json({message: "invalid", profileID: null})
+      res.json({
+        message: "invalid",
+        profileID: null
+      })
     } else {
       const matchProfile = foundUser.profiles.find((profile, index) => {
         if (profile.age == age && profile.color == color && profile.animal == animal) {
           return true;
         }
       });
-      if (matchProfile == undefined) {  //if the profile does not match the existing one add new profile
-        const childProfile = {age: age, color: color, animal: animal}
+      if (matchProfile == undefined) { //if the profile does not match the existing one add new profile
+        const childProfile = {
+          age: age,
+          color: color,
+          animal: animal
+        }
         foundUser.profiles.push(childProfile)
-        const savedUser = await foundUser.save()
-        const foundProfiles = await User.findById(savedUser._id, 'profiles')
-        const childObject = foundProfiles.profiles.find((object, index) => {  //search for profile
+        const savedUser = await foundUser.save().catch(err => {
+          console.log("Saving user error when adding profile: " + err)
+        })
+        const foundProfiles = await User.findById(savedUser._id, 'profiles').catch(err => {
+          console.log("Finding profiles error: " + err)
+        })
+        const childObject = foundProfiles.profiles.find((object, index) => { //search for profile
           if (object.age == age && object.color == color && object.animal == animal) {
             return true
           }
         });
-        res.json({message: "success", profileID: childObject._id})
-      }else{
-        res.json({message: "match", profileID: null})
+        res.json({
+          message: "success",
+          profileID: childObject._id
+        })
+      } else {
+        res.json({
+          message: "match",
+          profileID: null
+        })
       }
     }
   } catch (err) {
@@ -283,28 +342,41 @@ const addProfile = async (req, res) =>{
 // }
 
 const verifyEmailForReset = async (req, res) => {
-  try {
-    const foundUser = await User.findOne({username: req.body.email}) // check if the account exists in database
-    if (foundUser == null) {
-     res.json({message: "invalid"})
-     }else{
-       const result = await Auth(req.body.email, "ReadPal")
-       if (result.success == true) {
-         const foundOtp = await Otp.findOne({email: req.body.email})
-         if (foundOtp == null) {
-           const newOtp = new Otp({email: req.body.email,otp: result.OTP})
-           newOtp.save()
-         } else { // the email exists ( which means this is not the first time the user requests a otp)
-           foundOtp.otp = result.OTP; // update new otp to the document
-           foundOtp.save()
-         }
-         res.json({message: "success"})
-       }else{
-         console.log("Error when sending otp to user");
-       }
-     }
-  } catch (err) {
-    console.log(err)
+  const foundUser = await User.findOne({
+    username: req.body.email
+  }).catch(err => {
+    console.log("Finding user error when verifying email: " + err)
+  }) // check if the account exists in database
+  if (foundUser == null) {
+    res.json({
+      message: "invalid"
+    })
+  } else {
+    const result = await Auth(req.body.email, "ReadPal").catch(err => {
+      console.log("Sending Otp error wehn verifying for reset: " + err)
+    })
+    if (result.success == true) {
+      const foundOtp = await Otp.findOne({
+        email: req.body.email
+      }).catch(err => {
+        console.log("Finding Otp error when verifying email for reset: " + err)
+      })
+      if (foundOtp == null) {
+        const newOtp = new Otp({
+          email: req.body.email,
+          otp: result.OTP
+        })
+        newOtp.save()
+      } else { // the email exists ( which means this is not the first time the user requests a otp)
+        foundOtp.otp = result.OTP; // update new otp to the document
+        foundOtp.save()
+      }
+      res.json({
+        message: "success"
+      })
+    } else {
+      console.log("Error when sending otp to user");
+    }
   }
 }
 
@@ -337,19 +409,32 @@ const verifyEmailForReset = async (req, res) => {
 // }
 
 const resetPassword = async (req, res) => {
-  try {
-    const {otp, password} = req.body
-    const foundOtp = await Otp.findOneAndDelete({otp: otp})
-    if(foundOtp == null){
-      res.json({message: "invalid"})
-    }else{           
-      const foundUser = await User.findOne({username: foundOtp.email})
-      const user = await foundUser.setPassword(password)
-      foundUser.save();
-      res.json({message: "success"})
-    }
-  } catch (err) {
-    console.log(err)
+  const {
+    otp,
+    password
+  } = req.body
+  const foundOtp = await Otp.findOneAndDelete({
+    otp: otp
+  }).catch(err => {
+    console.log("Finding Otp error when reseting password: " + err)
+  })
+  if (foundOtp == null) {
+    res.json({
+      message: "invalid"
+    })
+  } else {
+    const foundUser = await User.findOne({
+      username: foundOtp.email
+    }).catch(err => {
+      console.log("Finding user error when reseting password: " + err)
+    })
+    const user = await foundUser.setPassword(password).catch(err => {
+      console.log("Setting password error: " + err)
+    })
+    foundUser.save();
+    res.json({
+      message: "success"
+    })
   }
 }
 
@@ -387,42 +472,51 @@ const resetPassword = async (req, res) => {
 // }
 
 const returnProfiles = async (req, res) => {
-  try {
-    const userID = req.params.userID
-    // const imagesList = [];
-    const foundUser = await User.findById({ _id: userID }).lean()
-    if(foundUser != null){
-      foundUser.profiles.forEach((profile, index, profilesList) => {
-        const bucketParams = {
-          Bucket : 'library.stories',
-          Key : `profileImages/${profile.animal.toLowerCase()}_-_${profile.color.toLowerCase()}1024_1.jpg`
-        }
-          s3.getObject(bucketParams, function (err, data) {
-          if (err) {
-            console.log("Error", err)
-          } else {
-            const image = Buffer.from(data.Body).toString('base64')
-            profile.icon = image
-            // imagesList.push(image);
-            if(index === profilesList.length - 1){
-              // console.log(imagesList.length);
-              res.json({ message: "success", profiles: foundUser.profiles})
-            }
+  const userID = req.params.userID
+  // const imagesList = [];
+  const foundUser = await User.findById({
+    _id: userID
+  }).lean().catch(err => {
+    console.log("Finding user error when returning profiles: " + err)
+  })
+  if (foundUser != null) {
+    foundUser.profiles.forEach((profile, index, profilesList) => {
+      const bucketParams = {
+        Bucket: 'library.stories',
+        Key: `profileImages/${profile.animal.toLowerCase()}_-_${profile.color.toLowerCase()}1024_1.jpg`
+      }
+      s3.getObject(bucketParams, function (err, data) {
+        if (err) {
+          console.log("Error", err)
+        } else {
+          const image = Buffer.from(data.Body).toString('base64')
+          profile.icon = image
+          // imagesList.push(image);
+          if (index === profilesList.length - 1) {
+            // console.log(imagesList.length);
+            res.json({
+              message: "success",
+              profiles: foundUser.profiles
+            })
           }
-        });
-      })
-    }else{
-      res.json({ message: "invalid", profiles: null, images: null })
-    }
-  } catch (err) {
-    console.log(err)
+        }
+      });
+    })
+  } else {
+    res.json({
+      message: "invalid",
+      profiles: null,
+      images: null
+    })
   }
 }
-  
+
 
 const userLogout = (req, res) => {
-     req.logout()
-     res.json({ message: "success"})
+  req.logout()
+  res.json({
+    message: "success"
+  })
 }
 
 // const getProfilesImgs = (req, res) => {
@@ -430,4 +524,13 @@ const userLogout = (req, res) => {
 // }
 
 
-export {verifyEmailForSignup, userSignup, userLogin, addProfile, returnProfiles, verifyEmailForReset, resetPassword, userLogout}
+export {
+  verifyEmailForSignup,
+  userSignup,
+  userLogin,
+  addProfile,
+  returnProfiles,
+  verifyEmailForReset,
+  resetPassword,
+  userLogout
+}
