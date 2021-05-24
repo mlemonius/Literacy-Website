@@ -31,7 +31,7 @@ const s3 = new AWS.S3({apiVersion: '2006-03-01'});
 const router = express.Router();
 
 const userLogin = (req, res, next) => {
-     passport.authenticate('local', function(err, user, info) {
+     passport.authenticate('local', (err, user, info) => {
           if (err) {
             return next(err); // will generate a 500 error
           }
@@ -50,84 +50,183 @@ const userLogin = (req, res, next) => {
         })(req, res, next);
 }
 
-const userSignup = (req, res) => {
-     const {firstname, lastname, organization, country, email, password, otp} = req.body;
-     Otp.findOneAndDelete({email: email,otp: otp}, (err, foundOtp) => { //find otp and email
-       if (foundOtp) { // if the sent otp and the otp in the database matches, create a new user
-         const newUser = new User({
-           username: email,
-           firstName: firstname,
-           lastName: lastname,
-           organization: organization,
-           country: country
-         });
-         User.register(newUser, password, (err, user) => {
-           if (err) {
-             console.log(err);
-           } else {
-             req.login(user, function(err) {
-               if (err) {
-                 return next(err);
-               } else {
-                 res.json({
-                   message: "success",
-                   userID: user._id
-                 });
-               }
-             });
-           }
-         });
-       } else {
-         res.json({
-           message: "invalid"
-         });
-       }
-     })
-}
+// const userSignup = (req, res) => {
+//      const {firstname, lastname, organization, country, email, password, otp} = req.body;
+//      Otp.findOneAndDelete({email: email,otp: otp}, (err, foundOtp) => { //find otp and email
+//        if (foundOtp) { // if the sent otp and the otp in the database matches, create a new user
+//          const newUser = new User({
+//            username: email,
+//            firstName: firstname,
+//            lastName: lastname,
+//            organization: organization,
+//            country: country
+//          });
+//          User.register(newUser, password, (err, user) => {
+//            if (err) {
+//              console.log(err);
+//            } else {
+//              req.login(user, function(err) {
+//                if (err) {
+//                  return next(err);
+//                } else {
+//                  res.json({
+//                    message: "success",
+//                    userID: user._id
+//                  });
+//                }
+//              });
+//            }
+//          });
+//        } else {
+//          res.json({
+//            message: "invalid"
+//          });
+//        }
+//      })
+//}
 
-const verifyEmailForSignup = (req, res) => {
-     User.findOne({username: req.body.email}, (err, foundUser) =>{
-          if(err){
-            console.log(err);
-          }else {
-            if (foundUser == null) {
-              Auth(req.body.email, "ReadPal").then(result =>{
-                if (result.success == true) {
-                  Otp.findOne({email: req.body.email}, (err, foundOtp) => { //check if the email exists in the database
-                  // console.log(foundOtp);
-                    if (err) {
-                      console.log(err);
-                    } else {          // first time requests otp
-                      if (foundOtp == null) {
-                        const newOtp = new Otp({
-                          email: req.body.email,
-                          otp: result.OTP
-                        });
-                        newOtp.save();
-                      } else { // the email exists ( which means this is not the first time the user requests a otp)
-                        foundOtp.otp = result.OTP; // update new otp to the document
-                        foundOtp.save();
-                      }
-                    }
-                  });
-                  res.json({message: "success"});
-                } else {
-                  res.json({message: "invalid"});
-                }
-              });
-            }else{
-              res.json({message: "match"})
+const userSignup = async (req, res) => {
+  const {firstname, lastname, organization, country, email, password, otp} = req.body;
+  try{
+    const foundOtp = await Otp.findOneAndDelete({email: email,otp: otp})
+    if (foundOtp) { // if the sent otp and the otp in the database matches, create a new user
+      const newUser = new User({
+        username: email,
+        firstName: firstname,
+        lastName: lastname,
+        organization: organization,
+        country: country
+      });
+      const user = await User.register(newUser, password)
+          req.login(user, (err) => {
+            if (err) {
+              return next(err);
+            } else {
+              res.json({message: "success", userID: user._id});
             }
-          }
-        })
+          })
+    }else {
+      res.json({message: "invalid"});
+    }
+  }catch(err){
+    console.log(err);
+  }
 }
 
-const addProfile = (req, res) =>{
-     const userID = req.params.userID;
+// const verifyEmailForSignup = (req, res) => {
+//      User.findOne({username: req.body.email}, (err, foundUser) =>{
+//           if(err){
+//             console.log(err);
+//           }else {
+//             if (foundUser == null) {
+//               Auth(req.body.email, "ReadPal").then(result =>{
+//                 if (result.success == true) {
+//                   Otp.findOne({email: req.body.email}, (err, foundOtp) => { //check if the email exists in the database
+//                   // console.log(foundOtp);
+//                     if (err) {
+//                       console.log(err);
+//                     } else {          // first time requests otp
+//                       if (foundOtp == null) {
+//                         const newOtp = new Otp({
+//                           email: req.body.email,
+//                           otp: result.OTP
+//                         });
+//                         newOtp.save();
+//                       } else { // the email exists ( which means this is not the first time the user requests a otp)
+//                         foundOtp.otp = result.OTP; // update new otp to the document
+//                         foundOtp.save();
+//                       }
+//                     }
+//                   });
+//                   res.json({message: "success"});
+//                 } else {
+//                   res.json({message: "invalid"});
+//                 }
+//               });
+//             }else{
+//               res.json({message: "match"})
+//             }
+//           }
+//         })
+// }
+
+
+const verifyEmailForSignup = async (req, res) => {
+  try{
+    const foundUser = await User.findOne({username: req.body.email})
+    console.log(foundUser);
+        if (foundUser == null) {
+          
+          const result = await Auth(req.body.email, "ReadPal")
+          if (result.success == true) {
+            const foundOtp = await Otp.findOne({email: req.body.email})
+            if (foundOtp == null) {
+              const newOtp = new Otp({email: req.body.email,otp: result.OTP});
+              newOtp.save();
+            } else { // the email exists ( which means this is not the first time the user requests a otp)
+              foundOtp.otp = result.OTP; // update new otp to the document
+              foundOtp.save();
+            }
+            res.json({message: "success"});
+          }else{
+            res.json({message: "invalid"})
+          }
+        }else{
+          res.json({message: "match"})
+        }
+  }catch(err){
+    console.log(err);
+  }
+}
+
+
+
+
+// const addProfile = (req, res) =>{
+//   const userID = req.params.userID;
+//   const {age,color,animal} = req.body;
+
+//   User.findById({_id: userID}, (err, foundUser) => { // check userID if it is valid
+//     if (err) {
+//       res.json({message: "invalid", profileID: null});
+//     } else {
+//       const matchProfile = foundUser.profiles.find((profile, index) => {
+//         if (profile.age == age && profile.color == color && profile.animal == animal) {
+//           return true;
+//         }
+//       });
+//       if (matchProfile == undefined) {  //if the profile does not match the existing one add new profile
+//         const childProfile = {age: age, color: color, animal: animal};
+//         foundUser.profiles.push(childProfile);
+//         foundUser.save().then(savedUser => {                // in order to find child profile id,  search thru parent and retrieve the child profile array
+//           User.findById(savedUser._id, 'profiles', function(err, foundProfiles) {
+//             if (err) {
+//               console.log(err);
+//             } else {          // at this stage the child profile must exist
+//               const childObject = foundProfiles.profiles.find((object, index) => {  //search for profile
+//                 if (object.age == age && object.color == color && object.animal == animal) {
+//                   return true;
+//                 }
+//               });
+//               res.json({message: "success", profileID: childObject._id
+//               });
+//             }
+//           });
+//         });
+//       } else {
+//         res.json({message: "match", profileID: null});
+//       }
+//     }
+//   });
+// }
+
+const addProfile = async (req, res) =>{
+  const userID = req.params.userID;
   const {age,color,animal} = req.body;
 
-  User.findById({_id: userID}, (err, foundUser) => { // check userID if it is valid
-    if (err) {
+  try {
+    const foundUser = await User.findById({_id: userID})
+    if (foundUser == null) {
       res.json({message: "invalid", profileID: null});
     } else {
       const matchProfile = foundUser.profiles.find((profile, index) => {
@@ -138,123 +237,200 @@ const addProfile = (req, res) =>{
       if (matchProfile == undefined) {  //if the profile does not match the existing one add new profile
         const childProfile = {age: age, color: color, animal: animal};
         foundUser.profiles.push(childProfile);
-        foundUser.save().then(savedUser => {                // in order to find child profile id,  search thru parent and retrieve the child profile array
-          User.findById(savedUser._id, 'profiles', function(err, foundProfiles) {
-            if (err) {
-              console.log(err);
-            } else {          // at this stage the child profile must exist
-              const childObject = foundProfiles.profiles.find((object, index) => {  //search for profile
-                if (object.age == age && object.color == color && object.animal == animal) {
-                  return true;
-                }
-              });
-              res.json({message: "success", profileID: childObject._id
-              });
-            }
-          });
+        const savedUser = await foundUser.save()
+        const foundProfiles = await User.findById(savedUser._id, 'profiles')
+        const childObject = foundProfiles.profiles.find((object, index) => {  //search for profile
+          if (object.age == age && object.color == color && object.animal == animal) {
+            return true;
+          }
         });
-      } else {
+        res.json({message: "success", profileID: childObject._id});
+      }else{
         res.json({message: "match", profileID: null});
       }
     }
-  });
+  } catch (err) {
+    console.log(err);
+  }
+
 }
 
-const verifyEmailForReset = (req, res) => {
-     User.findOne({username: req.body.email}, (err, foundUser) =>{ // check if the account exists in database
-          if (err) {
-            console.log(err);
-          }else {
-            if (foundUser == null) {
-              res.json({message: "invalid"})
-            }else{
-              Auth(req.body.email, "ReadPal").then(result => {
-                if (result.success == true) {
-                  Otp.findOne({email: req.body.email}, (err, foundOtp) => { //check if the email exists in the database
-                  // console.log(foundOtp);
-                    if (err) {
-                      console.log(err);
-                    } else {          // first time requests otp
-                      if (foundOtp == null) {
-                        const newOtp = new Otp({
-                          email: req.body.email,
-                          otp: result.OTP
-                        });
-                        newOtp.save();
-                      } else { // the email exists ( which means this is not the first time the user requests a otp)
-                        foundOtp.otp = result.OTP; // update new otp to the document
-                        foundOtp.save();
-                      }
-                      res.json({message: "success"});
-                    }
-                  });
-                }else{
-                  console.log("Error when sending otp to user");
-                }
-              });
-            }
-          }
-        })
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+// const verifyEmailForReset = (req, res) => {
+//      User.findOne({username: req.body.email}, (err, foundUser) =>{ // check if the account exists in database
+//           if (err) {
+//             console.log(err);
+//           }else {
+//             if (foundUser == null) {
+//               res.json({message: "invalid"})
+//             }else{
+//               Auth(req.body.email, "ReadPal").then(result => {
+//                 if (result.success == true) {
+//                   Otp.findOne({email: req.body.email}, (err, foundOtp) => { //check if the email exists in the database
+//                   // console.log(foundOtp);
+//                     if (err) {
+//                       console.log(err);
+//                     } else {          // first time requests otp
+//                       if (foundOtp == null) {
+//                         const newOtp = new Otp({
+//                           email: req.body.email,
+//                           otp: result.OTP
+//                         });
+//                         newOtp.save();
+//                       } else { // the email exists ( which means this is not the first time the user requests a otp)
+//                         foundOtp.otp = result.OTP; // update new otp to the document
+//                         foundOtp.save();
+//                       }
+//                       res.json({message: "success"});
+//                     }
+//                   });
+//                 }else{
+//                   console.log("Error when sending otp to user");
+//                 }
+//               });
+//             }
+//           }
+//         })
+// }
+
+const verifyEmailForReset = async (req, res) => {
+  try {
+    const foundUser = await User.findOne({username: req.body.email}) // check if the account exists in database
+    if (foundUser == null) {
+     res.json({message: "invalid"})
+     }else{
+       const result = await Auth(req.body.email, "ReadPal")
+       if (result.success == true) {
+         const foundOtp = await Otp.findOne({email: req.body.email})
+         if (foundOtp == null) {
+           const newOtp = new Otp({email: req.body.email,otp: result.OTP});
+           newOtp.save();
+         } else { // the email exists ( which means this is not the first time the user requests a otp)
+           foundOtp.otp = result.OTP; // update new otp to the document
+           foundOtp.save();
+         }
+         res.json({message: "success"});
+       }else{
+         console.log("Error when sending otp to user");
+       }
+     }
+  } catch (err) {
+    console.log(err);
+  }
 }
 
-const resetPassword = (req, res) => {
+// const resetPassword = (req, res) => {
+//     const {otp, password} = req.body;
+//     Otp.findOneAndDelete({otp: otp}, (err, foundOtp) =>{  // check if the otp user gave is valid
+//       if(err){
+//         console.log(err);
+//       }else{
+//         if(foundOtp == null){
+//           res.json({message: "invalid"})
+//         }else{                                               // if valid, find that user to set up the new password (given by user)
+//           User.findOne({username: foundOtp.email}, (err, foundUser) =>{
+//             if (err) {
+//               console.log(err);
+//             }else {
+//               foundUser.setPassword(password, function(err, user){  //reset password for user
+//                 if (err) {
+//                   console.log(err);
+//                 }else {
+//                   foundUser.save();
+//                   res.json({message: "success"});
+//                 }
+//               })
+//             }
+//           })
+//         }
+//       }
+//     })
+// }
+
+const resetPassword = async (req, res) => {
+  try {
     const {otp, password} = req.body;
-    Otp.findOneAndDelete({otp: otp}, (err, foundOtp) =>{  // check if the otp user gave is valid
-      if(err){
-        console.log(err);
-      }else{
-        if(foundOtp == null){
-          res.json({message: "invalid"})
-        }else{                                               // if valid, find that user to set up the new password (given by user)
-          User.findOne({username: foundOtp.email}, (err, foundUser) =>{
-            if (err) {
-              console.log(err);
-            }else {
-              foundUser.setPassword(password, function(err, user){  //reset password for user
-                if (err) {
-                  console.log(err);
-                }else {
-                  foundUser.save();
-                  res.json({message: "success"});
-                }
-              })
-            }
-          })
-        }
-      }
-    })
+    const foundOtp = await Otp.findOneAndDelete({otp: otp})
+    if(foundOtp == null){
+      res.json({message: "invalid"})
+    }else{           
+      const foundUser = await User.findOne({username: foundOtp.email})
+      const user = await foundUser.setPassword(password)
+      foundUser.save();
+      res.json({message: "success"});
+    }
+  } catch (err) {
+    console.log(err);
+  }
 }
 
-const returnProfiles = (req, res) => {
-  const userID = req.params.userID;
-  const imagesList = [];
-  User.findById({ _id: userID })
-  .then((foundUser) => {
+
+
+// const returnProfiles = (req, res) => {
+//   const userID = req.params.userID;
+//   const imagesList = [];
+//   User.findById({ _id: userID })
+//   .then((foundUser) => {
+//       foundUser.profiles.forEach((profile, index, profilesList) => {
+//         const bucketParams = {
+//           Bucket : 'library.stories',
+//           Key : `profileImages/${profile.animal.toLowerCase()}_-_${profile.color.toLowerCase()}1024_1.jpg`
+//         };
+//          s3.getObject(bucketParams, function (err, data) {
+//           if (err) {
+//             console.log("Error", err);
+//           } else {
+//             const image = Buffer.from(data.Body).toString('base64');
+//             // console.log(image);
+//             imagesList.push(image);
+//             if(index === profilesList.length - 1){
+//               // console.log(imagesList.length);
+//               res.json({ message: "success", profiles: foundUser.profiles, images: imagesList });
+//             }
+//           }
+//         });
+
+//       });
+//   })
+//     .catch((err) => {
+//       res.json({ message: "invalid", profiles: null, images: null });
+//     });
+// }
+
+const returnProfiles = async (req, res) => {
+  try {
+    const userID = req.params.userID;
+    // const imagesList = [];
+    const foundUser = await User.findById({ _id: userID }).lean()
+    if(foundUser != null){
       foundUser.profiles.forEach((profile, index, profilesList) => {
         const bucketParams = {
           Bucket : 'library.stories',
           Key : `profileImages/${profile.animal.toLowerCase()}_-_${profile.color.toLowerCase()}1024_1.jpg`
-        };
-         s3.getObject(bucketParams, function (err, data) {
+        }
+          s3.getObject(bucketParams, function (err, data) {
           if (err) {
             console.log("Error", err);
           } else {
             const image = Buffer.from(data.Body).toString('base64');
-            // console.log(image);
-            imagesList.push(image);
+            profile.icon = image
+            // imagesList.push(image);
             if(index === profilesList.length - 1){
               // console.log(imagesList.length);
-              res.json({ message: "success", profiles: foundUser.profiles, images: imagesList });
+              res.json({ message: "success", profiles: foundUser.profiles});
             }
           }
         });
-
-      });
-  })
-    .catch((err) => {
-      res.json({ message: "invalid", profiles: null, images: null });
-    });
+      })
+    }else{
+      res.json({ message: "invalid", profiles: null, images: null })
+    }
+  } catch (err) {
+    console.log(err);
+  }
 }
+  
 
 const userLogout = (req, res) => {
      req.logout();

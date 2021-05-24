@@ -12,7 +12,18 @@ const getStory = (req, res) => {
 }
 
 const getAllStoriesThumbnails = (req, res) => {
+     const bucketParams = {
+          Bucket : 'library.stories',
+          Prefix : 'stories/'
+        }
 
+        s3.listObjects(bucketParams, function(err, data) {
+          if (err) {
+            console.log("Error", err);
+          } else {
+            console.log("Success", data);
+          }
+        });
 }
 
 
