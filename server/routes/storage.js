@@ -1,10 +1,10 @@
-import express from "express";
-import {verifyEmailForSignup, userSignup, userLogin, addProfile, returnProfiles, verifyEmailForReset, resetPassword, userLogout} from "../controllers/userController.js"
+import express from "express"
+import {getStory, getAllStoriesTitles} from "../controllers/storageController.js"
 
-const storageRouter = express.Router();
+const storageRouter = express.Router()
 
-storageRouter.get("/story")
+storageRouter.get("/story", getStory)
 
-storageRouter.get("/thumbnails")
+storageRouter.get("/titles", getAllStoriesTitles)
 
-//userRouter.post("/server/verify", verifyEmailForSignup)
+export default storageRouter

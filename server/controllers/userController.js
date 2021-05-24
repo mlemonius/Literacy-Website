@@ -1,34 +1,22 @@
 //jshint esversion:6
-import {createRequire} from 'module';
-const require = createRequire(import.meta.url);
-import express from "express";
-const bodyParser = require("body-parser");
-const mongoose = require("mongoose");
-const session = require("express-session");
-const passport = require("passport");
-const passportLocalmongoose = require("passport-local-mongoose");
+import {createRequire} from 'module'
+const require = createRequire(import.meta.url)
+import express from "express"
+const bodyParser = require("body-parser")
+const mongoose = require("mongoose")
+const session = require("express-session")
+const passport = require("passport")
+const passportLocalmongoose = require("passport-local-mongoose")
 // Load the AWS SDK for Node.js
-const  AWS = require('aws-sdk');
+const  AWS = require('aws-sdk')
 // const GoogleStrategy = require('passport-google-oauth20').Strategy;
 // const findOrCreate = require('mongoose-findorcreate');
-import User from "../models/userModel.js";
-import Otp from "../models/otpModel.js";
-const {Auth} = require("two-step-auth");
+import User from "../models/userModel.js"
+import Otp from "../models/otpModel.js"
+const {Auth} = require("two-step-auth")
 
-
-// Set the region 
-// AWS.config.update({region: 'REGION'});
-
-// Create S3 service object
-const s3 = new AWS.S3({apiVersion: '2006-03-01'});
-
-// Create the parameters for calling listObjects
-
-
-// Call S3 to obtain a list of the objects in the bucket
-
-
-const router = express.Router();
+const s3 = new AWS.S3({apiVersion: '2006-03-01'})
+const router = express.Router()
 
 const userLogin = (req, res, next) => {
      passport.authenticate('local', (err, user, info) => {
@@ -36,7 +24,7 @@ const userLogin = (req, res, next) => {
             return next(err); // will generate a 500 error
           }
           if (!user) {
-            return res.json({message: "invalid", userID: null});
+            return res.json({message: "invalid", userID: null})
           }
           req.login(user, loginErr => {
             if (loginErr) {
@@ -45,8 +33,8 @@ const userLogin = (req, res, next) => {
             return res.json({
               message: "success",
               userID: req.user._id
-            });
-          });
+            })
+          })
         })(req, res, next);
 }
 
@@ -86,7 +74,7 @@ const userLogin = (req, res, next) => {
 //}
 
 const userSignup = async (req, res) => {
-  const {firstname, lastname, organization, country, email, password, otp} = req.body;
+  const {firstname, lastname, organization, country, email, password, otp} = req.body
   try{
     const foundOtp = await Otp.findOneAndDelete({email: email,otp: otp})
     if (foundOtp) { // if the sent otp and the otp in the database matches, create a new user
@@ -100,13 +88,13 @@ const userSignup = async (req, res) => {
       const user = await User.register(newUser, password)
           req.login(user, (err) => {
             if (err) {
-              return next(err);
+              return next(err)
             } else {
-              res.json({message: "success", userID: user._id});
+              res.json({message: "success", userID: user._id})
             }
           })
     }else {
-      res.json({message: "invalid"});
+      res.json({message: "invalid"})
     }
   }catch(err){
     console.log(err);
@@ -154,20 +142,20 @@ const userSignup = async (req, res) => {
 const verifyEmailForSignup = async (req, res) => {
   try{
     const foundUser = await User.findOne({username: req.body.email})
-    console.log(foundUser);
+    console.log(foundUser)
         if (foundUser == null) {
           
           const result = await Auth(req.body.email, "ReadPal")
           if (result.success == true) {
             const foundOtp = await Otp.findOne({email: req.body.email})
             if (foundOtp == null) {
-              const newOtp = new Otp({email: req.body.email,otp: result.OTP});
-              newOtp.save();
+              const newOtp = new Otp({email: req.body.email,otp: result.OTP})
+              newOtp.save()
             } else { // the email exists ( which means this is not the first time the user requests a otp)
-              foundOtp.otp = result.OTP; // update new otp to the document
-              foundOtp.save();
+              foundOtp.otp = result.OTP // update new otp to the document
+              foundOtp.save()
             }
-            res.json({message: "success"});
+            res.json({message: "success"})
           }else{
             res.json({message: "invalid"})
           }
@@ -175,7 +163,7 @@ const verifyEmailForSignup = async (req, res) => {
           res.json({message: "match"})
         }
   }catch(err){
-    console.log(err);
+    console.log(err)
   }
 }
 
@@ -221,13 +209,13 @@ const verifyEmailForSignup = async (req, res) => {
 // }
 
 const addProfile = async (req, res) =>{
-  const userID = req.params.userID;
-  const {age,color,animal} = req.body;
+  const userID = req.params.userID
+  const {age,color,animal} = req.body
 
   try {
     const foundUser = await User.findById({_id: userID})
     if (foundUser == null) {
-      res.json({message: "invalid", profileID: null});
+      res.json({message: "invalid", profileID: null})
     } else {
       const matchProfile = foundUser.profiles.find((profile, index) => {
         if (profile.age == age && profile.color == color && profile.animal == animal) {
@@ -235,22 +223,22 @@ const addProfile = async (req, res) =>{
         }
       });
       if (matchProfile == undefined) {  //if the profile does not match the existing one add new profile
-        const childProfile = {age: age, color: color, animal: animal};
-        foundUser.profiles.push(childProfile);
+        const childProfile = {age: age, color: color, animal: animal}
+        foundUser.profiles.push(childProfile)
         const savedUser = await foundUser.save()
         const foundProfiles = await User.findById(savedUser._id, 'profiles')
         const childObject = foundProfiles.profiles.find((object, index) => {  //search for profile
           if (object.age == age && object.color == color && object.animal == animal) {
-            return true;
+            return true
           }
         });
-        res.json({message: "success", profileID: childObject._id});
+        res.json({message: "success", profileID: childObject._id})
       }else{
-        res.json({message: "match", profileID: null});
+        res.json({message: "match", profileID: null})
       }
     }
   } catch (err) {
-    console.log(err);
+    console.log(err)
   }
 
 }
@@ -304,19 +292,19 @@ const verifyEmailForReset = async (req, res) => {
        if (result.success == true) {
          const foundOtp = await Otp.findOne({email: req.body.email})
          if (foundOtp == null) {
-           const newOtp = new Otp({email: req.body.email,otp: result.OTP});
-           newOtp.save();
+           const newOtp = new Otp({email: req.body.email,otp: result.OTP})
+           newOtp.save()
          } else { // the email exists ( which means this is not the first time the user requests a otp)
            foundOtp.otp = result.OTP; // update new otp to the document
-           foundOtp.save();
+           foundOtp.save()
          }
-         res.json({message: "success"});
+         res.json({message: "success"})
        }else{
          console.log("Error when sending otp to user");
        }
      }
   } catch (err) {
-    console.log(err);
+    console.log(err)
   }
 }
 
@@ -350,7 +338,7 @@ const verifyEmailForReset = async (req, res) => {
 
 const resetPassword = async (req, res) => {
   try {
-    const {otp, password} = req.body;
+    const {otp, password} = req.body
     const foundOtp = await Otp.findOneAndDelete({otp: otp})
     if(foundOtp == null){
       res.json({message: "invalid"})
@@ -358,10 +346,10 @@ const resetPassword = async (req, res) => {
       const foundUser = await User.findOne({username: foundOtp.email})
       const user = await foundUser.setPassword(password)
       foundUser.save();
-      res.json({message: "success"});
+      res.json({message: "success"})
     }
   } catch (err) {
-    console.log(err);
+    console.log(err)
   }
 }
 
@@ -400,7 +388,7 @@ const resetPassword = async (req, res) => {
 
 const returnProfiles = async (req, res) => {
   try {
-    const userID = req.params.userID;
+    const userID = req.params.userID
     // const imagesList = [];
     const foundUser = await User.findById({ _id: userID }).lean()
     if(foundUser != null){
@@ -411,14 +399,14 @@ const returnProfiles = async (req, res) => {
         }
           s3.getObject(bucketParams, function (err, data) {
           if (err) {
-            console.log("Error", err);
+            console.log("Error", err)
           } else {
-            const image = Buffer.from(data.Body).toString('base64');
+            const image = Buffer.from(data.Body).toString('base64')
             profile.icon = image
             // imagesList.push(image);
             if(index === profilesList.length - 1){
               // console.log(imagesList.length);
-              res.json({ message: "success", profiles: foundUser.profiles});
+              res.json({ message: "success", profiles: foundUser.profiles})
             }
           }
         });
@@ -427,14 +415,14 @@ const returnProfiles = async (req, res) => {
       res.json({ message: "invalid", profiles: null, images: null })
     }
   } catch (err) {
-    console.log(err);
+    console.log(err)
   }
 }
   
 
 const userLogout = (req, res) => {
-     req.logout();
-     res.json({ message: "success"});
+     req.logout()
+     res.json({ message: "success"})
 }
 
 // const getProfilesImgs = (req, res) => {

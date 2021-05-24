@@ -1,23 +1,24 @@
 //jshint esversion:6
-import { createRequire } from "module";
-const require = createRequire(import.meta.url);
-require("dotenv").config();
-const mongoose = require("mongoose");
-const express = require("express");
-const bodyParser = require("body-parser");
-const session = require("express-session");
-const passport = require("passport");
-const passportLocalmongoose = require("passport-local-mongoose");
-import User from "./models/userModel.js";
-import userRouter from "./routes/user.js";
+import { createRequire } from "module"
+const require = createRequire(import.meta.url)
+require("dotenv").config()
+const mongoose = require("mongoose")
+const express = require("express")
+const bodyParser = require("body-parser")
+const session = require("express-session")
+const passport = require("passport")
+const passportLocalmongoose = require("passport-local-mongoose")
+import User from "./models/userModel.js"
+import userRouter from "./routes/user.js"
+import storageRouter from "./routes/storage.js"
 //const GoogleStrategy = require("passport-google-oauth20").Strategy;
 // const findOrCreate = require("mongoose-findorcreate");
-const path = require("path");
+const path = require("path")
 
-const app = express();
+const app = express()
 
 // app.set("view engine", "ejs");
-app.use(bodyParser.urlencoded({ extended: true }));
+app.use(bodyParser.urlencoded({ limit: "200mb", extended: true }))
 // app.use(express.urlencoded({extended: true}));
 //app.use(express.json());
 // app.use(express.static("public"));
@@ -28,10 +29,10 @@ app.use(
     resave: false,
     saveUninitialized: false,
   })
-);
+)
 
-app.use(passport.initialize());
-app.use(passport.session());
+app.use(passport.initialize())
+app.use(passport.session())
 
 
 mongoose.connect(process.env.CONNECTION_URL, {
@@ -39,24 +40,24 @@ mongoose.connect(process.env.CONNECTION_URL, {
     useUnifiedTopology: true,
     useFindAndModify: false,
   }).then( ()=>{
-    console.log("Database connected");
+    console.log("Database connected")
   }).catch( error => {
-    console.log(error);
+    console.log(error)
   });
 
 // mongoose.set("bufferCommands", false);
-mongoose.set("useCreateIndex", true);
+mongoose.set("useCreateIndex", true)
 
-passport.use(User.createStrategy());
+passport.use(User.createStrategy())
 passport.serializeUser(function (user, done) {
-  done(null, user.id);
+  done(null, user.id)
 });
 
 passport.deserializeUser(function (id, done) {
   User.findById(id, function (err, user) {
-    done(err, user);
-  });
-});
+    done(err, user)
+  })
+})
 
 // passport.use(new GoogleStrategy({
 //     clientID: process.env.CLIENT_ID,
@@ -75,8 +76,8 @@ passport.deserializeUser(function (id, done) {
 
 
 // let __dirname = path.resolve();
-app.use("/server/user", userRouter);
-// app.use("/server/library")
+app.use("/server/user", userRouter)
+app.use("/server/library", storageRouter)
 
 // app.use(express.static(path.join(__dirname, "build")));
 
@@ -91,4 +92,4 @@ if (port == null || port == "") {
 
 app.listen(port, function () {
   console.log("Server started");
-});
+})
