@@ -2,11 +2,11 @@
 import {createRequire} from 'module'
 const require = createRequire(import.meta.url)
 import express from "express"
-const bodyParser = require("body-parser")
+// const bodyParser = require("body-parser")
 const mongoose = require("mongoose")
-const session = require("express-session")
+// const session = require("express-session")
 const passport = require("passport")
-const passportLocalmongoose = require("passport-local-mongoose")
+// const passportLocalmongoose = require("passport-local-mongoose")
 // Load the AWS SDK for Node.js
 const AWS = require('aws-sdk')
 // const GoogleStrategy = require('passport-google-oauth20').Strategy;
@@ -88,12 +88,7 @@ const userSignup = async (req, res) => {
     password,
     otp
   } = req.body
-  const foundOtp = await Otp.findOneAndDelete({
-    email: email,
-    otp: otp
-  }).catch(err => {
-    console.log("Finding Otp error when signing up: " + err)
-  })
+  const foundOtp = await Otp.findOneAndDelete({email: email, otp: otp}).catch(err => {console.log("Finding Otp error when signing up: " + err)})
   if (foundOtp) { // if the sent otp and the otp in the database matches, create a new user
     const newUser = new User({
       username: email,
@@ -102,9 +97,7 @@ const userSignup = async (req, res) => {
       organization: organization,
       country: country
     });
-    const user = await User.register(newUser, password).catch(err => {
-      console.log("Registering user error: " + err)
-    })
+    const user = await User.register(newUser, password).catch(err => {console.log("Registering user error: " + err)})
     req.login(user, (err) => {
       if (err) {
         return next(err)
@@ -161,21 +154,11 @@ const userSignup = async (req, res) => {
 
 
 const verifyEmailForSignup = async (req, res) => {
-  const foundUser = await User.findOne({
-    username: req.body.email
-  }).catch(err => {
-    console.log("Finding user error: " + err)
-  })
+  const foundUser = await User.findOne({username: req.body.email}).catch(err => {console.log("Finding user error: " + err)})
   if (foundUser == null) {
-    const result = await Auth(req.body.email, "ReadPal").catch(err => {
-      console.log("Sending Otp error when verifying email for signup: " + err)
-    })
+    const result = await Auth(req.body.email, "ReadPal").catch(err => {console.log("Sending Otp error when verifying email for signup: " + err)})
     if (result.success == true) {
-      const foundOtp = await Otp.findOne({
-        email: req.body.email
-      }).catch(err => {
-        console.log("Finding Otp error: " + err)
-      })
+      const foundOtp = await Otp.findOne({email: req.body.email}).catch(err => {console.log("Finding Otp error: " + err)})
       if (foundOtp == null) {
         const newOtp = new Otp({
           email: req.body.email,
@@ -251,11 +234,7 @@ const addProfile = async (req, res) => {
   } = req.body
 
   try {
-    const foundUser = await User.findById({
-      _id: userID
-    }).catch(err => {
-      console.log("Finding user error when adding profile: " + err)
-    })
+    const foundUser = await User.findById({_id: userID}).catch(err => {console.log("Finding user error when adding profile: " + err)})
     if (foundUser == null) {
       res.json({
         message: "invalid",
@@ -274,12 +253,8 @@ const addProfile = async (req, res) => {
           animal: animal
         }
         foundUser.profiles.push(childProfile)
-        const savedUser = await foundUser.save().catch(err => {
-          console.log("Saving user error when adding profile: " + err)
-        })
-        const foundProfiles = await User.findById(savedUser._id, 'profiles').catch(err => {
-          console.log("Finding profiles error: " + err)
-        })
+        const savedUser = await foundUser.save().catch(err => {console.log("Saving user error when adding profile: " + err)})
+        const foundProfiles = await User.findById(savedUser._id, 'profiles').catch(err => {console.log("Finding profiles error: " + err)})
         const childObject = foundProfiles.profiles.find((object, index) => { //search for profile
           if (object.age == age && object.color == color && object.animal == animal) {
             return true
@@ -342,9 +317,7 @@ const addProfile = async (req, res) => {
 // }
 
 const verifyEmailForReset = async (req, res) => {
-  const foundUser = await User.findOne({
-    username: req.body.email
-  }).catch(err => {
+  const foundUser = await User.findOne({username: req.body.email}).catch(err => {
     console.log("Finding user error when verifying email: " + err)
   }) // check if the account exists in database
   if (foundUser == null) {
@@ -352,15 +325,9 @@ const verifyEmailForReset = async (req, res) => {
       message: "invalid"
     })
   } else {
-    const result = await Auth(req.body.email, "ReadPal").catch(err => {
-      console.log("Sending Otp error wehn verifying for reset: " + err)
-    })
+    const result = await Auth(req.body.email, "ReadPal").catch(err => {console.log("Sending Otp error wehn verifying for reset: " + err)})
     if (result.success == true) {
-      const foundOtp = await Otp.findOne({
-        email: req.body.email
-      }).catch(err => {
-        console.log("Finding Otp error when verifying email for reset: " + err)
-      })
+      const foundOtp = await Otp.findOne({email: req.body.email}).catch(err => {console.log("Finding Otp error when verifying email for reset: " + err)})
       if (foundOtp == null) {
         const newOtp = new Otp({
           email: req.body.email,
@@ -413,11 +380,7 @@ const resetPassword = async (req, res) => {
     otp,
     password
   } = req.body
-  const foundOtp = await Otp.findOneAndDelete({
-    otp: otp
-  }).catch(err => {
-    console.log("Finding Otp error when reseting password: " + err)
-  })
+  const foundOtp = await Otp.findOneAndDelete({otp: otp}).catch(err => {console.log("Finding Otp error when reseting password: " + err)})
   if (foundOtp == null) {
     res.json({
       message: "invalid"
@@ -437,7 +400,6 @@ const resetPassword = async (req, res) => {
     })
   }
 }
-
 
 
 // const returnProfiles = (req, res) => {
@@ -474,9 +436,7 @@ const resetPassword = async (req, res) => {
 const returnProfiles = async (req, res) => {
   const userID = req.params.userID
   // const imagesList = [];
-  const foundUser = await User.findById({
-    _id: userID
-  }).lean().catch(err => {
+  const foundUser = await User.findById({_id: userID}).lean().catch(err => {
     console.log("Finding user error when returning profiles: " + err)
   })
   if (foundUser != null) {
