@@ -31,9 +31,28 @@ export const changeEmail = (email) => {
   };
 };
 
-export const setNewProfile = (profile) => {
+export const setNewProfile = (profileID, color, animal, age) => {
   return {
     type: "SETNEWPROFILE",
+    payload: {
+      id: profileID,
+      color: color,
+      animal: animal,
+      age: age,
+    },
+  };
+};
+
+export const setProfiles = (profiles) => {
+  return {
+    type: "SETPROFILES",
+    payload: profiles,
+  };
+};
+
+export const setCurrentProfile = (profile) => {
+  return {
+    type: "SETCURRENTPROFILE",
     payload: profile,
   };
 };

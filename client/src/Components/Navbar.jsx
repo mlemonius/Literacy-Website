@@ -4,7 +4,7 @@ import PersonIcon from "@material-ui/icons/Person";
 import ChatBubbleOutlineIcon from "@material-ui/icons/ChatBubbleOutline";
 import LibraryBooksIcon from "@material-ui/icons/LibraryBooks";
 import { Link } from "react-router-dom";
-import "../Styles/navbar.css";
+import "./navbar.css";
 
 const Navbar = () => {
   return (

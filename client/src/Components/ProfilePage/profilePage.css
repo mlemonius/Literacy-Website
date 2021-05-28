@@ -1,0 +1,39 @@
+/* Mobiles size */
+
+@media only screen and (min-device-width: 375px) and (max-device-width: 767px) and (-webkit-min-device-pixel-ratio: 2) {
+}
+
+/* --- */
+/* Tablets size */
+
+@media only screen and (min-device-width: 768px) and (max-device-width: 1024px) and (-webkit-min-device-pixel-ratio: 2) {
+}
+
+/* --- */
+/* Desktops size */
+
+@media only screen and (min-width: 1020px) and (-webkit-min-device-pixel-ratio: 2) {
+}
+
+.profile-home-block {
+  margin: auto;
+  text-align: center;
+  padding: 25px;
+}
+
+.MuiTypography-root.profile-home-header {
+  font-size: 35px;
+  color: teal;
+}
+
+.MuiTypography-root.profile-home-text {
+  font-size: 28px;
+  margin-bottom: 30px;
+}
+
+#profile-home-create-btn {
+  width: 200px;
+  font-size: 20px;
+  margin: 20px;
+  height: 100px;
+}

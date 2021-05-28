@@ -50,7 +50,7 @@ class ForgotPassword extends Component {
       axios({
         method: "post",
         // url: "https://secure-bastion-85489.herokuapp.com/server/forgot",
-        url: "/server/forgot",
+        url: "/server/user/forgot",
         data: qs.stringify({
           email: this.state.email,
         }),
@@ -78,7 +78,7 @@ class ForgotPassword extends Component {
       axios({
         method: "patch",
         // url: "https://secure-bastion-85489.herokuapp.com/server/reset",
-        url: "/server/reset",
+        url: "/server/user/reset",
         data: qs.stringify({
           otp: this.state.otp,
           password: this.state.password,

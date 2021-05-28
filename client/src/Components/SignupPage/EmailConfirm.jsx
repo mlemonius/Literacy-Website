@@ -15,7 +15,7 @@ class EmailConfirm extends Component {
     axios({
       method: "post",
       // url: "https://secure-bastion-85489.herokuapp.com/server/verify",
-      url: "/server/verify",
+      url: "/server/user/verify",
       data: qs.stringify({
         email: this.state.email,
       }),

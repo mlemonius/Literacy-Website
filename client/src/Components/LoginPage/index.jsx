@@ -34,7 +34,8 @@ class LoginPage extends Component {
   };
 
   validateEmail = () => {
-    if (/^[a-zA-Z0-9]+@(?:[a-zA-Z0-9]+\.)+[A-Za-z]+$/.test(this.state.email)) {
+    // if (/^[a-zA-Z0-9]+@(?:[a-zA-Z0-9]+\.)+[A-Za-z]+$/.test(this.state.email)) {
+    if (/^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/.test(this.state.email)) {
       return true;
     } else {
       return false;
@@ -42,7 +43,7 @@ class LoginPage extends Component {
   };
 
   validatePassword = (pw) => {
-    if (pw.length >= 8) {
+    if (pw.length >= 1) {
       return true;
     } else {
       return false;
@@ -53,7 +54,7 @@ class LoginPage extends Component {
     axios({
       method: "post",
       // url: "https://secure-bastion-85489.herokuapp.com/server/login",
-      url: "/server/login",
+      url: "http://ec2-3-130-2-65.us-east-2.compute.amazonaws.com/server/user/login",
       data: qs.stringify({
         username: this.state.email,
         password: this.state.password,
@@ -66,7 +67,7 @@ class LoginPage extends Component {
       if (response.status === 200) {
         if (response.data.message === "success") {
           this.props.login(response.data.userID, this.state.email);
-          this.props.history.push("/");
+          this.props.history.push("/profile");
           console.log(this.props.userID);
         } else {
           // this.setState({ valid: false });

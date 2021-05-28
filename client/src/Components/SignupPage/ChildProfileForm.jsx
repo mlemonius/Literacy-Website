@@ -84,7 +84,7 @@ class ChildProfileForm extends Component {
       axios({
         method: "post",
         // url: `https://secure-bastion-85489.herokuapp.com/server/${this.props.userID}/profile`,
-        url: `/server/${this.props.userID}/profile`,
+        url: `/server/user/${this.props.userID}/profile`,
         data: qs.stringify(info),
         headers: {
           "content-type": "application/x-www-form-urlencoded;charset=utf-8",
