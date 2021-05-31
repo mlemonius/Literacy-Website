@@ -2,72 +2,23 @@
 
 /* Info block */
 @media only screen and (min-device-width: 375px) and (max-device-width: 767px) and (-webkit-min-device-pixel-ratio: 2) {
-  .library-icon {
-    color: white;
-    position: absolute;
-    top: 20px;
-    right: 100px;
-  }
-  .chatroom-icon {
-    color: white;
-    position: absolute;
-    top: 20px;
-    right: 60px;
-  }
-  .profile-icon {
-    color: white;
-    position: absolute;
-    top: 20px;
-    right: 20px;
-  }
 }
 
 /* --- */
 /* Tablets size */
 
 @media only screen and (min-device-width: 768px) and (max-device-width: 1024px) and (-webkit-min-device-pixel-ratio: 2) {
-  .library-icon {
-    color: white;
-    position: absolute;
-    top: 20px;
-    right: 170px;
-  }
-  .chatroom-icon {
-    color: white;
-    position: absolute;
-    top: 20px;
-    right: 100px;
-  }
-  .profile-icon {
-    color: white;
-    position: absolute;
-    top: 20px;
-    right: 30px;
-  }
 }
 
 /* --- */
 /* Desktops size */
 
 @media only screen and (min-device-width: 1025px) and (-webkit-min-device-pixel-ratio: 2) {
-  .library-icon {
-    color: white;
-    position: absolute;
-    top: 20px;
-    right: 170px;
-  }
-  .chatroom-icon {
-    color: white;
-    position: absolute;
-    top: 20px;
-    right: 100px;
-  }
-  .profile-icon {
-    color: white;
-    position: absolute;
-    top: 20px;
-    right: 30px;
-  }
+}
+.logout-btn {
+  width: 100px;
+  position: absolute;
+  right: 25px;
 }
 
 /* .library-icon {

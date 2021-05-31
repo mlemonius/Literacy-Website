@@ -20,7 +20,7 @@ export const signup = (id, email) => {
 
 export const logout = () => {
   return {
-    type: "LOGIN",
+    type: "LOGOUT",
   };
 };
 
