@@ -454,10 +454,12 @@ const returnProfiles = async (req, res) => {
           // imagesList.push(image);
           if (index === profilesList.length - 1) {
             // console.log(imagesList.length);
-            res.json({
-              message: "success",
-              profiles: foundUser.profiles
-            })
+            setTimeout(() => {
+              res.json({
+                message: "success",
+                profiles: foundUser.profiles
+              })
+            }, 50);
           }
         }
       });
@@ -465,8 +467,7 @@ const returnProfiles = async (req, res) => {
   } else {
     res.json({
       message: "invalid",
-      profiles: null,
-      images: null
+      profiles: null
     })
   }
 }
