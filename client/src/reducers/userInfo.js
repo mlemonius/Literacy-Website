@@ -4,6 +4,7 @@ const initial = {
   currentProfile: {},
   yourChildren: [],
   friends: [],
+  activeStory: {},
 };
 
 const userInfo = (state = initial, action) => {
@@ -39,6 +40,11 @@ const userInfo = (state = initial, action) => {
       return {
         ...state,
         currentProfile: action.payload,
+      };
+    case "SETACTIVESTORY":
+      return {
+        ...state,
+        activeStory: action.payload,
       };
     case "LOGOUT":
       return initial;

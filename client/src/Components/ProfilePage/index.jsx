@@ -8,6 +8,7 @@ import { bindActionCreators } from "redux";
 import {
   setProfiles,
   setCurrentProfile,
+  logout,
 } from "../../actions/credentialActions";
 import axios from "axios";
 import { withCookies, Cookies } from "react-cookie";
@@ -27,6 +28,25 @@ class ProfilePage extends Component {
       if (response.data.message === "success") {
         this.props.setProfiles(response.data.profiles);
       }
+    });
+  };
+
+  handleLogout = () => {
+    axios.get("/server/user/logout").then((response) => {
+      if (response.data.message === "success") {
+        this.props.logout();
+        this.props.cookies.remove("userID");
+        this.props.cookies.remove("profileID");
+        this.props.history.push("/login");
+      }
+    });
+  };
+
+  handleChooseProfile = (id) => {
+    this.props.setCurrentProfile(id);
+    this.props.cookies.set("profileID", id, {
+      path: "/",
+      maxAge: 86400,
     });
   };
 
@@ -54,7 +74,10 @@ class ProfilePage extends Component {
                 marginBottom: 40,
               }}
             >
-              <Link to="/">
+              <Link
+                to="/library"
+                onClick={() => this.handleChooseProfile(child._id)}
+              >
                 <Typography
                   className="profile-home-id-text"
                   style={{
@@ -82,6 +105,11 @@ class ProfilePage extends Component {
               </button>
             </Link>
           </div>
+          <div>
+            <button id="profile-home-logout-btn" onClick={this.handleLogout}>
+              Log out
+            </button>
+          </div>
         </div>
       );
   }
@@ -99,6 +127,7 @@ const mapDispatchToProps = (dispatch) => {
     {
       setProfiles,
       setCurrentProfile,
+      logout,
     },
     dispatch
   );

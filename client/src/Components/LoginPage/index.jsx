@@ -70,7 +70,7 @@ class LoginPage extends Component {
         "content-type": "application/x-www-form-urlencoded;charset=utf-8",
       },
     }).then((response) => {
-      console.log(response);
+      console.log(response.headers);
       if (response.status === 200) {
         if (response.data.message === "success") {
           this.props.login(response.data.userID, this.state.email);

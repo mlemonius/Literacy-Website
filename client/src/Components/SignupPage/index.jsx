@@ -1,4 +1,3 @@
-import SignUpForm from "./ChildProfileForm";
 import CheckupPage from "./CheckupPage";
 import React, { useState } from "react";
 import { useHistory } from "react-router-dom";
@@ -39,10 +38,6 @@ function SignupPage(props) {
     setOpen(false);
   };
 
-  const handleChecked = (value) => {
-    setChecked(value);
-  };
-
   const handleSignup = () => {
     if (checked) {
       const cred = {
@@ -57,7 +52,6 @@ function SignupPage(props) {
 
       axios({
         method: "post",
-        // url: "https://secure-bastion-85489.herokuapp.com/server/register",
         url: "/server/user/register",
         data: qs.stringify(cred),
         headers: {
@@ -78,10 +72,6 @@ function SignupPage(props) {
     } else {
       handleClickOpen();
     }
-  };
-
-  const handleLogout = () => {
-    console.log("Log out");
   };
 
   return (

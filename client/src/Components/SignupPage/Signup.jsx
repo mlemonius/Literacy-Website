@@ -1,6 +1,5 @@
 import { React, Component } from "react";
-import { Checkbox, Button } from "@material-ui/core";
-import axios from "axios";
+import { Checkbox } from "@material-ui/core";
 import { CountryDropdown } from "react-country-region-selector";
 
 class Signup extends Component {

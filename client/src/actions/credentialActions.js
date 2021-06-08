@@ -56,3 +56,13 @@ export const setCurrentProfile = (profile) => {
     payload: profile,
   };
 };
+
+export const setActiveStory = (id, title) => {
+  return {
+    type: "SETACTIVESTORY",
+    payload: {
+      id: id,
+      title: title,
+    },
+  };
+};
