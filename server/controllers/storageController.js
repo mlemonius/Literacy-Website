@@ -11,13 +11,18 @@ const s3 = new AWS.S3({
 })
 
 const getStory = (req, res) => {
+  let title = req.query.title
+  title =  title.split("+").join(" ")
   const bucketParams = {
     Bucket: 'library.stories',
-    Key: `stories/${req.body.title}.pdf`
+    Key: `stories/${title}.pdf`
   }
   // const chunks = []
-  s3.getObject(bucketParams).createReadStream().pipe(res)
-  // readStream.on ('error', (err) => {
+  s3.getObject(bucketParams).createReadStream().pipe(res).on("err", (err) =>{
+    console.log(err)
+  })
+
+  // // readStream.on ('error', (err) => {
   //   console.log(err)
   // })
 
@@ -135,20 +140,24 @@ s3.listObjects(bucketParamsForTitles, (err, data) => {
               break;
             case 7:
               colonIndex = line.indexOf(':')
-              description += line.slice(colonIndex + 1).trim() + " "
-              //console.log(story);
+              line = convertQuotesToDummy(line.slice(colonIndex + 1).trim())
+              description += line + " "
+              // console.log(description);
               break;
             default:
               if (line == '' || line == require("os").EOL) {
-                story.description = description
+                // console.log(description);
+                story.description = description.trim()
                 stories.push(story) 
                 setTimeout(() => {
                   if (index === titlesList.length - 1 ) {
+                    // res.header("Content-Type", "text/json; charset=utf-8")
                     res.json({message: "success", stories: stories})
                   }
                 }, 100);
               } else {
-                description += line.trim() + " "
+                line = convertQuotesToDummy(line.trim())
+                description += line + " "
               }
               break;
           }
@@ -157,6 +166,29 @@ s3.listObjects(bucketParamsForTitles, (err, data) => {
     }
   })
 }
+
+const convertQuotesToDummy = (line) => {
+  let index = line.indexOf(" ")
+
+  while(index !== -1){
+
+    if( line.charAt(index + 1) !== " " && line.charAt(index + 1) === line.charAt(index + 1).toUpperCase()){
+      line = line.slice(0, index) + "“" + line.slice(index + 1)   //one for opening quote
+    }
+    
+    else if(line.charAt(index + 1) === " "){
+      line = line.slice(0, index) + "”" + line.slice(index + 1)
+    }
+
+    else{
+      line = line.slice(0, index) + "’" + line.slice(index + 1)
+    }
+
+    index = line.indexOf("�")
+  }
+  return line
+}
+
 export {
   getStory,
   getAllStoriesDetails
