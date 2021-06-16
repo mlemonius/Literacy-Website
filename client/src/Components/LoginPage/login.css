@@ -28,7 +28,7 @@ button {
   cursor: pointer;
 }
 
-.signup {
+.login {
   width: 100%;
   min-height: 100vh;
   padding: 0 20px;
@@ -36,7 +36,7 @@ button {
   display: flex;
 }
 
-.signup .signupContainer {
+.login .loginContainer {
   padding: 60px;
   margin: auto;
   width: 100%;
@@ -46,16 +46,10 @@ button {
   flex-direction: column;
   justify-content: center;
   background: white;
-  /* background: radial-gradient(
-    ellipse at left bottom,
-    rgba(22, 24, 47, 1) 0%,
-    rgba(38, 20, 72, 0.9) 59%,
-    rgba(17, 27, 75, 0.9) 100%
-  ); */
   box-shadow: 0 50px 70px -20px rgba(0, 0, 0, 0.8);
 }
 
-.signup .signupContainer label {
+.login .loginContainer label {
   color: rgba(40, 40, 40, 0.4);
   margin: 14px 0;
   display: block;
@@ -63,7 +57,7 @@ button {
   line-height: 1;
 }
 
-.signup .signupContainer input {
+.login .loginContainer input {
   width: 100%;
   border: none;
   outline: none;
@@ -75,18 +69,19 @@ button {
   letter-spacing: 1px;
 }
 
-.signup .signupContainer .btnContainer {
+.login .loginContainer .btnContainer {
   width: 100%;
   padding: 24px 0;
+  text-align: center;
 }
 
-.signup .signupContainer .btnContainer p {
+.login .loginContainer .btnContainer p {
   margin: 14px 0 0 0;
   text-align: right;
   color: #696969;
 }
 
-.signup .signupContainer .btnContainer p span {
+.login .loginContainer .btnContainer p span {
   color: #696969;
   font-weight: 500;
   letter-spacing: 0.5px;
@@ -95,41 +90,11 @@ button {
   transition: all 400ms ease-in-out;
 }
 
-.signup .signupContainer .btnContainer p span:hover {
+.login .loginContainer .btnContainer p span:hover {
   color: red;
 }
 
-.signup .signupContainer .errorMsg {
+.login .loginContainer .errorMsg {
   color: red;
   font-size: 16px;
 }
-
-/* .hero {
-    width: 100%;
-    min-height: 100vh;
-    background: radial-gradient(
-      ellipse at left bottom,
-      rgba(22, 24, 47, 1) 0%,
-      rgba(38, 20, 72, 0.9) 59%,
-      rgba(17, 27, 75, 0.9) 100%
-    );
-  }
-  
-  .hero nav {
-    background: #603bbb;
-    width: 100%;
-    padding: 20px 40px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-  }
-  
-  .hero nav h2 {
-    color: #fff;
-  }
-  
-  .hero nav button {
-    width: 86px;
-    padding: 8px 0;
-    background: #3a2b58;
-  } */

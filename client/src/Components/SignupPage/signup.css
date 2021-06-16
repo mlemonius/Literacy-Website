@@ -28,7 +28,7 @@ button {
   cursor: pointer;
 }
 
-.email-confirm {
+.signup {
   width: 100%;
   min-height: 100vh;
   padding: 0 20px;
@@ -36,7 +36,7 @@ button {
   display: flex;
 }
 
-.email-confirm .email-confirmContainer {
+.signup .signupContainer {
   padding: 60px;
   margin: auto;
   width: 100%;
@@ -55,7 +55,7 @@ button {
   box-shadow: 0 50px 70px -20px rgba(0, 0, 0, 0.8);
 }
 
-.email-confirm .email-confirmContainer label {
+.signup .signupContainer label {
   color: rgba(40, 40, 40, 0.4);
   margin: 14px 0;
   display: block;
@@ -63,7 +63,7 @@ button {
   line-height: 1;
 }
 
-.email-confirm .email-confirmContainer input {
+.signup .signupContainer input {
   width: 100%;
   border: none;
   outline: none;
@@ -73,20 +73,22 @@ button {
   border: 1px solid rgba(20, 20, 20, 0.1);
   color: black;
   letter-spacing: 1px;
+  margin-bottom: 5px;
 }
 
-.email-confirm .email-confirmContainer .btnContainer {
+.signup .signupContainer .btnContainer {
   width: 100%;
   padding: 24px 0;
+  text-align: center;
 }
 
-.email-confirm .email-confirmContainer .btnContainer p {
+.signup .signupContainer .btnContainer p {
   margin: 14px 0 0 0;
   text-align: right;
   color: #696969;
 }
 
-.email-confirm .email-confirmContainer .btnContainer p span {
+.signup .signupContainer .btnContainer p span {
   color: #696969;
   font-weight: 500;
   letter-spacing: 0.5px;
@@ -95,11 +97,16 @@ button {
   transition: all 400ms ease-in-out;
 }
 
-.email-confirm .email-confirmContainer .btnContainer p span:hover {
+.signup .signupContainer .btnContainer p span:hover {
   color: red;
 }
 
-.email-confirm .email-confirmContainer .errorMsg {
+.signup .signupContainer .errorMsg {
   color: red;
   font-size: 16px;
+}
+
+.signup #country-dropdown {
+  height: 35px;
+  margin-bottom: 20px;
 }

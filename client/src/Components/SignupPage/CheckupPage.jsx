@@ -10,7 +10,7 @@ import {
   DialogActions,
   Button,
 } from "@material-ui/core";
-import "../../Styles/checkupPage.css";
+import "./checkupPage.css";
 import { withRouter } from "react-router-dom";
 
 class Checkup extends Component {

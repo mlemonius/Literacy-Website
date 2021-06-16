@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import "../../Styles/emailConfirm.css";
+import "./emailConfirm.css";
 import axios from "axios";
 import qs from "qs";
 import { changeEmail } from "../../actions/credentialActions";
@@ -15,7 +15,7 @@ class EmailConfirm extends Component {
     axios({
       method: "post",
       // url: "https://secure-bastion-85489.herokuapp.com/server/verify",
-      url: "/server/verify",
+      url: "/server/user/verify",
       data: qs.stringify({
         email: this.state.email,
       }),

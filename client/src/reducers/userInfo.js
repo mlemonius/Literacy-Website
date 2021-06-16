@@ -1,8 +1,10 @@
 const initial = {
   userID: "",
   email: "",
+  currentProfile: {},
   yourChildren: [],
   friends: [],
+  activeStory: {},
 };
 
 const userInfo = (state = initial, action) => {
@@ -28,6 +30,21 @@ const userInfo = (state = initial, action) => {
       return {
         ...state,
         yourChildren: [...state.yourChildren, action.payload],
+      };
+    case "SETPROFILES":
+      return {
+        ...state,
+        yourChildren: action.payload,
+      };
+    case "SETCURRENTPROFILE":
+      return {
+        ...state,
+        currentProfile: action.payload,
+      };
+    case "SETACTIVESTORY":
+      return {
+        ...state,
+        activeStory: action.payload,
       };
     case "LOGOUT":
       return initial;

@@ -1,0 +1,27 @@
+.library-page-header {
+  text-align: center;
+  padding-top: 25px;
+}
+.lib-story {
+  margin: 1%;
+  max-width: 98%;
+}
+.lib-story:hover {
+  background-color: #fbeeee;
+}
+
+.library-page-block {
+  background-color: #f1bcbb;
+  margin: 5%;
+  border: 1px solid #aec6cf;
+  border-radius: 25px;
+  box-shadow: 50px 50px 70px -20px rgba(0, 0, 0, 0.8);
+}
+
+.MuiTypography-root.MuiListItemText-primary.MuiTypography-body1.MuiTypography-displayBlock {
+  font-size: 35px;
+}
+
+.MuiTypography-root.MuiListItemText-secondary.MuiTypography-body2.MuiTypography-colorTextSecondary.MuiTypography-displayBlock {
+  font-size: 20px;
+}

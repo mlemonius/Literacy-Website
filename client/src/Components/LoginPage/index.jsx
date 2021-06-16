@@ -1,15 +1,22 @@
 import React, { Component } from "react";
 import Login from "./Login";
-// import SignUpForm from "../SignupPage/SignUpForm";
-import "../../Styles/login.css";
+import { instanceOf } from "prop-types";
+import "./login.css";
 import axios from "axios";
 import qs from "qs";
 import { login } from "../../actions/credentialActions";
 import { connect } from "react-redux";
 import { bindActionCreators } from "redux";
+import { withCookies, Cookies } from "react-cookie";
+import { Redirect } from "react-router-dom";
 
 class LoginPage extends Component {
+  static propTypes = {
+    cookies: instanceOf(Cookies).isRequired,
+  };
+
   state = {
+    userID: this.props.cookies.get("userID") || "",
     email: "",
     password: "",
     valid: false,
@@ -34,7 +41,9 @@ class LoginPage extends Component {
   };
 
   validateEmail = () => {
-    if (/^[a-zA-Z0-9]+@(?:[a-zA-Z0-9]+\.)+[A-Za-z]+$/.test(this.state.email)) {
+    if (
+      /^[a-zA-Z0-9\.]+@(?:[a-zA-Z0-9]+\.)+[A-Za-z0-9]+$/.test(this.state.email)
+    ) {
       return true;
     } else {
       return false;
@@ -42,7 +51,7 @@ class LoginPage extends Component {
   };
 
   validatePassword = (pw) => {
-    if (pw.length >= 8) {
+    if (pw.length > 0) {
       return true;
     } else {
       return false;
@@ -52,8 +61,7 @@ class LoginPage extends Component {
   handleLogin = () => {
     axios({
       method: "post",
-      // url: "https://secure-bastion-85489.herokuapp.com/server/login",
-      url: "/server/login",
+      url: "/server/user/login",
       data: qs.stringify({
         username: this.state.email,
         password: this.state.password,
@@ -62,12 +70,15 @@ class LoginPage extends Component {
         "content-type": "application/x-www-form-urlencoded;charset=utf-8",
       },
     }).then((response) => {
-      console.log(response);
+      console.log(response.headers);
       if (response.status === 200) {
         if (response.data.message === "success") {
           this.props.login(response.data.userID, this.state.email);
-          this.props.history.push("/");
-          console.log(this.props.userID);
+          this.props.cookies.set("userID", response.data.userID, {
+            path: "/",
+            maxAge: 86400,
+          });
+          this.props.history.push("/profile");
         } else {
           // this.setState({ valid: false });
         }
@@ -82,11 +93,14 @@ class LoginPage extends Component {
 
   handleLogout = () => {
     axios.post("", {}).then((response) => {});
+    this.props.cookies.remove("userID");
     console.log("Log out");
   };
 
   render() {
-    return (
+    return this.props.cookies.get("userID") === "undefined" ||
+      this.props.cookies.get("userID") === undefined ||
+      this.props.cookies.get("userID") === "" ? (
       <div className="LoginPage">
         <Login
           email={this.state.email}
@@ -99,6 +113,8 @@ class LoginPage extends Component {
           setValid={this.setValid}
         />
       </div>
+    ) : (
+      <Redirect to="/profile" />
     );
   }
 }
@@ -118,4 +134,7 @@ const mapDispatchToProps = (dispatch) => {
   );
 };
 
-export default connect(mapStateToProps, mapDispatchToProps)(LoginPage);
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(withCookies(LoginPage));
