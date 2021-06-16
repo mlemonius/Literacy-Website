@@ -10,5 +10,6 @@ const otpSchema = new mongoose.Schema({
   email:{type: String, unique: true},
   otp: String
 });
+
 const Otp = new mongoose.model("Otp", otpSchema);
 export default Otp;

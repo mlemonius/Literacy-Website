@@ -2,7 +2,6 @@
 import {createRequire} from 'module'
 const require = createRequire(import.meta.url)
 import express from "express"
-const mongoose = require("mongoose")
 const passport = require("passport")
 const AWS = require('aws-sdk')
 // const GoogleStrategy = require('passport-google-oauth20').Strategy;
@@ -50,10 +49,10 @@ const userSignup = async (req, res) => {
     password,
     otp
   } = req.body
-  const foundOtp = await Otp.findOneAndDelete({email: email, otp: otp}).catch(err => {console.log("Finding Otp error when signing up: " + err)})
+  const foundOtp = await Otp.findOneAndDelete({email: email.toLowerCase(), otp: otp}).catch(err => {console.log("Finding Otp error when signing up: " + err)})
   if (foundOtp) { // if the sent otp and the otp in the database matches, create a new user
     const newUser = new User({
-      username: email,
+      username: email.toLowerCase(),
       firstName: firstname,
       lastName: lastname,
       organization: organization,
@@ -80,14 +79,14 @@ const userSignup = async (req, res) => {
 
 
 const verifyEmailForSignup = async (req, res) => {
-  const foundUser = await User.findOne({username: req.body.email}).catch(err => {console.log("Finding user error: " + err)})
+  const foundUser = await User.findOne({username: req.body.email.toLowerCase()}).catch(err => {console.log("Finding user error: " + err)})
   if (foundUser == null) {
-    const result = await Auth(req.body.email, "ReadPal").catch(err => {console.log("Sending Otp error when verifying email for signup: " + err)})
+    const result = await Auth(req.body.email.toLowerCase(), "ReadPal").catch(err => {console.log("Sending Otp error when verifying email for signup: " + err)})
     if (result.success == true) {
-      const foundOtp = await Otp.findOne({email: req.body.email}).catch(err => {console.log("Finding Otp error: " + err)})
+      const foundOtp = await Otp.findOne({email: req.body.email.toLowerCase()}).catch(err => {console.log("Finding Otp error: " + err)})
       if (foundOtp == null) {
         const newOtp = new Otp({
-          email: req.body.email,
+          email: req.body.email.toLowerCase(),
           otp: result.OTP
         })
         newOtp.save()
@@ -165,7 +164,7 @@ const addProfile = async (req, res) => {
 
 
 const verifyEmailForReset = async (req, res) => {
-  const foundUser = await User.findOne({username: req.body.email}).catch(err => {
+  const foundUser = await User.findOne({username: req.body.email.toLowerCase()}).catch(err => {
     console.log("Finding user error when verifying email: " + err)
   }) // check if the account exists in database
   if (foundUser == null) {
@@ -173,12 +172,12 @@ const verifyEmailForReset = async (req, res) => {
       message: "invalid"
     })
   } else {
-    const result = await Auth(req.body.email, "ReadPal").catch(err => {console.log("Sending Otp error wehn verifying for reset: " + err)})
+    const result = await Auth(req.body.email.toLowerCase(), "ReadPal").catch(err => {console.log("Sending Otp error wehn verifying for reset: " + err)})
     if (result.success == true) {
-      const foundOtp = await Otp.findOne({email: req.body.email}).catch(err => {console.log("Finding Otp error when verifying email for reset: " + err)})
+      const foundOtp = await Otp.findOne({email: req.body.email.toLowerCase()}).catch(err => {console.log("Finding Otp error when verifying email for reset: " + err)})
       if (foundOtp == null) {
         const newOtp = new Otp({
-          email: req.body.email,
+          email: req.body.email.toLowerCase(),
           otp: result.OTP
         })
         newOtp.save()
@@ -208,7 +207,7 @@ const resetPassword = async (req, res) => {
     })
   } else {
     const foundUser = await User.findOne({
-      username: foundOtp.email
+      username: foundOtp.email.toLowerCase()
     }).catch(err => {
       console.log("Finding user error when reseting password: " + err)
     })
@@ -271,6 +270,14 @@ const userLogout = (req, res) => {
 }
 
 
+const authenticateUser = (req, res) => {
+  if (req.isAuthenticated()) {
+    res.json({message: "success"})
+  }else{
+    res.json({message: "invalid"})
+  }
+}
+
 
 export {
   verifyEmailForSignup,
@@ -280,5 +287,6 @@ export {
   returnProfiles,
   verifyEmailForReset,
   resetPassword,
-  userLogout
+  userLogout,
+  authenticateUser
 }

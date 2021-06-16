@@ -4,7 +4,6 @@ const require = createRequire(import.meta.url)
 require("dotenv").config()
 const mongoose = require("mongoose")
 const express = require("express")
-const bodyParser = require("body-parser")
 const session = require("express-session")
 const passport = require("passport")
 import User from "./models/userModel.js"
@@ -13,10 +12,11 @@ import storageRouter from "./routes/storage.js"
 //const GoogleStrategy = require("passport-google-oauth20").Strategy;
 // const findOrCreate = require("mongoose-findorcreate");
 const path = require("path")
-
+const LocalStrategy = require('passport-local').Strategy
 
 const app = express()
-app.use(bodyParser.urlencoded({ limit: "200mb", extended: true }))
+app.use(express.urlencoded({ limit: "200mb", extended: true }))
+app.use(express.json())
 
 app.use(
   session({
@@ -42,7 +42,15 @@ mongoose.connect(process.env.CONNECTION_URL, {
 
 mongoose.set("useCreateIndex", true)
 
-passport.use(User.createStrategy())
+// passport.use(User.createStrategy())
+passport.use(new LocalStrategy(
+  function(username, password, done) {
+    User.findOne({ username: username.toLowerCase() }, function (err, user) {
+      return done(null, user);
+    });
+  }
+));
+
 passport.serializeUser(function (user, done) {
   done(null, user.id)
 });
@@ -72,11 +80,11 @@ passport.deserializeUser(function (id, done) {
 
 app.use("/server/user", userRouter)
 app.use("/server/library", storageRouter)
-
-// let __dirname = path.resolve();
-// app.use(express.static(path.join(__dirname, "build")));
-// app.get("/*", (req, res) => {
-//   res.sendFile(path.join(__dirname, "build", "index.html"));
+  
+//  let __dirname = path.resolve();
+//  app.use(express.static(path.join(__dirname, "build")));
+//  app.get("/*", (req, res) => {
+//    res.sendFile(path.join(__dirname, "build", "index.html"));
 // });
 
 let port = process.env.PORT;

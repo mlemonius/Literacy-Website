@@ -1,5 +1,5 @@
 import express from "express";
-import {verifyEmailForSignup, userSignup, userLogin, addProfile, returnProfiles, verifyEmailForReset, resetPassword, userLogout} from "../controllers/userController.js"
+import {verifyEmailForSignup, userSignup, userLogin, addProfile, returnProfiles, verifyEmailForReset, resetPassword, userLogout, authenticateUser} from "../controllers/userController.js"
 
 const userRouter = express.Router();
 
@@ -27,6 +27,8 @@ userRouter.post("/forgot", verifyEmailForReset)
 userRouter.patch("/reset", resetPassword)
 
 userRouter.get("/logout", userLogout)
+
+userRouter.get("/authenticate", authenticateUser)
 
 
 /*-----------------------User Profile CRUD Operations-----------------------------------*/
