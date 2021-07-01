@@ -9,7 +9,7 @@ import { connect } from "react-redux";
 import { bindActionCreators } from "redux";
 import { withCookies, Cookies } from "react-cookie";
 import { Redirect } from "react-router-dom";
-
+import { Helmet } from "react-helmet";
 class LoginPage extends Component {
   static propTypes = {
     cookies: instanceOf(Cookies).isRequired,
@@ -101,18 +101,23 @@ class LoginPage extends Component {
     return this.props.cookies.get("userID") === "undefined" ||
       this.props.cookies.get("userID") === undefined ||
       this.props.cookies.get("userID") === "" ? (
-      <div className="LoginPage">
-        <Login
-          email={this.state.email}
-          setEmail={this.setEmail}
-          password={this.state.password}
-          setPassword={this.setPassword}
-          handleLogin={this.handleLogin}
-          validateEmail={this.validateEmail}
-          valid={this.state.valid}
-          setValid={this.setValid}
-        />
-      </div>
+      <>
+        <Helmet>
+          <title>ReadPal | Login</title>
+        </Helmet>
+        <div className="LoginPage">
+          <Login
+            email={this.state.email}
+            setEmail={this.setEmail}
+            password={this.state.password}
+            setPassword={this.setPassword}
+            handleLogin={this.handleLogin}
+            validateEmail={this.validateEmail}
+            valid={this.state.valid}
+            setValid={this.setValid}
+          />
+        </div>
+      </>
     ) : (
       <Redirect to="/profile" />
     );

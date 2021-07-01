@@ -10,6 +10,7 @@ import ForgotPassword from "./Components/ForgotPasswordPage";
 import ProfilePage from "./Components/ProfilePage";
 import LibraryPage from "./Components/LibraryPage";
 import ReadingPage from "./Components/ReadingPage";
+import PayWall from "./Components/PayWall";
 
 const Main = () => {
   return (
@@ -23,6 +24,8 @@ const Main = () => {
       <Route path="/profile" exact component={ProfilePage} />
       <Route path="/library" exact component={LibraryPage} />
       <Route path="/read-story" exact component={ReadingPage} />
+      {/* <Route path="/paywall" exact component={PayWall} /> */}
+
       <Route path="/" exact component={LandingPage} />
 
       {/* <Route path="/chatroom" component={Chatroom} /> */}

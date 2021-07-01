@@ -18,7 +18,7 @@ class Cards extends Component {
           <div className="col-md-6 col-sm-6 col-xs-12">
             <Card
               imgsrc={children}
-              header="Plan 1"
+              header="Individual"
               content={this.state.list}
               price="$49"
             />
@@ -26,19 +26,11 @@ class Cards extends Component {
           <div className="col-md-6 col-sm-6 col-xs-12">
             <Card
               imgsrc={children}
-              header="Plan 2"
+              header="Group"
               content={this.state.list}
               price="$89"
             />
           </div>
-          {/* <div className="col-md-4 col-sm-6 col-xs-12">
-            <Card
-              imgsrc={children}
-              header="Plan 3"
-              content={this.state.list}
-              price="$109"
-            />
-          </div> */}
         </div>
       </div>
     );
