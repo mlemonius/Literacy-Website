@@ -43,7 +43,7 @@ const getStory = (req, res) => {
   //     res.json({
   //       message: "error",
   //       file: null
-  //     })
+  //     }) 
   //   } else {
   //     const file = Buffer.from(data.Body).toString('base64')
   //     res.json({
@@ -98,7 +98,7 @@ const addDescriptionToStory = (myInterface) => {
   let description = ""
   let colonIndex = 0
 
-  return new Promise((resolve, reject) =>{
+  return new Promise((resolve) =>{
     myInterface.on('line', function (line) {          
       line = Buffer.from(line).toString('utf8')
       //console.log(line);

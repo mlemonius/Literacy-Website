@@ -229,29 +229,20 @@ const returnProfiles = async (req, res) => {
     console.log("Finding user error when returning profiles: " + err)
   })
   if (foundUser != null) {
-    foundUser.profiles.forEach((profile, index, profilesList) => {
-      const bucketParams = {          //find the image that match the profile
-        Bucket: 'library.stories',
-        Key: `profileImages/${profile.animal.toLowerCase()}_-_${profile.color.toLowerCase()}1024_1.jpg`
-      }
-      s3.getObject(bucketParams, function (err, data) {
-        if (err) {
-          console.log("Error", err)
-        } else {
-          const image = Buffer.from(data.Body).toString('base64')
-          profile.icon = image
-          // imagesList.push(image);
-          if (index === profilesList.length - 1) {
-            // console.log(imagesList.length);
-            setTimeout(() => {
-              res.json({
-                message: "success",
-                profiles: foundUser.profiles
-              })
-            }, 50);
-          }
+    Promise.all(
+      foundUser.profiles.map(async (profile, index, profilesList) => {
+        //console.log("profile " + index + " starts");
+        const bucketParams = {          //find the image that match the profile
+          Bucket: 'library.stories',
+          Key: `profileImages/${profile.animal.toLowerCase()}_-_${profile.color.toLowerCase()}1024_1.jpg`
         }
-      });
+        await addImageToProfile(bucketParams, profile)
+      })
+    ).then(() => {
+      res.json({
+        message: "success",
+        profiles: foundUser.profiles
+      })
     })
   } else {
     res.json({
@@ -261,8 +252,23 @@ const returnProfiles = async (req, res) => {
   }
 }
 
+const addImageToProfile = (bucketParams, profile) =>{
+  return new Promise((resolve) => {
+    s3.getObject(bucketParams, function (err, data) {
+      if (err) {
+        console.log("Error", err)
+      } else {
+        const image = Buffer.from(data.Body).toString('base64')
+        profile.icon = image
+        resolve()
+      }
+    })
+  })
+}
+
 
 const userLogout = (req, res) => {
+  //console.log(req.user);
   req.logout()
   res.json({
     message: "success"
