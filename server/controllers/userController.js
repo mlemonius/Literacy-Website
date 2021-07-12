@@ -252,7 +252,7 @@ const returnProfiles = async (req, res) => {
   }
 }
 
-const addImageToProfile = (bucketParams, profile) =>{
+const addImageToProfile = (bucketParams, profile) => {
   return new Promise((resolve) => {
     s3.getObject(bucketParams, function (err, data) {
       if (err) {
