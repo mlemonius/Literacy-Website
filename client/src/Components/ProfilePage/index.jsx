@@ -13,6 +13,7 @@ import {
 import axios from "axios";
 import { withCookies, Cookies } from "react-cookie";
 import { Redirect } from "react-router-dom";
+import { Helmet } from "react-helmet";
 
 class ProfilePage extends Component {
   static propTypes = {
@@ -21,6 +22,7 @@ class ProfilePage extends Component {
 
   state = {
     userID: this.props.cookies.get("userID") || "",
+    validSession: true,
   };
 
   getProfiles = () => {
@@ -51,13 +53,29 @@ class ProfilePage extends Component {
   };
 
   componentDidMount = () => {
+    this.authenticate();
     this.getProfiles();
+    setInterval(() => this.authenticate(), 60000 * 10);
+  };
+
+  authenticate = () => {
+    axios.get("/server/user/authenticate").then((response) => {
+      if (response.data.message === "success") {
+      } else {
+        this.props.history.push("/login");
+      }
+    });
   };
 
   render() {
-    if (this.state.userID === "") return <Redirect to="/login" />;
-    else
-      return (
+    // if (this.state.userID === "")
+    // if (this.state.validSession) return <Redirect to="/login" />;
+    // else
+    return (
+      <>
+        <Helmet>
+          <title>ReadPal | Profile</title>
+        </Helmet>
         <div className="profile-home-block">
           <Typography className="profile-home-header">
             Please select who is reading today
@@ -111,7 +129,8 @@ class ProfilePage extends Component {
             </button>
           </div>
         </div>
-      );
+      </>
+    );
   }
 }
 

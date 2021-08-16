@@ -3,7 +3,8 @@ import { instanceOf } from "prop-types";
 import PDFdisplay from "./PDFdisplay";
 import { connect } from "react-redux";
 import { withCookies, Cookies } from "react-cookie";
-
+import { Helmet } from "react-helmet";
+import axios from "axios";
 class ReadingPage extends Component {
   static propTypes = {
     cookies: instanceOf(Cookies).isRequired,
@@ -15,10 +16,31 @@ class ReadingPage extends Component {
   backToLibrary = () => {
     this.props.history.push("/library");
   };
+  componentDidMount = () => {
+    this.authenticate();
+    setInterval(() => this.authenticate(), 60000 * 10);
+  };
+
+  authenticate = () => {
+    axios.get("/server/user/authenticate").then((response) => {
+      if (response.data.message === "success") {
+      } else {
+        this.props.history.push("/login");
+      }
+    });
+  };
 
   render() {
     return (
-      <PDFdisplay title={this.state.title} backToLibrary={this.backToLibrary} />
+      <>
+        <Helmet>
+          <title>ReadPal | Reading: {this.state.title}</title>
+        </Helmet>
+        <PDFdisplay
+          title={this.state.title}
+          backToLibrary={this.backToLibrary}
+        />
+      </>
     );
   }
 }

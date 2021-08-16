@@ -10,7 +10,7 @@ import {
 import "./forgotPassword.css";
 import axios from "axios";
 import qs from "qs";
-
+import { Helmet } from "react-helmet";
 class ForgotPassword extends Component {
   state = {
     email: "",
@@ -112,7 +112,10 @@ class ForgotPassword extends Component {
 
   render() {
     return (
-      <React.Fragment>
+      <>
+        <Helmet>
+          <title>ReadPal | Forgot Password</title>
+        </Helmet>
         {this.state.next ? (
           <section className="forgotPassword">
             <div
@@ -183,7 +186,7 @@ class ForgotPassword extends Component {
             </Button>
           </DialogActions>
         </Dialog>
-      </React.Fragment>
+      </>
     );
   }
 }

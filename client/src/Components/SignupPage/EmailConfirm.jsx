@@ -5,6 +5,7 @@ import qs from "qs";
 import { changeEmail } from "../../actions/credentialActions";
 import { connect } from "react-redux";
 import { bindActionCreators } from "redux";
+import { Helmet } from "react-helmet";
 
 class EmailConfirm extends Component {
   state = {
@@ -39,11 +40,15 @@ class EmailConfirm extends Component {
 
   render() {
     return (
-      <section className="email-confirm">
-        <div className="email-confirmContainer" style={{ marginTop: "10%" }}>
-          <h1>Sign Up</h1>
-          <label>Enter your email address</label>
-          {/* <input
+      <>
+        <Helmet>
+          <title>ReadPal | Email Confirmation</title>
+        </Helmet>
+        <section className="email-confirm">
+          <div className="email-confirmContainer" style={{ marginTop: "10%" }}>
+            <h1>Sign Up</h1>
+            <label>Enter your email address</label>
+            {/* <input
             type="text"
             autoFocus
             required
@@ -51,18 +56,19 @@ class EmailConfirm extends Component {
             value={this.state.confirmCode}
             onChange={(e) => this.setState({ confirmCode: e.target.value })}
           /> */}
-          <input
-            type="text"
-            required
-            value={this.state.email}
-            onChange={(e) => this.setState({ email: e.target.value })}
-          />
+            <input
+              type="text"
+              required
+              value={this.state.email}
+              onChange={(e) => this.setState({ email: e.target.value })}
+            />
 
-          <div className="btnContainer">
-            <button onClick={this.handleConfirm}>Register</button>
+            <div className="btnContainer">
+              <button onClick={this.handleConfirm}>Register</button>
+            </div>
           </div>
-        </div>
-      </section>
+        </section>
+      </>
     );
   }
 }

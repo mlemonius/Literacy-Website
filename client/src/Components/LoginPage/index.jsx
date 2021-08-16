@@ -58,6 +58,14 @@ class LoginPage extends Component {
     }
   };
 
+  componentDidMount = () => {
+    axios.get("/server/user/authenticate").then((response) => {
+      if (response.data.message === "success") {
+        this.props.history.push("/profile");
+      }
+    });
+  };
+
   handleLogin = () => {
     axios({
       method: "post",
@@ -98,9 +106,10 @@ class LoginPage extends Component {
   };
 
   render() {
-    return this.props.cookies.get("userID") === "undefined" ||
-      this.props.cookies.get("userID") === undefined ||
-      this.props.cookies.get("userID") === "" ? (
+    return (
+      // this.props.cookies.get("userID") === "undefined" ||
+      //   this.props.cookies.get("userID") === undefined ||
+      //   this.props.cookies.get("userID") === "" ? (
       <>
         <Helmet>
           <title>ReadPal | Login</title>
@@ -118,9 +127,10 @@ class LoginPage extends Component {
           />
         </div>
       </>
-    ) : (
-      <Redirect to="/profile" />
     );
+    // : (
+    //   <Redirect to="/profile" />
+    // );
   }
 }
 

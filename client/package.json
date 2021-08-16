@@ -25,7 +25,12 @@
     "react-spinners": "^0.11.0",
     "redux": "^4.0.5",
     "styled-components": "^5.2.1",
-    "web-vitals": "^0.2.4"
+    "web-vitals": "^0.2.4",
+    "rodal": "^1.8.1",
+    "simple-peer": "^9.7.2",
+    "socket.io-client": "^2.3.0",
+    "howler": "^2.2.0",
+    "react-github-btn": "^1.2.0"
   },
   "scripts": {
     "start": "react-scripts start",

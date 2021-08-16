@@ -1,5 +1,5 @@
 import CheckupPage from "./CheckupPage";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useHistory } from "react-router-dom";
 import Signup from "./Signup";
 import "./signup.css";
@@ -16,6 +16,7 @@ import qs from "qs";
 import { signup } from "../../actions/credentialActions";
 import { connect } from "react-redux";
 import { bindActionCreators } from "redux";
+import { Helmet } from "react-helmet";
 
 function SignupPage(props) {
   const history = useHistory();
@@ -36,6 +37,19 @@ function SignupPage(props) {
 
   const handleClose = () => {
     setOpen(false);
+  };
+
+  useEffect(() => {
+    authenticate();
+    setInterval(() => this.authenticate(), 60000 * 10);
+  });
+
+  const authenticate = () => {
+    axios.get("/server/user/authenticate").then((response) => {
+      if (response.data.message === "success") {
+        this.props.history.push("/profile");
+      }
+    });
   };
 
   const handleSignup = () => {
@@ -75,47 +89,52 @@ function SignupPage(props) {
   };
 
   return (
-    <div className="SignupPage">
-      {!asked ? (
-        <CheckupPage setAsked={setAsked} />
-      ) : (
-        <Signup
-          firstname={firstname}
-          lastname={lastname}
-          organization={organization}
-          country={country}
-          otp={otp}
-          password={password}
-          setOtp={setOtp}
-          setLastname={setLastname}
-          setFirstname={setFirstname}
-          setOrganization={setOrganization}
-          setCountry={setCountry}
-          setPassword={setPassword}
-          handleSignup={handleSignup}
-          checked={checked}
-          setChecked={setChecked}
-        />
-      )}
-      <Dialog
-        open={open}
-        onClose={handleClose}
-        aria-labelledby="alert-dialog-title"
-        aria-describedby="alert-dialog-description"
-      >
-        <DialogTitle id="alert-dialog-title">Forget anything?</DialogTitle>
-        <DialogContent>
-          <DialogContentText id="alert-dialog-description">
-            Please Agree the Terms and Services!
-          </DialogContentText>
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={handleClose} color="primary" autoFocus>
-            Close
-          </Button>
-        </DialogActions>
-      </Dialog>
-    </div>
+    <>
+      <Helmet>
+        <title>ReadPal | Sign up</title>
+      </Helmet>
+      <div className="SignupPage">
+        {!asked ? (
+          <CheckupPage setAsked={setAsked} />
+        ) : (
+          <Signup
+            firstname={firstname}
+            lastname={lastname}
+            organization={organization}
+            country={country}
+            otp={otp}
+            password={password}
+            setOtp={setOtp}
+            setLastname={setLastname}
+            setFirstname={setFirstname}
+            setOrganization={setOrganization}
+            setCountry={setCountry}
+            setPassword={setPassword}
+            handleSignup={handleSignup}
+            checked={checked}
+            setChecked={setChecked}
+          />
+        )}
+        <Dialog
+          open={open}
+          onClose={handleClose}
+          aria-labelledby="alert-dialog-title"
+          aria-describedby="alert-dialog-description"
+        >
+          <DialogTitle id="alert-dialog-title">Forget anything?</DialogTitle>
+          <DialogContent>
+            <DialogContentText id="alert-dialog-description">
+              Please Agree the Terms and Services!
+            </DialogContentText>
+          </DialogContent>
+          <DialogActions>
+            <Button onClick={handleClose} color="primary" autoFocus>
+              Close
+            </Button>
+          </DialogActions>
+        </Dialog>
+      </div>
+    </>
   );
 }
 

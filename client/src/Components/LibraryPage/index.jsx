@@ -21,6 +21,7 @@ import { setActiveStory } from "../../actions/credentialActions";
 import axios from "axios";
 import { withCookies, Cookies } from "react-cookie";
 import sample from "../../Data/children.jpg";
+import { Helmet } from "react-helmet";
 
 function CustomizedDialog(props) {
   const { handleOpen, open, story, handleChooseStory } = props;
@@ -84,9 +85,20 @@ class LibraryPage extends Component {
     });
   };
 
-  componentDidMount() {
+  componentDidMount = () => {
+    this.authenticate();
     this.getTitles();
-  }
+    setInterval(() => this.authenticate(), 60000 * 10);
+  };
+
+  authenticate = () => {
+    axios.get("/server/user/authenticate").then((response) => {
+      if (response.data.message === "success") {
+      } else {
+        this.props.history.push("/login");
+      }
+    });
+  };
 
   handleChooseStory = (title) => {
     this.props.setActiveStory(title);
@@ -108,6 +120,9 @@ class LibraryPage extends Component {
   render() {
     return (
       <>
+        <Helmet>
+          <title>ReadPal | Library</title>
+        </Helmet>
         <Typography className="library-page-header" variant="h2">
           Library
         </Typography>
