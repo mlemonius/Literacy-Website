@@ -231,8 +231,7 @@ const returnStudents = async (req, res) => {
       })
   } else {
     res.json({
-      message: "invalid",
-      profiles: null
+      message: "invalid"
     })
   }
 }
