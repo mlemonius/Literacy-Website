@@ -1,15 +1,8 @@
-import {
-  createRequire
-} from 'module'
-import { resolve } from 'path';
-const require = createRequire(
-  import.meta.url)
-const AWS = require('aws-sdk')
+import {createRequire} from 'module'
+const require = createRequire(import.meta.url)
 const readline = require('readline');
 const fs = require('fs');
-const s3 = new AWS.S3({
-  apiVersion: '2006-03-01'
-})
+import s3 from "../aws/s3.js"
 
 const getStory = (req, res) => {
   let title = req.query.title

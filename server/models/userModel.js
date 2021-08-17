@@ -13,7 +13,8 @@ const userSchema = new mongoose.Schema({
   organization: String,
   country: String,
   password: String,
-  profiles:[{ age: Number, color: String, animal: String}]
+  profiles:[{ age: Number, color: String, animal: String}],
+  students:[{email: String}]
   // googleId: String
 });
 
