@@ -9,6 +9,7 @@ const passport = require("passport")
 import User from "./models/userModel.js"
 import userRouter from "./routes/user.js"
 import storageRouter from "./routes/storage.js"
+import videoRouter from './routes/video.js';
 //const GoogleStrategy = require("passport-google-oauth20").Strategy;
 // const findOrCreate = require("mongoose-findorcreate");
 const path = require("path")
@@ -80,6 +81,7 @@ passport.deserializeUser(function (id, done) {
 
 app.use("/server/user", userRouter)
 app.use("/server/library", storageRouter)
+app.use("/server/video", videoRouter)
   
 //  let __dirname = path.resolve();
 //  app.use(express.static(path.join(__dirname, "build")));
@@ -95,3 +97,7 @@ if (port == null || port == "") {
 app.listen(port, function () {
   console.log("Server started");
 })
+
+export default app
+
+

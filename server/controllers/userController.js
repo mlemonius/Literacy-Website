@@ -11,7 +11,7 @@ import Otp from "../models/otpModel.js"
 const {Auth} = require("two-step-auth")
 import nodemailer from "nodemailer"
 
-const transporter = nodemailer.createTransport({
+const transporter = nodemailer.createTransport({   /// this is the email I created for sending emails to students on behalf of teacher
   service: 'gmail',
   auth: {
     user: 'readpalishere@gmail.com',
