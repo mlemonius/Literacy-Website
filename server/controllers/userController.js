@@ -10,6 +10,8 @@ import User from "../models/userModel.js"
 import Otp from "../models/otpModel.js"
 const {Auth} = require("two-step-auth")
 import nodemailer from "nodemailer"
+import axios from "axios"
+import moment from "moment"
 
 const transporter = nodemailer.createTransport({   /// this is the email I created for sending emails to students on behalf of teacher
   service: 'gmail',
@@ -197,7 +199,7 @@ const addStudent = async (req, res) => {
         }
       })
       if(foundEmail == undefined) {
-        foundUser.students.push({email: email})
+        foundUser.students.push({email: email, _id: foundStudent._id})
         const savedUser = await foundUser.save().catch(err => {console.log("Saving user error when adding student: " + err)})
 
         const foundStudents = await User.findById(savedUser._id, 'students').catch(err => {console.log("Finding students error: " + err)})
@@ -370,26 +372,50 @@ const sendEmailToStudent = async (req, res) => {
   if (!req.body.email || !req.body.username) {
     return res.json({message: "missing body"})
   }
+
   const {email, username} = req.body
   const foundUser = await User.findOne({username: email.toLowerCase()}).catch(err => {console.log("Finding user error: " + err)})
-  if (foundUser !== null) {
-    const mailOptions = {
-      from: 'readpalishere@gmail.com',
-      to: `${email}`,
-      subject: 'Lesson will begin soon, teacher is waiting for you',
-      html: `<h1>Hey student</h1><p>Please paste the teacher username: <b>${username}</b> and hit the call!</p>`
-    }
+
+
+  const startDate = moment().format() + "Z"
+  const endDate = moment().add(1, "hours").format() + "Z"
+
+  const requestBody = {
+    startDate: startDate,
+    endDate: endDate,
+    fields: ["hostRoomUrl"],
+  }
   
-    transporter.sendMail(mailOptions, function(error){
-      if (error) {
-        console.log(error);
-      } else {
-        res.json({message: "success"})
+  const configBody = {
+    headers: {
+      Authorization: `Bearer ${process.env.API_KEY}`,
+      "Content-Type": "application/json",
+    }
+  }
+
+  if (foundUser !== null) {
+    axios.post("https://api.whereby.dev/v1/meetings", requestBody, configBody).then(response => {
+      if(response.status == 200) {
+        const mailOptions = {
+          from: 'readpalishere@gmail.com',
+          to: `${email}`,
+          subject: 'Reading Time',
+          html: `<h1>Hey friend</h1><p>Please go to this link: <b>${response.data.roomUrl}</b> to join the call with your Readpal!</p>`
+        }
+      
+        transporter.sendMail(mailOptions, function(error){
+          if (error) {
+            console.log(error);
+          } else {
+            res.json({message: "success", hostRoomUrl: response.data.hostRoomUrl})
+          }
+        })
       }
-    })
+    }).catch(err => console.log(err))
   }else {
     res.json({message: "invalid"})
   }
+  
 }
 
 
