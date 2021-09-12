@@ -9,7 +9,6 @@ const passport = require("passport")
 import User from "./models/userModel.js"
 import userRouter from "./routes/user.js"
 import storageRouter from "./routes/storage.js"
-import videoRouter from './routes/video.js';
 //const GoogleStrategy = require("passport-google-oauth20").Strategy;
 // const findOrCreate = require("mongoose-findorcreate");
 const path = require("path")
@@ -96,7 +95,3 @@ if (port == null || port == "") {
 app.listen(port, function () {
   console.log("Server started");
 })
-
-export default app
-
-

@@ -375,10 +375,10 @@ const sendEmailToStudent = async (req, res) => {
 
   const {email, username} = req.body
   const foundUser = await User.findOne({username: email.toLowerCase()}).catch(err => {console.log("Finding user error: " + err)})
+  const foundCaller = await User.findById({_id: username}).catch(err => console.log("Finding caller error: " + err))
 
-
-  const startDate = moment().format() + "Z"
-  const endDate = moment().add(1, "hours").format() + "Z"
+  const startDate = moment().format('YYYY-MM-DDTHH:mm:ss.SSS[Z]')
+  const endDate = moment().add(1, "hours").format('YYYY-MM-DDTHH:mm:ss.SSS[Z]')
 
   const requestBody = {
     startDate: startDate,
@@ -395,7 +395,7 @@ const sendEmailToStudent = async (req, res) => {
 
   if (foundUser !== null) {
     axios.post("https://api.whereby.dev/v1/meetings", requestBody, configBody).then(response => {
-      if(response.status == 200) {
+      if(response.status == 201) {
         const mailOptions = {
           from: 'readpalishere@gmail.com',
           to: `${email}`,
