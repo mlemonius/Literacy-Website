@@ -395,7 +395,7 @@ const sendEmailToStudent = async (req, res) => {
     }
   }
 
-  if (foundUser !== null) {
+  if (foundUser !== null && foundCaller !== null) {
     axios.post("https://api.whereby.dev/v1/meetings", requestBody, configBody).then(response => {
       if(response.status == 201) {
         const mailOptions = {
