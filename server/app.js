@@ -18,8 +18,7 @@ const LocalStrategy = require('passport-local').Strategy
 const app = express()
 app.use(express.urlencoded({ limit: "200mb", extended: true }))
 app.use(express.json())
-app.use(cors())
-cors({credentials: true, origin: true})
+app.use(cors({credentials: true, origin: true}))
 app.use(
   session({
     secret: "Our little secret.",

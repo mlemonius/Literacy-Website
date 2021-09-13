@@ -38,9 +38,11 @@ const userLogin = (req, res, next) => {
       if (loginErr) {
         return next(loginErr);
       }
+      console.log(req.session);
       return res.json({
         message: "success",
-        userID: req.user._id
+        userID: req.user._id,
+        sID: req.sessionID
       })
     })
   })(req, res, next);
@@ -73,7 +75,8 @@ const userSignup = async (req, res) => {
       } else {
         res.json({
           message: "success",
-          userID: user._id
+          userID: user._id,
+          sID: req.sessionID
         })
       }
     })
@@ -360,7 +363,7 @@ const userLogout = (req, res) => {
 
 
 const authenticateUser = (req, res) => {
-  if (req.isAuthenticated()) {
+  if (req.body.sID === req.sessionID) {
     res.json({message: "success"})
   }else{
     res.json({message: "invalid"})
