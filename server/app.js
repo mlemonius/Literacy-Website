@@ -9,6 +9,7 @@ const passport = require("passport")
 import User from "./models/userModel.js"
 import userRouter from "./routes/user.js"
 import storageRouter from "./routes/storage.js"
+import cors from "cors"
 //const GoogleStrategy = require("passport-google-oauth20").Strategy;
 // const findOrCreate = require("mongoose-findorcreate");
 const path = require("path")
@@ -17,7 +18,7 @@ const LocalStrategy = require('passport-local').Strategy
 const app = express()
 app.use(express.urlencoded({ limit: "200mb", extended: true }))
 app.use(express.json())
-
+app.use(cors())
 app.use(
   session({
     secret: "Our little secret.",
