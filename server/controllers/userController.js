@@ -12,7 +12,6 @@ const {Auth} = require("two-step-auth")
 import nodemailer from "nodemailer"
 import axios from "axios"
 import moment from "moment"
-import MongoStore from 'connect-mongo'
 
 
 const transporter = nodemailer.createTransport({   /// this is the email I created for sending emails to students on behalf of teacher
@@ -48,6 +47,8 @@ const userLogin = (req, res, next) => {
     })
   })(req, res, next);
 }
+
+
 
 
 const userSignup = async (req, res) => {

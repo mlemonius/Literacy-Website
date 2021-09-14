@@ -28,7 +28,7 @@ userRouter.patch("/reset", resetPassword)
 
 userRouter.get("/logout", userLogout)
 
-userRouter.get("/authenticate", authenticateUser)
+userRouter.post("/authenticate", authenticateUser)
 
 userRouter.post("/:userID/student", addStudent)
 userRouter.get("/:userID/students", returnStudents)

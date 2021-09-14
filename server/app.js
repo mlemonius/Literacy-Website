@@ -19,16 +19,17 @@ const LocalStrategy = require('passport-local').Strategy
 const app = express()
 app.use(express.urlencoded({ limit: "200mb", extended: true }))
 app.use(express.json())
-app.use(cors({
+app.use(cors(
+  {
   credentials: true, 
   origin: "https://www.storybook.academy", 
-  allowedHeaders: ["Content-Type","Authorization","X-Requested-With","X-Forwarded-Proto", "cookie","set-cookie"],
+  allowedHeaders: ["Content-Type","Authorization","X-Requested-With","X-Forwarded-Proto","cookie","set-cookie"],
   methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
-  //exposedHeaders: ["Content-Type","Authorization","X-Requested-With","X-Forwarded-Proto","cookie","set-cookie"]
+  exposedHeaders: ["Content-Type","Authorization","X-Requested-With","X-Forwarded-Proto","cookie", "set-cookie"]
   }
 ))
 
-// Add headers
+//Add headers
 // app.use(function (req, res, next) {
 
 //   // Website you wish to allow to connect
@@ -51,12 +52,12 @@ app.use(cors({
 app.use(
   session({
     secret: "Our little secret.",
-    resave: false,
+    resave: true,
     saveUninitialized: true,
     store: MongoStore.create({
       mongoUrl: process.env.CONNECTION_URL,
     }),
-    unset: 'destroy'
+    unset: 'destroy',
   })
 )
 
