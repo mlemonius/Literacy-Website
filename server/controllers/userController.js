@@ -12,6 +12,8 @@ const {Auth} = require("two-step-auth")
 import nodemailer from "nodemailer"
 import axios from "axios"
 import moment from "moment"
+import MongoStore from 'connect-mongo'
+
 
 const transporter = nodemailer.createTransport({   /// this is the email I created for sending emails to students on behalf of teacher
   service: 'gmail',
@@ -38,11 +40,10 @@ const userLogin = (req, res, next) => {
       if (loginErr) {
         return next(loginErr);
       }
-      console.log(req.session);
+      //console.log(req.session);
       return res.json({
         message: "success",
         userID: req.user._id,
-        sID: req.sessionID
       })
     })
   })(req, res, next);
@@ -76,7 +77,6 @@ const userSignup = async (req, res) => {
         res.json({
           message: "success",
           userID: user._id,
-          sID: req.sessionID
         })
       }
     })
@@ -355,7 +355,10 @@ const addImageToProfile = (bucketParams, profile) => {
 
 const userLogout = (req, res) => {
   //console.log(req.user);
+  //MongoStore.destroy(req.sessionID, callback)
+  
   req.logout()
+  req.session = null;
   res.json({
     message: "success"
   })
@@ -363,7 +366,7 @@ const userLogout = (req, res) => {
 
 
 const authenticateUser = (req, res) => {
-  if (req.body.sID === req.sessionID) {
+  if (req.isAuthenticated()) {
     res.json({message: "success"})
   }else{
     res.json({message: "invalid"})
