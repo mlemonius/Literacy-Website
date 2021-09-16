@@ -12,6 +12,7 @@ const {Auth} = require("two-step-auth")
 import nodemailer from "nodemailer"
 import axios from "axios"
 import moment from "moment"
+import MongoStore from 'connect-mongo'
 
 
 const transporter = nodemailer.createTransport({   /// this is the email I created for sending emails to students on behalf of teacher
@@ -355,11 +356,11 @@ const addImageToProfile = (bucketParams, profile) => {
 
 
 const userLogout = (req, res) => {
-  //console.log(req.user);
-  //MongoStore.destroy(req.sessionID, callback)
   
   req.logout()
-  req.session = null;
+  // req.session = null
+  // req.session.passport.user = null
+  // //req.session.destroy()
   res.json({
     message: "success"
   })

@@ -52,12 +52,15 @@ app.use(cors(
 app.use(
   session({
     secret: "Our little secret.",
-    resave: true,
-    saveUninitialized: true,
+    resave: false,
+    saveUninitialized: false,
     store: MongoStore.create({
       mongoUrl: process.env.CONNECTION_URL,
     }),
-    unset: 'destroy',
+    // unset: 'destroy',
+    cookie: {
+      httpOnly: false
+    }
   })
 )
 
