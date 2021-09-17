@@ -22,6 +22,12 @@ class Login extends Component {
     this.setState({ open: false });
   };
 
+  handleEnterPress = (e) => {
+    if (e.key === "Enter") {
+      this.handleSubmit();
+    }
+  };
+
   handleSubmit = () => {
     if (this.props.valid) {
       this.props.handleLogin();
@@ -42,6 +48,7 @@ class Login extends Component {
             required
             value={this.props.email}
             onChange={(e) => this.props.setEmail(e.target.value)}
+            onKeyDown={this.handleEnterPress}
           />
 
           <label>Password</label>
@@ -50,6 +57,7 @@ class Login extends Component {
             required
             value={this.props.password}
             onChange={(e) => this.props.setPassword(e.target.value)}
+            onKeyDown={this.handleEnterPress}
           />
 
           <p></p>

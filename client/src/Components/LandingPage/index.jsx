@@ -1,4 +1,4 @@
-import React, { Component } from "react";
+import React, { useEffect } from "react";
 
 import Info from "./Info";
 import Footer from "./Footer";
@@ -7,43 +7,49 @@ import "./landingPage.css";
 import { Link } from "react-router-dom";
 import { Helmet } from "react-helmet";
 import axios from "axios";
-class LandingPage extends Component {
-  componentDidMount = () => {
-    this.authenticate();
+import { useHistory } from "react-router";
+
+const LandingPage = () => {
+  const history = useHistory();
+
+  useEffect(() => {
+    authenticate();
     setInterval(() => this.authenticate(), 60000 * 10);
-  };
+  }, []);
 
-  authenticate = () => {
-    axios.get("/server/user/authenticate").then((response) => {
-      if (response.data.message === "success") {
-      } else {
-        this.props.history.push("/login");
+  const authenticate = async () => {
+    const response = await axios.post(
+      "/server/user/authenticate",
+      {},
+      {
+        withCredentials: true,
       }
-    });
+    );
+    if (response.data.message !== "success") {
+      history.push("/login");
+    }
   };
 
-  render() {
-    return (
-      <>
-        <Helmet>
-          <title>ReadPal | Sign Up</title>
-        </Helmet>
-        <div className="LandingDiv">
-          <Info />
-          <div style={{ margin: 40, marginBottom: 5, textAlign: "center" }}>
-            <ArrowDownwardIcon />
-          </div>
-          <div className="landing-page-login">
-            <Link to="/login">
-              <button className="landing-page-button">Login/Signup</button>
-            </Link>
-          </div>
-          {/* <br /> */}
-          {/* <Footer /> */}
+  return (
+    <>
+      <Helmet>
+        <title>Storybook Academy | Welcome</title>
+      </Helmet>
+      <div className="LandingDiv">
+        <Info />
+        <div style={{ margin: 40, marginBottom: 5, textAlign: "center" }}>
+          <ArrowDownwardIcon />
         </div>
-      </>
-    );
-  }
-}
+        <div className="landing-page-login">
+          <Link to="/login">
+            <button className="landing-page-button">Login/Signup</button>
+          </Link>
+        </div>
+        {/* <br /> */}
+        {/* <Footer /> */}
+      </div>
+    </>
+  );
+};
 
 export default LandingPage;

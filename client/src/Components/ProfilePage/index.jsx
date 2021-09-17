@@ -11,6 +11,7 @@ import {
   logout,
 } from "../../actions/credentialActions";
 import axios from "axios";
+import qs from "qs";
 import { withCookies, Cookies } from "react-cookie";
 import { Redirect } from "react-router-dom";
 import { Helmet } from "react-helmet";
@@ -34,14 +35,18 @@ class ProfilePage extends Component {
   };
 
   handleLogout = () => {
-    axios.get("/server/user/logout").then((response) => {
-      if (response.data.message === "success") {
-        this.props.logout();
-        this.props.cookies.remove("userID");
-        this.props.cookies.remove("profileID");
-        this.props.history.push("/login");
-      }
-    });
+    axios
+      .get("/server/user/logout", { withCredentials: true })
+      .then((response) => {
+        if (response.data.message === "success") {
+          this.props.logout();
+          this.props.cookies.remove("userID");
+          this.props.cookies.remove("profileID");
+          this.props.cookies.set("connect.sid", "", { path: "/", maxAge: 0 });
+          this.props.cookies.remove("connect.sid");
+          this.props.history.push("/login");
+        }
+      });
   };
 
   handleChooseProfile = (id) => {
@@ -58,23 +63,24 @@ class ProfilePage extends Component {
     setInterval(() => this.authenticate(), 60000 * 10);
   };
 
-  authenticate = () => {
-    axios.get("/server/user/authenticate").then((response) => {
-      if (response.data.message === "success") {
-      } else {
-        this.props.history.push("/login");
+  authenticate = async () => {
+    const response = await axios.post(
+      "/server/user/authenticate",
+      {},
+      {
+        withCredentials: true,
       }
-    });
+    );
+    if (response.data.message !== "success") {
+      this.props.history.push("/login");
+    }
   };
 
   render() {
-    // if (this.state.userID === "")
-    // if (this.state.validSession) return <Redirect to="/login" />;
-    // else
     return (
       <>
         <Helmet>
-          <title>ReadPal | Profile</title>
+          <title>Storybook Academy | Profile</title>
         </Helmet>
         <div className="profile-home-block">
           <Typography className="profile-home-header">
@@ -93,7 +99,7 @@ class ProfilePage extends Component {
               }}
             >
               <Link
-                to="/library"
+                to="/friends-list"
                 onClick={() => this.handleChooseProfile(child._id)}
               >
                 <Typography

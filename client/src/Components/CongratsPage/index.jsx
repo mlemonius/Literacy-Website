@@ -10,7 +10,7 @@ const CongratsPage = (props) => {
   return (
     <>
       <Helmet>
-        <title>ReadPal | Congratulation</title>
+        <title>Storybook Academy | Congratulation</title>
       </Helmet>
       <div className="profile-done-block">
         <Typography className="profile-congrat-header">

@@ -42,7 +42,7 @@ class EmailConfirm extends Component {
     return (
       <>
         <Helmet>
-          <title>ReadPal | Email Confirmation</title>
+          <title>Storybook Academy | Email Confirmation</title>
         </Helmet>
         <section className="email-confirm">
           <div className="email-confirmContainer" style={{ marginTop: "10%" }}>

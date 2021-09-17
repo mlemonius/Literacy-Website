@@ -16,10 +16,10 @@ class Info extends Component {
     return (
       <div className="Info-block">
         <Container className="header-container">
-          <h1 className="page-title" style={{ color: "#434343" }}>
-            Literacy Website
+          <h1 className="page-title" style={{ color: "#434343", margin: 15 }}>
+            Storybook Academy
           </h1>
-          <Typography color="textSecondary">
+          <Typography style={{ textAlign: "center" }} color="textSecondary">
             Lorem ipsum dolor sit amet, consectetur adipiscing elit.
           </Typography>
         </Container>

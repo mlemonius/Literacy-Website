@@ -8,8 +8,8 @@ import { login } from "../../actions/credentialActions";
 import { connect } from "react-redux";
 import { bindActionCreators } from "redux";
 import { withCookies, Cookies } from "react-cookie";
-import { Redirect } from "react-router-dom";
 import { Helmet } from "react-helmet";
+
 class LoginPage extends Component {
   static propTypes = {
     cookies: instanceOf(Cookies).isRequired,
@@ -58,51 +58,50 @@ class LoginPage extends Component {
     }
   };
 
-  componentDidMount = () => {
-    axios.get("/server/user/authenticate").then((response) => {
-      if (response.data.message === "success") {
-        this.props.history.push("/profile");
+  componentDidMount = async () => {
+    const response = await axios.post(
+      "/server/user/authenticate",
+      {},
+      {
+        withCredentials: true,
       }
-    });
+    );
+    if (response.data.message === "success") {
+      this.props.history.push("/profile");
+    }
   };
 
-  handleLogin = () => {
-    axios({
-      method: "post",
-      url: "/server/user/login",
-      data: qs.stringify({
+  handleLogin = async () => {
+    const response = await axios.post(
+      "/server/user/login",
+      qs.stringify({
         username: this.state.email,
         password: this.state.password,
       }),
-      headers: {
-        "content-type": "application/x-www-form-urlencoded;charset=utf-8",
-      },
-    }).then((response) => {
-      console.log(response.headers);
-      if (response.status === 200) {
-        if (response.data.message === "success") {
-          this.props.login(response.data.userID, this.state.email);
-          this.props.cookies.set("userID", response.data.userID, {
-            path: "/",
-            maxAge: 86400,
-          });
-          this.props.history.push("/profile");
-        } else {
-          // this.setState({ valid: false });
-        }
-      } else {
+      {
+        withCredentials: true,
+        headers: {
+          "content-type": "application/x-www-form-urlencoded;charset=utf-8",
+        },
       }
-    });
+    );
+    if (response.status === 200) {
+      if (response.data.message === "success") {
+        this.props.login(response.data.userID, this.state.email);
+        this.props.cookies.set("userID", response.data.userID, {
+          path: "/",
+          maxAge: 86400,
+        });
+        this.props.history.push("/profile");
+      } else {
+        // this.setState({ valid: false });
+      }
+    } else {
+    }
   };
 
   setValid = (value) => {
     this.setState({ valid: value });
-  };
-
-  handleLogout = () => {
-    axios.post("", {}).then((response) => {});
-    this.props.cookies.remove("userID");
-    console.log("Log out");
   };
 
   render() {
@@ -112,7 +111,7 @@ class LoginPage extends Component {
       //   this.props.cookies.get("userID") === "" ? (
       <>
         <Helmet>
-          <title>ReadPal | Login</title>
+          <title>Storybook Academy | Login</title>
         </Helmet>
         <div className="LoginPage">
           <Login

@@ -5,8 +5,6 @@ import {
   ListItem,
   Divider,
   ListItemText,
-  ListItemAvatar,
-  Avatar,
   Button,
   Typography,
   Dialog,
@@ -91,13 +89,17 @@ class LibraryPage extends Component {
     setInterval(() => this.authenticate(), 60000 * 10);
   };
 
-  authenticate = () => {
-    axios.get("/server/user/authenticate").then((response) => {
-      if (response.data.message === "success") {
-      } else {
-        this.props.history.push("/login");
+  authenticate = async () => {
+    const response = await axios.post(
+      "/server/user/authenticate",
+      {},
+      {
+        withCredentials: true,
       }
-    });
+    );
+    if (response.data.message !== "success") {
+      this.props.history.push("/login");
+    }
   };
 
   handleChooseStory = (title) => {
@@ -121,7 +123,7 @@ class LibraryPage extends Component {
     return (
       <>
         <Helmet>
-          <title>ReadPal | Library</title>
+          <title>Storybook Academy | Library</title>
         </Helmet>
         <Typography className="library-page-header" variant="h2">
           Library

@@ -44,12 +44,17 @@ function SignupPage(props) {
     setInterval(() => this.authenticate(), 60000 * 10);
   });
 
-  const authenticate = () => {
-    axios.get("/server/user/authenticate").then((response) => {
-      if (response.data.message === "success") {
-        this.props.history.push("/profile");
+  const authenticate = async () => {
+    const response = await axios.post(
+      "/server/user/authenticate",
+      {},
+      {
+        withCredentials: true,
       }
-    });
+    );
+    if (response.data.message === "success") {
+      history.push("/profile");
+    }
   };
 
   const handleSignup = () => {
@@ -72,7 +77,6 @@ function SignupPage(props) {
           "content-type": "application/x-www-form-urlencoded;charset=utf-8",
         },
       }).then((response) => {
-        console.log(response);
         if (response.status === 200) {
           if (response.data.message === "success") {
             props.signup(response.data.userID, props.email);
@@ -91,7 +95,7 @@ function SignupPage(props) {
   return (
     <>
       <Helmet>
-        <title>ReadPal | Sign up</title>
+        <title>Storybook Academy | Sign up</title>
       </Helmet>
       <div className="SignupPage">
         {!asked ? (
@@ -141,6 +145,7 @@ function SignupPage(props) {
 const mapStateToProps = (state) => {
   return {
     email: state.userInfo.email,
+    userID: state.userInfo.userID,
   };
 };
 

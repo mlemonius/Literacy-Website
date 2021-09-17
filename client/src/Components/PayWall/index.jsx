@@ -7,7 +7,7 @@ const PayWall = () => {
   return (
     <>
       <Helmet>
-        <title>ReadPal | PayWall</title>
+        <title>Storybook Academy | PayWall</title>
       </Helmet>
       <div className="paywall-block">
         <Cards />

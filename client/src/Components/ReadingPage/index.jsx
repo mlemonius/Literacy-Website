@@ -5,6 +5,7 @@ import { connect } from "react-redux";
 import { withCookies, Cookies } from "react-cookie";
 import { Helmet } from "react-helmet";
 import axios from "axios";
+
 class ReadingPage extends Component {
   static propTypes = {
     cookies: instanceOf(Cookies).isRequired,
@@ -21,20 +22,24 @@ class ReadingPage extends Component {
     setInterval(() => this.authenticate(), 60000 * 10);
   };
 
-  authenticate = () => {
-    axios.get("/server/user/authenticate").then((response) => {
-      if (response.data.message === "success") {
-      } else {
-        this.props.history.push("/login");
+  authenticate = async () => {
+    const response = await axios.post(
+      "/server/user/authenticate",
+      {},
+      {
+        withCredentials: true,
       }
-    });
+    );
+    if (response.data.message !== "success") {
+      this.props.history.push("/login");
+    }
   };
 
   render() {
     return (
       <>
         <Helmet>
-          <title>ReadPal | Reading: {this.state.title}</title>
+          <title>Storybook Academy | Reading: {this.state.title}</title>
         </Helmet>
         <PDFdisplay
           title={this.state.title}

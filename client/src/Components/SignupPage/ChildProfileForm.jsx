@@ -110,10 +110,12 @@ class ChildProfileForm extends Component {
     return (
       <>
         <Helmet>
-          <title>ReadPal | Create New Child Profile</title>
+          <title>Storybook Academy | Create New Child Profile</title>
         </Helmet>
         <div style={{ margin: 20, padding: 10 }}>
-          <Typography className="readpal-header">Welcome to ReadPal</Typography>
+          <Typography className="Storybook-Academy-header">
+            Welcome to Storybook Academy
+          </Typography>
           <Typography className="greetings-header">
             To begin, tell us about yourself.
           </Typography>

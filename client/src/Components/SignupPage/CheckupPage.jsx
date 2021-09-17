@@ -66,7 +66,7 @@ class Checkup extends Component {
     return (
       <>
         <Helmet>
-          <title>ReadPal | Sign up Security Check</title>
+          <title>Storybook Academy | Sign up Security Check</title>
         </Helmet>
         <div
           className="sec-checkup-container"
@@ -83,7 +83,7 @@ class Checkup extends Component {
                 style={{ paddingBottom: 10, margin: 30, fontSize: 30 }}
               >
                 I have a child between 7 - 9 years of age who is interested in
-                ReadPal
+                Storybook Academy
                 <Checkbox
                   required
                   checked={this.state.question1}

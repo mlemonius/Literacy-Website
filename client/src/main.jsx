@@ -12,6 +12,7 @@ import LibraryPage from "./Components/LibraryPage";
 import ReadingPage from "./Components/ReadingPage";
 import PayWall from "./Components/PayWall";
 import VideoCallPage from "./Components/VideoCallPage";
+import FriendsList from "./Components/VideoCallPage/FriendsList";
 
 const Main = () => {
   return (
@@ -25,6 +26,7 @@ const Main = () => {
       <Route path="/profile" exact component={ProfilePage} />
       <Route path="/library" exact component={LibraryPage} />
       <Route path="/read-story" exact component={ReadingPage} />
+      <Route path="/friends-list" exact component={FriendsList} />
       <Route path="/calling" exact component={VideoCallPage} />
 
       {/* <Route path="/paywall" exact component={PayWall} /> */}

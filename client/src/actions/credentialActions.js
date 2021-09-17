@@ -66,3 +66,12 @@ export const setActiveStory = (id, title) => {
     },
   };
 };
+
+export const setFriendEmail = (email) => {
+  return {
+    type: "SETFRIENDEMAIL",
+    payload: {
+      email: email,
+    },
+  };
+};
