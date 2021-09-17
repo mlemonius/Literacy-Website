@@ -1,65 +1,33 @@
-import {createRequire} from 'module'
+import { createRequire } from 'module'
 const require = createRequire(import.meta.url)
-const readline = require('readline');
-const fs = require('fs');
+const readline = require('readline')
 import s3 from "../aws/s3.js"
 
 const getStory = (req, res) => {
   let title = req.query.title
-  title =  title.split("+").join(" ")
+  title = title.split("+").join(" ")
   const bucketParams = {
     Bucket: 'library.stories',
     Key: `stories/${title}.pdf`
   }
-  // const chunks = []
-  s3.getObject(bucketParams).createReadStream().pipe(res).on("err", (err) =>{
+  s3.getObject(bucketParams).createReadStream().pipe(res).on("err", (err) => {
     console.log(err)
   })
-
-  // // readStream.on ('error', (err) => {
-  //   console.log(err)
-  // })
-
-  // readStream.on ('data', chunk => {
-  //   chunks.push(chunk)
-  // })
-  // readStream.on('end', () => {
-  //   const pdf = Buffer.concat(chunks).toString('base64')
-  //   res.json({
-  //           message: "success",
-  //           file: pdf
-  //         })
-  // })
-  //, (err, data) => {
-  //   if (err) {
-  //     console.log("Error", err)
-  //     res.json({
-  //       message: "error",
-  //       file: null
-  //     }) 
-  //   } else {
-  //     const file = Buffer.from(data.Body).toString('base64')
-  //     res.json({
-  //       message: "success",
-  //       file: file
-  //     })
-  //   }
-  // })
 }
 
 const getAllStoriesDetails = (req, res) => {
-const bucketParamsForTitles = {
-  Bucket: 'library.stories',
-  Prefix: 'stories/'
-}
+  const bucketParamsForTitles = {
+    Bucket: 'library.stories',
+    Prefix: 'stories/'
+  }
 
-s3.listObjects(bucketParamsForTitles, async (err, data) => {
-  let stories = []
+  s3.listObjects(bucketParamsForTitles, async (err, data) => {
+    let stories = []
     if (err) {
       console.log("error", err)
     } else {
       Promise.all(
-        data.Contents.map(async (title, index) =>{
+        data.Contents.map(async (title, index) => {
           if (index != 0) {
             //console.log(`index ${index} started`);
             const slashIndex = title.Key.indexOf("/")
@@ -78,8 +46,8 @@ s3.listObjects(bucketParamsForTitles, async (err, data) => {
           }
         })
       ).then(() => {
-        stories.sort((a,b) => (a.title > b.title) ? 1 : ((b.title > a.title) ? - 1 : 0))
-        res.json({message: "success", stories: stories})
+        stories.sort((a, b) => (a.title > b.title) ? 1 : ((b.title > a.title) ? - 1 : 0))
+        res.json({ message: "success", stories: stories })
       })
     }
   })
@@ -91,8 +59,8 @@ const addDescriptionToStory = (myInterface) => {
   let description = ""
   let colonIndex = 0
 
-  return new Promise((resolve) =>{
-    myInterface.on('line', function (line) {          
+  return new Promise((resolve) => {
+    myInterface.on('line', function (line) {
       line = Buffer.from(line).toString('utf8')
       //console.log(line);
       lineNum++
@@ -137,7 +105,7 @@ const addDescriptionToStory = (myInterface) => {
             ageRanges.push(ages.slice(0, commaIndex))
             ages = ages.slice(commaIndex + 1).trim()
             commaIndex = ages.indexOf(',')
-            if( commaIndex == -1) {
+            if (commaIndex == -1) {
               ageRanges.push(ages)
             }
           }
@@ -168,17 +136,17 @@ const addDescriptionToStory = (myInterface) => {
 
 const convertQuotesToDummy = (line) => {     // utf-8 does not recognize “” and ’
   let index = line.indexOf("�")
-  while(index !== -1){
+  while (index !== -1) {
 
-    if( line.charAt(index + 1) !== " " && line.charAt(index + 1) === line.charAt(index + 1).toUpperCase()){
-      line = line.slice(0, index) + "“" + line.slice(index + 1)  
+    if (line.charAt(index + 1) !== " " && line.charAt(index + 1) === line.charAt(index + 1).toUpperCase()) {
+      line = line.slice(0, index) + "“" + line.slice(index + 1)
     }
-    
-    else if(line.charAt(index + 1) === " "){
+
+    else if (line.charAt(index + 1) === " ") {
       line = line.slice(0, index) + "”" + line.slice(index + 1)
     }
 
-    else{
+    else {
       line = line.slice(0, index) + "’" + line.slice(index + 1)
     }
 

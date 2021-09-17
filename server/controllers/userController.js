@@ -1,29 +1,25 @@
 //jshint esversion:6
-import {createRequire} from 'module'
+import { createRequire } from 'module'
 const require = createRequire(import.meta.url)
 import express from "express"
 const passport = require("passport")
 import s3 from "../aws/s3.js"
-// const GoogleStrategy = require('passport-google-oauth20').Strategy;
-// const findOrCreate = require('mongoose-findorcreate');
 import User from "../models/userModel.js"
 import Otp from "../models/otpModel.js"
-const {Auth} = require("two-step-auth")
+const { Auth } = require("two-step-auth")
 import nodemailer from "nodemailer"
 import axios from "axios"
 import moment from "moment"
-import MongoStore from 'connect-mongo'
 
 
 const transporter = nodemailer.createTransport({   /// this is the email I created for sending emails to students on behalf of teacher
   service: 'gmail',
   auth: {
     user: 'readpalishere@gmail.com',
-    pass: 'youcannotbreakit'
+    pass: process.env.GMAIL_PS
   }
 });
 
-const router = express.Router()
 
 const userLogin = (req, res, next) => {
   passport.authenticate('local', (err, user, info) => {
@@ -50,8 +46,6 @@ const userLogin = (req, res, next) => {
 }
 
 
-
-
 const userSignup = async (req, res) => {
   const {
     firstname,
@@ -62,7 +56,7 @@ const userSignup = async (req, res) => {
     password,
     otp
   } = req.body
-  const foundOtp = await Otp.findOneAndDelete({email: email.toLowerCase(), otp: otp}).catch(err => {console.log("Finding Otp error when signing up: " + err)})
+  const foundOtp = await Otp.findOneAndDelete({ email: email.toLowerCase(), otp: otp }).catch(err => { console.log("Finding Otp error when signing up: " + err) })
   if (foundOtp) { // if the sent otp and the otp in the database matches, create a new user
     const newUser = new User({
       username: email.toLowerCase(),
@@ -71,7 +65,7 @@ const userSignup = async (req, res) => {
       organization: organization,
       country: country
     });
-    const user = await User.register(newUser, password).catch(err => {console.log("Registering user error: " + err)})
+    const user = await User.register(newUser, password).catch(err => { console.log("Registering user error: " + err) })
     req.login(user, (err) => {
       if (err) {
         return next(err)
@@ -91,14 +85,14 @@ const userSignup = async (req, res) => {
 
 
 const verifyEmailForSignup = async (req, res) => {
-  if(!req.body.email) {
-    return res.json({message: "missing body"})
+  if (!req.body.email) {
+    return res.json({ message: "missing body" })
   }
-  const foundUser = await User.findOne({username: req.body.email.toLowerCase()}).catch(err => {console.log("Finding user error: " + err)})
+  const foundUser = await User.findOne({ username: req.body.email.toLowerCase() }).catch(err => { console.log("Finding user error: " + err) })
   if (foundUser == null) {
-    const result = await Auth(req.body.email.toLowerCase(), "ReadPal").catch(err => {console.log("Sending Otp error when verifying email for signup: " + err)})
+    const result = await Auth(req.body.email.toLowerCase(), "ReadPal").catch(err => { console.log("Sending Otp error when verifying email for signup: " + err) })
     if (result.success == true) {
-      const foundOtp = await Otp.findOne({email: req.body.email.toLowerCase()}).catch(err => {console.log("Finding Otp error: " + err)})
+      const foundOtp = await Otp.findOne({ email: req.body.email.toLowerCase() }).catch(err => { console.log("Finding Otp error: " + err) })
       if (foundOtp == null) {
         const newOtp = new Otp({
           email: req.body.email.toLowerCase(),
@@ -129,8 +123,8 @@ const addProfile = async (req, res) => {
   const userID = req.params.userID
 
 
-  if(!req.body.age || !req.body.color || !req.body.animal) {
-    return res.json({message: "missing body"})
+  if (!req.body.age || !req.body.color || !req.body.animal) {
+    return res.json({ message: "missing body" })
   }
 
   const {
@@ -140,7 +134,7 @@ const addProfile = async (req, res) => {
   } = req.body
 
   try {
-    const foundUser = await User.findById({_id: userID}).catch(err => {console.log("Finding user error when adding profile: " + err)})
+    const foundUser = await User.findById({ _id: userID }).catch(err => { console.log("Finding user error when adding profile: " + err) })
     if (foundUser == null) {
       res.json({
         message: "invalid",
@@ -159,8 +153,8 @@ const addProfile = async (req, res) => {
           animal: animal
         }
         foundUser.profiles.push(childProfile)
-        const savedUser = await foundUser.save().catch(err => {console.log("Saving user error when adding profile: " + err)})
-        const foundProfiles = await User.findById(savedUser._id, 'profiles').catch(err => {console.log("Finding profiles error: " + err)})
+        const savedUser = await foundUser.save().catch(err => { console.log("Saving user error when adding profile: " + err) })
+        const foundProfiles = await User.findById(savedUser._id, 'profiles').catch(err => { console.log("Finding profiles error: " + err) })
         const childObject = foundProfiles.profiles.find((object, index) => { //search for profile
           if (object.age == age && object.color == color && object.animal == animal) {
             return true
@@ -187,38 +181,41 @@ const addProfile = async (req, res) => {
 const addStudent = async (req, res) => {
   const userID = req.params.userID
   try {
-    if(!req.body.email) {
-      return res.json({message: "missing body"})
+    if (!req.body.email) {
+      return res.json({ message: "missing body" })
     }
     const email = req.body.email.toLowerCase()
 
-    const foundUser = await User.findById({_id: userID}).catch(err => {console.log("Finding user error when adding student: " + err)})
-    const foundStudent = await User.findOne({username: email}).catch(err => {console.log("Finding student error when adding student: " + err)})
+    const foundUser = await User.findById({ _id: userID }).catch(err => { console.log("Finding user error when adding student: " + err) })
+    const foundStudent = await User.findOne({ username: email }).catch(err => { console.log("Finding student error when adding student: " + err) })
 
-    if(foundUser == null || foundStudent == null || foundUser.username == foundStudent.email) {
-      res.json({message: "invalid"})
-    }else {
+    if (foundUser == null || foundStudent == null || foundUser.username == foundStudent.email) {
+      res.json({ message: "invalid" })
+    } else {
       const foundEmail = foundUser.students.find((student, index) => {
-        if(student.email == email) {
+        if (student.email == email) {
           return true
         }
       })
-      if(foundEmail == undefined) {
-        foundUser.students.push({email: email, _id: foundStudent._id})
-        const savedUser = await foundUser.save().catch(err => {console.log("Saving user error when adding student: " + err)})
+      if (foundEmail == undefined) {
+        foundUser.students.push({ email: email, _id: foundStudent._id })
+        const savedUser = await foundUser.save().catch(err => { console.log("Saving user error when adding student: " + err) })
 
-        const foundStudents = await User.findById(savedUser._id, 'students').catch(err => {console.log("Finding students error: " + err)})
+        foundStudent.students.push({ email: foundUser.username, _id: foundUser._id })
+        await foundStudent.save().catch(err => console.log("Saving student error when adding user: " + err))
+
+        const foundStudents = await User.findById(savedUser._id, 'students').catch(err => { console.log("Finding students error: " + err) })
         const childObject = foundStudents.students.find((object, index) => { //search for student
-            if (object.email == email) {
-              return true
-            }
-          });
-          res.json({
-            message: "success",
-            studentID: childObject._id
-          })
-      }else {
-        res.json({message: "match"})
+          if (object.email == email) {
+            return true
+          }
+        });
+        res.json({
+          message: "success",
+          studentID: childObject._id
+        })
+      } else {
+        res.json({ message: "match" })
       }
     }
   } catch (err) {
@@ -228,14 +225,15 @@ const addStudent = async (req, res) => {
 
 const returnStudents = async (req, res) => {
   const userID = req.params.userID
-  const foundUser = await User.findById({_id: userID}).lean().catch(err => {       // lean(): foundUser can be modified locally (not attached to the db)
+  const foundUser = await User.findById({ _id: userID }).catch(err => {       // lean(): foundUser can be modified locally (not attached to the db)
     console.log("Finding user error when returning students: " + err)
   })
   if (foundUser != null) {
-      res.json({
-        message: "success",
-        students: foundUser.students
-      })
+    console.log(foundUser.students)
+    res.json({
+      message: "success",
+      students: foundUser.students
+    })
   } else {
     res.json({
       message: "invalid"
@@ -246,9 +244,9 @@ const returnStudents = async (req, res) => {
 
 const verifyEmailForReset = async (req, res) => {
   if (!req.body.email) {
-    return res.json({message: "missing body"})
+    return res.json({ message: "missing body" })
   }
-  const foundUser = await User.findOne({username: req.body.email.toLowerCase()}).catch(err => {
+  const foundUser = await User.findOne({ username: req.body.email.toLowerCase() }).catch(err => {
     console.log("Finding user error when verifying email: " + err)
   }) // check if the account exists in database
   if (foundUser == null) {
@@ -256,9 +254,9 @@ const verifyEmailForReset = async (req, res) => {
       message: "invalid"
     })
   } else {
-    const result = await Auth(req.body.email.toLowerCase(), "ReadPal").catch(err => {console.log("Sending Otp error wehn verifying for reset: " + err)})
+    const result = await Auth(req.body.email.toLowerCase(), "ReadPal").catch(err => { console.log("Sending Otp error wehn verifying for reset: " + err) })
     if (result.success == true) {
-      const foundOtp = await Otp.findOne({email: req.body.email.toLowerCase()}).catch(err => {console.log("Finding Otp error when verifying email for reset: " + err)})
+      const foundOtp = await Otp.findOne({ email: req.body.email.toLowerCase() }).catch(err => { console.log("Finding Otp error when verifying email for reset: " + err) })
       if (foundOtp == null) {
         const newOtp = new Otp({
           email: req.body.email.toLowerCase(),
@@ -281,7 +279,7 @@ const verifyEmailForReset = async (req, res) => {
 
 const resetPassword = async (req, res) => {
   if (!req.body.otp || !req.body.password) {
-    return res.json({message: "missing body"})
+    return res.json({ message: "missing body" })
   }
 
   const {
@@ -289,7 +287,7 @@ const resetPassword = async (req, res) => {
     password
   } = req.body
 
-  const foundOtp = await Otp.findOneAndDelete({otp: otp}).catch(err => {console.log("Finding Otp error when reseting password: " + err)})
+  const foundOtp = await Otp.findOneAndDelete({ otp: otp }).catch(err => { console.log("Finding Otp error when reseting password: " + err) })
   if (foundOtp == null) {
     res.json({
       message: "invalid"
@@ -313,13 +311,12 @@ const resetPassword = async (req, res) => {
 
 const returnProfiles = async (req, res) => {
   const userID = req.params.userID
-  const foundUser = await User.findById({_id: userID}).lean().catch(err => {       // lean(): foundUser can be modified locally (not attached to the db)
+  const foundUser = await User.findById({ _id: userID }).lean().catch(err => {       // lean(): foundUser can be modified locally (not attached to the db)
     console.log("Finding user error when returning profiles: " + err)
   })
   if (foundUser != null) {
     Promise.all(
       foundUser.profiles.map(async (profile, index, profilesList) => {
-        //console.log("profile " + index + " starts");
         const bucketParams = {          //find the image that match the profile
           Bucket: 'library.stories',
           Key: `profileImages/${profile.animal.toLowerCase()}_-_${profile.color.toLowerCase()}1024_1.jpg`
@@ -327,6 +324,7 @@ const returnProfiles = async (req, res) => {
         await addImageToProfile(bucketParams, profile)
       })
     ).then(() => {
+      //console.log(foundUser.profiles)
       res.json({
         message: "success",
         profiles: foundUser.profiles
@@ -348,6 +346,7 @@ const addImageToProfile = (bucketParams, profile) => {
       } else {
         const image = Buffer.from(data.Body).toString('base64')
         profile.icon = image
+        //console.log(profile)
         resolve()
       }
     })
@@ -356,11 +355,7 @@ const addImageToProfile = (bucketParams, profile) => {
 
 
 const userLogout = (req, res) => {
-  
   req.logout()
-  // req.session = null
-  // req.session.passport.user = null
-  // //req.session.destroy()
   res.json({
     message: "success"
   })
@@ -369,22 +364,22 @@ const userLogout = (req, res) => {
 
 const authenticateUser = (req, res) => {
   if (req.isAuthenticated()) {
-    res.json({message: "success"})
-  }else{
-    res.json({message: "invalid"})
+    res.json({ message: "success" })
+  } else {
+    res.json({ message: "invalid" })
   }
 }
 
 const sendEmailToStudent = async (req, res) => {
 
   if (!req.body.email || !req.body.username) {
-    return res.json({message: "missing body"})
+    return res.json({ message: "missing body" })
   }
 
-  const {email, username} = req.body
-  const foundUser = await User.findOne({username: email.toLowerCase()}).catch(err => {console.log("Finding user error: " + err)})
+  const { email, username } = req.body
+  const foundUser = await User.findOne({ username: email.toLowerCase() }).catch(err => { console.log("Finding user error: " + err) })
 
-  const foundCaller = await User.findById({_id: username}).catch(err => console.log("Finding caller error: " + err))
+  const foundCaller = await User.findById({ _id: username }).catch(err => console.log("Finding caller error: " + err))
 
   const startDate = moment().format('YYYY-MM-DDTHH:mm:ss.SSS[Z]')
   const endDate = moment().add(1, "hours").format('YYYY-MM-DDTHH:mm:ss.SSS[Z]')
@@ -395,7 +390,7 @@ const sendEmailToStudent = async (req, res) => {
     endDate: endDate,
     fields: ["hostRoomUrl"],
   }
-  
+
   const configBody = {
     headers: {
       Authorization: `Bearer ${process.env.API_KEY}`,
@@ -405,27 +400,27 @@ const sendEmailToStudent = async (req, res) => {
 
   if (foundUser !== null && foundCaller !== null) {
     axios.post("https://api.whereby.dev/v1/meetings", requestBody, configBody).then(response => {
-      if(response.status == 201) {
+      if (response.status == 201) {
         const mailOptions = {
           from: 'readpalishere@gmail.com',
           to: `${email}`,
           subject: 'Reading Time',
           html: `<h1>Hey friend</h1><p>Please go to this link: <b>${response.data.roomUrl}</b> to join the call with your Readpal!</p>`
         }
-      
-        transporter.sendMail(mailOptions, function(error){
+
+        transporter.sendMail(mailOptions, function (error) {
           if (error) {
             console.log(error);
           } else {
-            res.json({message: "success", hostRoomUrl: response.data.hostRoomUrl})
+            res.json({ message: "success", hostRoomUrl: response.data.hostRoomUrl })
           }
         })
       }
     }).catch(err => console.log(err))
-  }else {
-    res.json({message: "invalid"})
+  } else {
+    res.json({ message: "invalid" })
   }
-  
+
 }
 
 

@@ -1,5 +1,5 @@
 import express from "express"
-import {getStory, getAllStoriesDetails} from "../controllers/storageController.js"
+import { getStory, getAllStoriesDetails } from "../controllers/storageController.js"
 
 const storageRouter = express.Router()
 

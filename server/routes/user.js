@@ -1,18 +1,7 @@
 import express from "express";
-import {verifyEmailForSignup, userSignup, userLogin, addProfile, returnProfiles, verifyEmailForReset, resetPassword, userLogout, authenticateUser, addStudent, returnStudents, sendEmailToStudent} from "../controllers/userController.js"
+import { verifyEmailForSignup, userSignup, userLogin, addProfile, returnProfiles, verifyEmailForReset, resetPassword, userLogout, authenticateUser, addStudent, returnStudents, sendEmailToStudent } from "../controllers/userController.js"
 
 const userRouter = express.Router();
-
-// router.get("/auth/google", passport.authenticate("google", {
-//   scope: ["profile"]
-// }));
-
-// router.get('/auth/google/secrets',
-//   passport.authenticate('google', {
-//     failureRedirect: "/login",
-//     successRedirect: "/secrets"
-//   }));
-
 
 /*-----------------------User Authentication-----------------------------------*/
 
@@ -31,6 +20,7 @@ userRouter.get("/logout", userLogout)
 userRouter.post("/authenticate", authenticateUser)
 
 userRouter.post("/:userID/student", addStudent)
+
 userRouter.get("/:userID/students", returnStudents)
 
 userRouter.post("/send", sendEmailToStudent)
@@ -41,7 +31,6 @@ userRouter.post("/:userID/profile", addProfile)
 
 userRouter.get("/:userID/profiles", returnProfiles)
 
-// userRouter.get("/profiles/images")
 
 
 
