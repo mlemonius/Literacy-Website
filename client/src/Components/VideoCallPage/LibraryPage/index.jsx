@@ -15,11 +15,10 @@ import {
 import "./libraryPage.css";
 import { connect } from "react-redux";
 import { bindActionCreators } from "redux";
-import { setActiveStory } from "../../actions/credentialActions";
+import { setActiveStory } from "../../../actions/credentialActions";
 import axios from "axios";
 import { withCookies, Cookies } from "react-cookie";
-import sample from "../../Data/children.jpg";
-import { Helmet } from "react-helmet";
+import sample from "../../../Data/children.jpg";
 
 function CustomizedDialog(props) {
   const { handleOpen, open, story, handleChooseStory } = props;
@@ -54,7 +53,6 @@ function CustomizedDialog(props) {
         >
           Read
         </Button>
-        <Button variant="primary">Find Friends</Button>
       </DialogActions>
     </Dialog>
   );
@@ -84,22 +82,7 @@ class LibraryPage extends Component {
   };
 
   componentDidMount = () => {
-    this.authenticate();
     this.getTitles();
-    setInterval(() => this.authenticate(), 60000 * 10);
-  };
-
-  authenticate = async () => {
-    const response = await axios.post(
-      "/server/user/authenticate",
-      {},
-      {
-        withCredentials: true,
-      }
-    );
-    if (response.data.message !== "success") {
-      this.props.history.push("/login");
-    }
   };
 
   handleChooseStory = (title) => {
@@ -108,7 +91,7 @@ class LibraryPage extends Component {
       path: "/",
       maxAge: 86400,
     });
-    this.props.history.push("/read-story");
+    this.props.toggleLeft("read-story");
   };
 
   handleOpen = (action) => {
@@ -122,9 +105,6 @@ class LibraryPage extends Component {
   render() {
     return (
       <>
-        <Helmet>
-          <title>Storybook Academy | Library</title>
-        </Helmet>
         <Typography className="library-page-header" variant="h2">
           Library
         </Typography>

@@ -42,7 +42,7 @@ class LoginPage extends Component {
 
   validateEmail = () => {
     if (
-      /^[a-zA-Z0-9\.]+@(?:[a-zA-Z0-9]+\.)+[A-Za-z0-9]+$/.test(this.state.email)
+      /^[a-zA-Z0-9.]+@(?:[a-zA-Z0-9]+.)+[A-Za-z0-9]+$/.test(this.state.email)
     ) {
       return true;
     } else {

@@ -1,7 +1,7 @@
 import React, { useEffect } from "react";
 
 import Info from "./Info";
-import Footer from "./Footer";
+// import Footer from "./Footer";
 import ArrowDownwardIcon from "@material-ui/icons/ArrowDownward";
 import "./landingPage.css";
 import { Link } from "react-router-dom";
@@ -12,11 +12,6 @@ import { useHistory } from "react-router";
 const LandingPage = () => {
   const history = useHistory();
 
-  useEffect(() => {
-    authenticate();
-    setInterval(() => this.authenticate(), 60000 * 10);
-  }, []);
-
   const authenticate = async () => {
     const response = await axios.post(
       "/server/user/authenticate",
@@ -25,10 +20,17 @@ const LandingPage = () => {
         withCredentials: true,
       }
     );
-    if (response.data.message !== "success") {
+    if (response.data.message === "success") {
+      history.push("/profile");
+    } else {
       history.push("/login");
     }
   };
+
+  useEffect(() => {
+    authenticate();
+    setInterval(() => authenticate(), 60000 * 10);
+  }, []);
 
   return (
     <>

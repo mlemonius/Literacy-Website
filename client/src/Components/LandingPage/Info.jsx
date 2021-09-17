@@ -1,11 +1,11 @@
 import React, { Component } from "react";
 import {
-  Grid,
-  Card,
-  CardContent,
-  CardActions,
+  // Grid,
+  // Card,
+  // CardContent,
+  // CardActions,
+  // Button,
   Typography,
-  Button,
   Container,
 } from "@material-ui/core";
 import "./landingPage.css";

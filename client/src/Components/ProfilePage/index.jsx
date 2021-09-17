@@ -11,9 +11,7 @@ import {
   logout,
 } from "../../actions/credentialActions";
 import axios from "axios";
-import qs from "qs";
 import { withCookies, Cookies } from "react-cookie";
-import { Redirect } from "react-router-dom";
 import { Helmet } from "react-helmet";
 
 class ProfilePage extends Component {
@@ -36,7 +34,9 @@ class ProfilePage extends Component {
 
   handleLogout = () => {
     axios
-      .get("/server/user/logout", { withCredentials: true })
+      .get("/server/user/logout", {
+        withCredentials: true,
+      })
       .then((response) => {
         if (response.data.message === "success") {
           this.props.logout();
@@ -99,7 +99,7 @@ class ProfilePage extends Component {
               }}
             >
               <Link
-                to="/friends-list"
+                to="/meetings"
                 onClick={() => this.handleChooseProfile(child._id)}
               >
                 <Typography

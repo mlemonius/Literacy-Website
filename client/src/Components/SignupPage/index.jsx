@@ -42,7 +42,7 @@ function SignupPage(props) {
   useEffect(() => {
     authenticate();
     setInterval(() => this.authenticate(), 60000 * 10);
-  });
+  }, []);
 
   const authenticate = async () => {
     const response = await axios.post(

@@ -1,0 +1,23 @@
+.videocall-page-outerdiv {
+  margin: 5px;
+}
+
+.videocall-page-leftdiv {
+  width: 50%;
+  float: left;
+}
+
+.videocall-page-rightdiv {
+  margin-left: 50%;
+}
+
+.videocall-iframe-div {
+  width: 100%;
+  margin: 5px;
+}
+
+.videocall-iframe-element {
+  width: 100%;
+  height: 100%;
+  margin: 5px;
+}
