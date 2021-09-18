@@ -8,7 +8,7 @@ import {
   Button,
   Container,
 } from "@material-ui/core";
-import "../../Styles/landingPage.css";
+import "./landingPage.css";
 
 class Info extends Component {
   state = {};

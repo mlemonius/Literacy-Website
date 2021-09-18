@@ -1,0 +1,93 @@
+/* Mobiles size */
+
+@media only screen and (min-device-width: 375px) and (max-device-width: 767px) and (-webkit-min-device-pixel-ratio: 2) {
+  .readpal-container {
+    margin: auto;
+  }
+
+  .library-col {
+    visibility: hidden;
+  }
+
+  .form-col {
+    width: 100%;
+  }
+
+  .MuiTypography-root.readpal-header {
+    font-size: 45px;
+  }
+
+  .MuiTypography-root.greetings-header {
+    font-size: 20px;
+  }
+}
+
+/* --- */
+/* Tablets size */
+
+@media only screen and (min-device-width: 768px) and (max-device-width: 1024px) and (-webkit-min-device-pixel-ratio: 2) {
+  .readpal-container {
+    margin: auto;
+  }
+
+  .library-col {
+    width: 50%;
+  }
+
+  .form-col {
+    width: 50%;
+  }
+
+  .MuiTypography-root.readpal-header {
+    font-size: 35px;
+  }
+
+  .MuiTypography-root.greetings-header {
+    font-size: 20px;
+  }
+}
+
+/* --- */
+/* Desktops size */
+
+@media only screen and (min-width: 1025px) and (-webkit-min-device-pixel-ratio: 2) {
+  .readpal-container {
+    margin: auto;
+  }
+
+  .library-col {
+    margin: auto;
+  }
+
+  .form-col {
+    margin: auto;
+  }
+
+  .MuiTypography-root.readpal-header {
+    font-size: 40px;
+  }
+
+  .MuiTypography-root.greetings-header {
+    font-size: 20px;
+  }
+}
+
+.readpal-container {
+  margin: auto;
+}
+
+.library-col {
+  margin: auto;
+}
+
+.form-col {
+  margin: auto;
+}
+
+.MuiTypography-root.readpal-header {
+  font-size: 40px;
+}
+
+.MuiTypography-root.greetings-header {
+  font-size: 20px;
+}

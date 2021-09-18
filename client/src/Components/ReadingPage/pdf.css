@@ -1,0 +1,20 @@
+.pdf-display-container {
+  max-width: 40%;
+  width: 40%;
+  position: fixed;
+  left: 2%;
+  top: 25px;
+  padding: 10px;
+  margin-bottom: 100px;
+}
+
+.MuiInputBase-input.MuiInput-input {
+  padding: 6px;
+}
+
+.pdf-display-loading {
+  margin: auto;
+  padding: 25%;
+  justify-content: center;
+  text-align: center;
+}

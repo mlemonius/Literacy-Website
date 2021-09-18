@@ -1,13 +1,13 @@
 import { React, Component } from "react";
-import { Checkbox, Button } from "@material-ui/core";
-import axios from "axios";
+import { Checkbox } from "@material-ui/core";
+import { CountryDropdown } from "react-country-region-selector";
 
 class Signup extends Component {
   state = {};
 
-  resendCode = () => {
-    axios.get("").then((response) => {});
-  };
+  // resendCode = () => {
+  //   axios.get("").then((response) => {});
+  // };
 
   render() {
     return (
@@ -24,13 +24,13 @@ class Signup extends Component {
             value={this.props.otp}
             onChange={(e) => this.props.setOtp(e.target.value)}
           />
-          <Button
+          {/* <Button
             variant="contained"
             style={{ width: 130, margin: 10 }}
             onClick={this.resendCode}
           >
             Resend Code
-          </Button>
+          </Button> */}
 
           <label>Password</label>
           <input
@@ -39,7 +39,6 @@ class Signup extends Component {
             value={this.props.password}
             onChange={(e) => this.props.setPassword(e.target.value)}
           />
-          <p className="errorMsg">{this.props.passwordError}</p>
 
           <label>First Name</label>
           <input
@@ -49,7 +48,6 @@ class Signup extends Component {
             value={this.props.firstname}
             onChange={(e) => this.props.setFirstname(e.target.value)}
           />
-          <p className="errorMsg">{this.props.firstnameError}</p>
 
           <label>Last Name</label>
           <input
@@ -58,7 +56,6 @@ class Signup extends Component {
             value={this.props.lastname}
             onChange={(e) => this.props.setLastname(e.target.value)}
           />
-          <p className="errorMsg">{this.props.lastnameError}</p>
 
           <label>Organization</label>
           <input
@@ -67,25 +64,19 @@ class Signup extends Component {
             value={this.props.organization}
             onChange={(e) => this.props.setOrganization(e.target.value)}
           />
-          <p className="errorMsg">{this.props.organizationError}</p>
 
           <label>Country</label>
-          <input
+          {/* <input
             type="text"
             required
             value={this.props.country}
             onChange={(e) => this.props.setCountry(e.target.value)}
+          /> */}
+          <CountryDropdown
+            id="country-dropdown"
+            value={this.props.country}
+            onChange={(val) => this.props.setCountry(val)}
           />
-          <p className="errorMsg">{this.props.countryError}</p>
-
-          {/* <label>Email Address</label>
-          <input
-            type="text"
-            required
-            value={this.props.email}
-            onChange={(e) => this.props.setEmail(e.target.value)}
-          />
-          <p className="errorMsg">{this.props.emailError}</p> */}
 
           <div>
             <p style={{ fontSize: 22, display: "inline-block" }}>
