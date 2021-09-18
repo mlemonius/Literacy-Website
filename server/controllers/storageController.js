@@ -10,7 +10,7 @@ const getStory = (req, res) => {
     Bucket: 'library.stories',
     Key: `stories/${title}.pdf`
   }
-  s3.getObject(bucketParams).createReadStream().pipe(res).on("err", (err) => {
+  s3.getObject(bucketParams).createReadStream().pipe(res).on("err", (err) => { // get the story based on the given title and pipe it to the response
     console.log(err)
   })
 }
