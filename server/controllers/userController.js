@@ -16,7 +16,7 @@ const transporter = nodemailer.createTransport({   /// this is the email I creat
   service: 'gmail',
   auth: {
     user: 'readpalishere@gmail.com',
-    pass: process.env.GMAIL_PS
+    pass: 'youcannotbreakit'
   }
 });
 
@@ -26,17 +26,19 @@ const userLogin = (req, res, next) => {
     if (err) {
       return next(err); // will generate a 500 error
     }
+
     if (!user) {
       return res.json({
         message: "invalid",
         userID: null
       })
     }
+
     req.login(user, loginErr => {
       if (loginErr) {
         return next(loginErr);
       }
-      //console.log(req.session);
+
       return res.json({
         message: "success",
         userID: req.user._id,
