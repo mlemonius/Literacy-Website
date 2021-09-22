@@ -407,7 +407,7 @@ const sendEmailToStudent = async (req, res) => {
           from: 'readpalishere@gmail.com',
           to: `${email}`,
           subject: 'Reading Time',
-          html: `<h1>Hey friend</h1><p>Please go to this link: <b>${response.data.roomUrl}</b> to join the call with your Readpal!</p>`
+          html: `<h1>Hey friend</h1><p>Please paste this line on the join call box: <b>${response.data.roomUrl.slice(40)}</b> to join the call with your Readpal!</p>`
         }
 
         transporter.sendMail(mailOptions, function (error) {
