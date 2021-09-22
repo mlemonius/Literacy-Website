@@ -3,7 +3,8 @@ import {createRequire} from 'module';
 const require = createRequire(import.meta.url);
 const mongoose = require("mongoose");
 // const findOrCreate = require('mongoose-findorcreate');
-const passportLocalmongoose = require("passport-local-mongoose");
+const passportLocalMongoose = require("passport-local-mongoose");
+const bcrypt   = require('bcrypt-nodejs');
 
 
 const userSchema = new mongoose.Schema({
@@ -18,8 +19,11 @@ const userSchema = new mongoose.Schema({
   // googleId: String
 });
 
-userSchema.plugin(passportLocalmongoose);
-// userSchema.plugin(findOrCreate);
+const options = {
+  usernameLowerCase: true
+}
+
+userSchema.plugin(passportLocalMongoose, options);
 
 const User = new mongoose.model("User", userSchema);
 export default User;
