@@ -4,7 +4,6 @@ const require = createRequire(import.meta.url);
 const mongoose = require("mongoose");
 // const findOrCreate = require('mongoose-findorcreate');
 const passportLocalMongoose = require("passport-local-mongoose");
-const bcrypt   = require('bcrypt-nodejs');
 
 
 const userSchema = new mongoose.Schema({
@@ -14,9 +13,14 @@ const userSchema = new mongoose.Schema({
   organization: String,
   country: String,
   password: String,
-  profiles:[{ age: Number, color: String, animal: String}],
-  students:[{email: String}]
-  // googleId: String
+  profiles:[{
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "Profile"
+  }],
+  students:[{
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "Profile"
+  }]
 });
 
 const options = {

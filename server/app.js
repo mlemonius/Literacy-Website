@@ -29,12 +29,12 @@ app.use(cors(
 
 app.use(
   session({
-    secret: process.env.SECRET,
-    resave: false,
-    saveUninitialized: false,
     store: MongoStore.create({
       mongoUrl: process.env.CONNECTION_URL,
     }),
+    secret: process.env.SECRET,
+    resave: false,
+    saveUninitialized: false,
     cookie: {
       httpOnly: false
     }
@@ -86,11 +86,11 @@ passport.deserializeUser(User.deserializeUser());
 app.use("/server/user", userRouter)
 app.use("/server/library", storageRouter)
 
-let __dirname = path.resolve();
-app.use(express.static(path.join(__dirname, "build")));
-app.get("/*", (req, res) => {  
-  res.sendFile(path.join(__dirname, "build", "index.html"));
-});
+// let __dirname = path.resolve();
+// app.use(express.static(path.join(__dirname, "build")));
+// app.get("/*", (req, res) => {  
+//   res.sendFile(path.join(__dirname, "build", "index.html"));
+// });
 
 let port = process.env.PORT;
 if (port == null || port == "") {
