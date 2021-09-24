@@ -186,9 +186,9 @@ const addStudent = async (req, res) => {
     const student = req.body.student
 
     const foundUser = await User.findById({ _id: userID }).catch(err => { console.log("Finding user error when adding student: " + err) }) // find the user the wants to add friend 
-    const foundStudent = await Profile.findOne({ name: student }).catch(err => { console.log("Finding student error when adding student: " + err) }) // find the student that user wants to add friend
+    const foundStudent = await Profile.findOne({ name: student }).populate("parent").catch(err => { console.log("Finding student error when adding student: " + err) }) // find the student that user wants to add friend
 
-    if (foundUser == null || foundStudent == null) {  // student and user both have to exist first 
+    if (foundUser == null || foundStudent == null || foundStudent.parent === foundUser._id) {  // student and user both have to exist first, and teacher cannot add his/her own child as a student.
       res.json({ message: "invalid" })
     } else {
       const foundID = foundUser.students.find(student => student._id.toString() === foundStudent._id.toString())  // find if the user already added student 
@@ -219,10 +219,10 @@ const addFriend = async (req, res) => {
     const profile = req.body.profile
     const profileToAdd = req.body.profileToAdd
 
-    const foundProfile = await Profile.findOne({ name: profile }).catch(err => { console.log("Finding profile error when adding friend: " + err) }) // find the profile
-    const foundProfileToAdd = await Profile.findOne({ name: profileToAdd }).catch(err => { console.log("Finding friend to add error : " + err) }) // find profile to add
+    const foundProfile = await Profile.findOne({ name: profile }).populate("parent").catch(err => { console.log("Finding profile error when adding friend: " + err) }) // find the profile
+    const foundProfileToAdd = await Profile.findOne({ name: profileToAdd }).populate("parent").catch(err => { console.log("Finding friend to add error : " + err) }) // find profile to add
 
-    if (foundProfile == null || foundProfileToAdd == null || profile === profileToAdd) {  // student and user both have to exist first 
+    if (foundProfile == null || foundProfileToAdd == null || profile === profileToAdd || foundProfile.parent === foundProfileToAdd.parent) {  // student and user both have to exist first, they cannot add friend to themselves and 2 profiles with the same parent cannot be friends.
       res.json({ message: "invalid" })
     } else {
       const foundFriend = foundProfile.friends.find(friend => friend._id.toString() === foundProfileToAdd._id.toString()) // find if the user already added friend to this profile
