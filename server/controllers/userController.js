@@ -160,7 +160,7 @@ const addProfile = async (req, res) => {  // done
         //foundUser = await User.findById({_id: foundUser._id}).populate("profiles")
         res.json({
           message: "success",
-          profileID: childProfile._id,
+          profileID: childProfile.name,
           //profile: foundUser
         })
       } else {
@@ -180,13 +180,13 @@ const addProfile = async (req, res) => {  // done
 const addStudent = async (req, res) => {
   const userID = req.params.userID
   try {
-    if (!req.body.name) {
+    if (!req.body.student) {
       return res.json({ message: "missing body" })
     }
-    const name = req.body.name
+    const student = req.body.student
 
     const foundUser = await User.findById({ _id: userID }).catch(err => { console.log("Finding user error when adding student: " + err) }) // find the user the wants to add friend 
-    const foundStudent = await Profile.findOne({ name: name }).catch(err => { console.log("Finding student error when adding student: " + err) }) // find the student that user wants to add friend
+    const foundStudent = await Profile.findOne({ name: student }).catch(err => { console.log("Finding student error when adding student: " + err) }) // find the student that user wants to add friend
 
     if (foundUser == null || foundStudent == null) {  // student and user both have to exist first 
       res.json({ message: "invalid" })
@@ -199,7 +199,7 @@ const addStudent = async (req, res) => {
         await foundStudent.save().catch(err => console.log("Add teacher to the student profile error: " + err))
         res.json({
           message: "success",
-          studentID: foundStudent._id,
+          studentID: foundStudent.name,
           //user: foundUser
         })
       } else {
@@ -394,14 +394,14 @@ const authenticateUser = (req, res) => {
   }
 }
 
-const sendEmailToStudent = async (req, res) => {
+const sendEmailToCallee = async (req, res) => {
 
-  if (!req.body.email || !req.body.username) {
+  if (!req.body.callee || !req.body.username) {
     return res.json({ message: "missing body" })
   }
 
-  const { email, username } = req.body
-  const foundUser = await User.findOne({ username: email.toLowerCase() }).catch(err => { console.log("Finding user error: " + err) }) // find the user
+  const { callee, username } = req.body
+  const foundCallee = await Profile.findOne({ name: callee }).populate("parent").catch(err => { console.log("Finding callee error: " + err) }) // find the user
 
   const foundCaller = await User.findById({ _id: username }).catch(err => console.log("Finding caller error: " + err))// find the student that user wants to call
 
@@ -422,12 +422,12 @@ const sendEmailToStudent = async (req, res) => {
     }
   }
 
-  if (foundUser !== null && foundCaller !== null) {
+  if (foundCallee !== null && foundCaller !== null) {
     axios.post("https://api.whereby.dev/v1/meetings", requestBody, configBody).then(response => {  // call the whereby api to create the room to call
       if (response.status == 201) {
         const mailOptions = {  // use this email to send the room url to the callee
           from: 'readpalishere@gmail.com',
-          to: `${email}`,
+          to: `${foundCallee.parent.username}`,
           subject: 'Reading Time',
           html: `<h1>Hey friend</h1><p>Please paste this line on the join call box: <b>${response.data.roomUrl.slice(40)}</b> to join the call with your Readpal!</p>`
         }
@@ -460,6 +460,6 @@ export {
   authenticateUser,
   addStudent,
   returnStudents,
-  sendEmailToStudent,
+  sendEmailToCallee,
   addFriend
 }
