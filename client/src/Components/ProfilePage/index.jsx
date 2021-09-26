@@ -42,7 +42,12 @@ class ProfilePage extends Component {
           this.props.logout();
           this.props.cookies.remove("userID");
           this.props.cookies.remove("profileID");
-          this.props.cookies.set("connect.sid", "", { path: "/", maxAge: 0 });
+          this.props.cookies.set("connect.sid", "", {
+            path: "/",
+            maxAge: 0,
+            sameSite: "none",
+            secure: true,
+          });
           this.props.cookies.remove("connect.sid");
           this.props.history.push("/login");
         }
@@ -54,6 +59,8 @@ class ProfilePage extends Component {
     this.props.cookies.set("profileID", id, {
       path: "/",
       maxAge: 86400,
+      sameSite: "none",
+      secure: true,
     });
   };
 

@@ -30,6 +30,7 @@ function SignupPage(props) {
   const [password, setPassword] = useState("");
   const [checked, setChecked] = useState(false);
   const [open, setOpen] = useState(false);
+  const [submit, setSubmit] = useState(false);
 
   const handleClickOpen = () => {
     setOpen(true);
@@ -58,6 +59,7 @@ function SignupPage(props) {
   };
 
   const handleSignup = () => {
+    setSubmit(true);
     if (checked) {
       const cred = {
         otp: otp,
@@ -82,9 +84,10 @@ function SignupPage(props) {
             props.signup(response.data.userID, props.email);
             history.push("/child-profile-form");
           } else {
-            // this.setState({ valid: false });
+            setSubmit(false);
           }
         } else {
+          setSubmit(false);
         }
       });
     } else {
@@ -117,6 +120,7 @@ function SignupPage(props) {
             handleSignup={handleSignup}
             checked={checked}
             setChecked={setChecked}
+            submit={submit}
           />
         )}
         <Dialog

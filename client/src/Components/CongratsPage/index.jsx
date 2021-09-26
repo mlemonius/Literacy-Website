@@ -3,7 +3,7 @@ import { Typography } from "@material-ui/core";
 import { Link } from "react-router-dom";
 import "./congrats.css";
 import { connect } from "react-redux";
-import ProfileIcon from "../../Data/green_lion.jpg";
+import ProfileIcon from "../../Data/congrat.jpeg";
 import { Helmet } from "react-helmet";
 
 const CongratsPage = (props) => {

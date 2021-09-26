@@ -90,6 +90,8 @@ class LibraryPage extends Component {
     this.props.cookies.set("activeStory", title, {
       path: "/",
       maxAge: 86400,
+      sameSite: "none",
+      secure: true,
     });
     this.props.toggleLeft("read-story");
   };

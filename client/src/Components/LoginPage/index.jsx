@@ -20,6 +20,7 @@ class LoginPage extends Component {
     email: "",
     password: "",
     valid: false,
+    submit: false,
   };
 
   setEmail = (value) => {
@@ -72,6 +73,7 @@ class LoginPage extends Component {
   };
 
   handleLogin = async () => {
+    this.setState({ submit: true });
     const response = await axios.post(
       "/server/user/login",
       qs.stringify({
@@ -91,12 +93,16 @@ class LoginPage extends Component {
         this.props.cookies.set("userID", response.data.userID, {
           path: "/",
           maxAge: 86400,
+          sameSite: "none",
+          secure: true,
         });
         this.props.history.push("/profile");
       } else {
         // this.setState({ valid: false });
+        this.setState({ submit: false });
       }
     } else {
+      this.setState({ submit: false });
     }
   };
 
@@ -123,6 +129,7 @@ class LoginPage extends Component {
             validateEmail={this.validateEmail}
             valid={this.state.valid}
             setValid={this.setValid}
+            submit={this.state.submit}
           />
         </div>
       </>

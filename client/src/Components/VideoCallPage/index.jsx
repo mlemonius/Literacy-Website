@@ -11,6 +11,11 @@ class VideoCallPage extends Component {
   state = {
     toggleLeft: "library",
     toggleRight: "friends-list",
+    roomID: "",
+  };
+
+  joinRoom = (id) => {
+    this.setState({ roomID: id });
   };
 
   setLeft = (value) => {
@@ -55,9 +60,15 @@ class VideoCallPage extends Component {
           </div>
           <div className="videocall-page-rightdiv">
             {this.state.toggleRight === "friends-list" ? (
-              <FriendsList toggleRight={(value) => this.setRight(value)} />
+              <FriendsList
+                toggleRight={(value) => this.setRight(value)}
+                joinRoom={this.joinRoom}
+              />
             ) : (
-              <VideoCall toggleRight={(value) => this.setRight(value)} />
+              <VideoCall
+                toggleRight={(value) => this.setRight(value)}
+                roomID={this.state.roomID}
+              />
             )}
           </div>
         </div>

@@ -12,23 +12,27 @@ const VideoCall = (props) => {
   const [cookies] = useCookies();
 
   useEffect(() => {
-    async function fetchData() {
-      const response = await axios({
-        method: "post",
-        url: "/server/user/send",
-        data: qs.stringify({
-          username: username === "" ? cookies.userID : username,
-          email: friendEmail,
-        }),
-        headers: {
-          "content-type": "application/x-www-form-urlencoded;charset=utf-8",
-        },
-      });
-      if (response.data.message === "success") {
-        setHostURL(response.data.hostRoomUrl);
+    if (props.roomID === "") {
+      async function fetchData() {
+        const response = await axios({
+          method: "post",
+          url: "/server/user/send",
+          data: qs.stringify({
+            username: username === "" ? cookies.userID : username,
+            email: friendEmail,
+          }),
+          headers: {
+            "content-type": "application/x-www-form-urlencoded;charset=utf-8",
+          },
+        });
+        if (response.data.message === "success") {
+          setHostURL(response.data.hostRoomUrl);
+        }
       }
+      fetchData();
+    } else {
+      setHostURL(`https://storybookacademy101.whereby.com/${props.roomID}`);
     }
-    fetchData();
   }, [username, friendEmail]);
 
   return (

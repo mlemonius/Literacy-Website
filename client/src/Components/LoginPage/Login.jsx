@@ -40,11 +40,21 @@ class Login extends Component {
     return (
       <section className="login">
         <div className="loginContainer" style={{ marginTop: "10%" }}>
-          <h1>Log In</h1>
+          {this.props.submit ? <h1>Logging In...</h1> : <h1>Log In</h1>}
           <label>Email</label>
           <input
             type="text"
             autoFocus
+            disabled={this.props.submit}
+            style={
+              this.props.submit
+                ? {
+                    backgroundColor: "#D3D3D3",
+                    color: "grey",
+                    cursor: "not-allowed",
+                  }
+                : {}
+            }
             required
             value={this.props.email}
             onChange={(e) => this.props.setEmail(e.target.value)}
@@ -54,6 +64,16 @@ class Login extends Component {
           <label>Password</label>
           <input
             type="password"
+            disabled={this.props.submit}
+            style={
+              this.props.submit
+                ? {
+                    backgroundColor: "#D3D3D3",
+                    color: "grey",
+                    cursor: "not-allowed",
+                  }
+                : {}
+            }
             required
             value={this.props.password}
             onChange={(e) => this.props.setPassword(e.target.value)}
@@ -64,7 +84,20 @@ class Login extends Component {
           <Link to="/forgot-password">Forgot your password?</Link>
 
           <div className="btnContainer">
-            <button onClick={this.handleSubmit}>Log In</button>
+            <button
+              onClick={this.handleSubmit}
+              disabled={this.props.submit}
+              style={
+                this.props.submit
+                  ? {
+                      backgroundColor: "grey",
+                      cursor: "not-allowed",
+                    }
+                  : {}
+              }
+            >
+              Log In
+            </button>
             <p>
               Not a Member yet?
               <span>

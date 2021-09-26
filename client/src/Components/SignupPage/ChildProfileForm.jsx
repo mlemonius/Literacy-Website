@@ -18,6 +18,8 @@ import { setNewProfile } from "../../actions/credentialActions";
 import { connect } from "react-redux";
 import { bindActionCreators } from "redux";
 import { Helmet } from "react-helmet";
+import { withCookies, Cookies } from "react-cookie";
+import { instanceOf } from "prop-types";
 
 const ages = ["7", "8", "9"];
 const colors = ["Blue", "Red", "Green", "Pink", "Purple", "Orange", "Yellow"];
@@ -35,17 +37,23 @@ const animals = [
 ];
 
 class ChildProfileForm extends Component {
+  static propTypes = {
+    cookies: instanceOf(Cookies).isRequired,
+  };
+
   state = {
     age: "",
     color: "",
     animal: "",
     valid: false,
     open: false,
+    submit: false,
   };
 
   componentDidUpdate = (prevProps, prevState) => {
     if (
       prevState.valid === false &&
+      prevState.submit === false &&
       this.state.age !== "" &&
       this.state.color !== "" &&
       this.state.animal !== ""
@@ -74,31 +82,40 @@ class ChildProfileForm extends Component {
 
   handleSubmit = () => {
     if (this.state.valid) {
+      this.setState({ submit: true });
       const info = {
         age: this.state.age,
         color: this.state.color,
         animal: this.state.animal,
       };
-      // console.log(info); //send info to backend!
+
+      const id =
+        this.props.userID !== ""
+          ? this.props.userID
+          : this.props.cookies.get("userID");
 
       axios({
         method: "post",
-        // url: `https://secure-bastion-85489.herokuapp.com/server/${this.props.userID}/profile`,
-        url: `/server/user/${this.props.userID}/profile`,
+        url: `/server/user/${id}/profile`,
         data: qs.stringify(info),
         headers: {
           "content-type": "application/x-www-form-urlencoded;charset=utf-8",
         },
       }).then((response) => {
-        if ((response.data.message = "success")) {
-          this.props.setNewProfile(
-            response.data.profileID,
-            this.state.color,
-            this.state.animal,
-            this.state.age
-          );
-          this.props.history.push("/congrats");
+        if (response.status === 200) {
+          if ((response.data.message = "success")) {
+            this.props.setNewProfile(
+              response.data.profileID,
+              this.state.color,
+              this.state.animal,
+              this.state.age
+            );
+            this.props.history.push("/congrats");
+          } else {
+            this.setState({ submit: false });
+          }
         } else {
+          this.setState({ submit: false });
         }
       });
     } else {
@@ -168,7 +185,20 @@ class ChildProfileForm extends Component {
               </Grid>
             </Grid>
           </form>
-          <button onClick={this.handleSubmit}>Submit</button>
+          <button
+            onClick={this.handleSubmit}
+            disabled={this.state.submit}
+            style={
+              this.state.submit
+                ? {
+                    backgroundColor: "grey",
+                    cursor: "not-allowed",
+                  }
+                : {}
+            }
+          >
+            Submit
+          </button>
           <Dialog
             open={this.state.open}
             onClose={this.handleClose}
