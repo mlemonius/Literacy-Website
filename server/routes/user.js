@@ -1,5 +1,5 @@
 import express from "express";
-import { verifyEmailForSignup, userSignup, userLogin, addProfile, returnProfiles, verifyEmailForReset, resetPassword, userLogout, authenticateUser, addStudent, returnStudents, sendEmailToCallee, addFriend } from "../controllers/userController.js"
+import { verifyEmailForSignup, userSignup, userLogin, addProfile, returnProfiles, verifyEmailForReset, resetPassword, userLogout, authenticateUser, addStudent, returnStudents, sendEmailToCallee, addFriend, returnFriends } from "../controllers/userController.js"
 
 const userRouter = express.Router();
 
@@ -26,6 +26,8 @@ userRouter.get("/:userID/students", returnStudents)
 userRouter.post("/send", sendEmailToCallee)
 
 userRouter.post("/addFriend", addFriend)
+
+userRouter.get("/:profileID/friends", returnFriends)
 
 /*-----------------------User Profile CRUD Operations-----------------------------------*/
 

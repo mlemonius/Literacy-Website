@@ -361,6 +361,16 @@ const returnProfiles = async (req, res) => {
   }
 }
 
+const returnFriends = async (req, res) => {
+  const profileID = req.params.profileID
+  const foundProfile = await Profile.findOne({name: profileID}).populate("friends", "-_id name age color animal").catch(err => console.log("Finding profile id error when returning friends: " + error))
+  if(foundProfile !== null) {
+    res.json({message: "success", friends: foundProfile.friends})
+  }else {
+    res.json({message: "invalid", friends: null})
+  }
+}
+
 // This method is get called from the returnProfiles method
 const addImageToProfile = (bucketParams, profile) => {
   return new Promise((resolve) => {
@@ -461,5 +471,6 @@ export {
   addStudent,
   returnStudents,
   sendEmailToCallee,
-  addFriend
+  addFriend,
+  returnFriends
 }
