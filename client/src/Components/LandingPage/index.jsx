@@ -1,14 +1,42 @@
-import React, { Component } from "react";
+import React, { useEffect } from "react";
 
 import Info from "./Info";
-import Footer from "./Footer";
+// import Footer from "./Footer";
 import ArrowDownwardIcon from "@material-ui/icons/ArrowDownward";
 import "./landingPage.css";
 import { Link } from "react-router-dom";
+import { Helmet } from "react-helmet";
+import axios from "axios";
+import { useHistory } from "react-router";
 
-class LandingPage extends Component {
-  render() {
-    return (
+const LandingPage = () => {
+  const history = useHistory();
+
+  const authenticate = async () => {
+    const response = await axios.post(
+      "/server/user/authenticate",
+      {},
+      {
+        withCredentials: true,
+      }
+    );
+    if (response.data.message === "success") {
+      history.push("/profile");
+    } else {
+      history.push("/login");
+    }
+  };
+
+  useEffect(() => {
+    authenticate();
+    setInterval(() => authenticate(), 60000 * 10);
+  }, []);
+
+  return (
+    <>
+      <Helmet>
+        <title>Storybook Academy | Welcome</title>
+      </Helmet>
       <div className="LandingDiv">
         <Info />
         <div style={{ margin: 40, marginBottom: 5, textAlign: "center" }}>
@@ -22,8 +50,8 @@ class LandingPage extends Component {
         {/* <br /> */}
         {/* <Footer /> */}
       </div>
-    );
-  }
-}
+    </>
+  );
+};
 
 export default LandingPage;

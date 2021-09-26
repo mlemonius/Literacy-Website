@@ -8,7 +8,7 @@ import { login } from "../../actions/credentialActions";
 import { connect } from "react-redux";
 import { bindActionCreators } from "redux";
 import { withCookies, Cookies } from "react-cookie";
-import { Redirect } from "react-router-dom";
+import { Helmet } from "react-helmet";
 
 class LoginPage extends Component {
   static propTypes = {
@@ -20,6 +20,7 @@ class LoginPage extends Component {
     email: "",
     password: "",
     valid: false,
+    submit: false,
   };
 
   setEmail = (value) => {
@@ -42,7 +43,7 @@ class LoginPage extends Component {
 
   validateEmail = () => {
     if (
-      /^[a-zA-Z0-9\.]+@(?:[a-zA-Z0-9]+\.)+[A-Za-z0-9]+$/.test(this.state.email)
+      /^[a-zA-Z0-9.]+@(?:[a-zA-Z0-9]+.)+[A-Za-z0-9]+$/.test(this.state.email)
     ) {
       return true;
     } else {
@@ -58,64 +59,84 @@ class LoginPage extends Component {
     }
   };
 
-  handleLogin = () => {
-    axios({
-      method: "post",
-      url: "/server/user/login",
-      data: qs.stringify({
+  componentDidMount = async () => {
+    const response = await axios.post(
+      "/server/user/authenticate",
+      {},
+      {
+        withCredentials: true,
+      }
+    );
+    if (response.data.message === "success") {
+      this.props.history.push("/profile");
+    }
+  };
+
+  handleLogin = async () => {
+    this.setState({ submit: true });
+    const response = await axios.post(
+      "/server/user/login",
+      qs.stringify({
         username: this.state.email,
         password: this.state.password,
       }),
-      headers: {
-        "content-type": "application/x-www-form-urlencoded;charset=utf-8",
-      },
-    }).then((response) => {
-      console.log(response.headers);
-      if (response.status === 200) {
-        if (response.data.message === "success") {
-          this.props.login(response.data.userID, this.state.email);
-          this.props.cookies.set("userID", response.data.userID, {
-            path: "/",
-            maxAge: 86400,
-          });
-          this.props.history.push("/profile");
-        } else {
-          // this.setState({ valid: false });
-        }
-      } else {
+      {
+        withCredentials: true,
+        headers: {
+          "content-type": "application/x-www-form-urlencoded;charset=utf-8",
+        },
       }
-    });
+    );
+    if (response.status === 200) {
+      if (response.data.message === "success") {
+        this.props.login(response.data.userID, this.state.email);
+        this.props.cookies.set("userID", response.data.userID, {
+          path: "/",
+          maxAge: 86400,
+          sameSite: "none",
+          secure: true,
+        });
+        this.props.history.push("/profile");
+      } else {
+        // this.setState({ valid: false });
+        this.setState({ submit: false });
+      }
+    } else {
+      this.setState({ submit: false });
+    }
   };
 
   setValid = (value) => {
     this.setState({ valid: value });
   };
 
-  handleLogout = () => {
-    axios.post("", {}).then((response) => {});
-    this.props.cookies.remove("userID");
-    console.log("Log out");
-  };
-
   render() {
-    return this.props.cookies.get("userID") === "undefined" ||
-      this.props.cookies.get("userID") === undefined ||
-      this.props.cookies.get("userID") === "" ? (
-      <div className="LoginPage">
-        <Login
-          email={this.state.email}
-          setEmail={this.setEmail}
-          password={this.state.password}
-          setPassword={this.setPassword}
-          handleLogin={this.handleLogin}
-          validateEmail={this.validateEmail}
-          valid={this.state.valid}
-          setValid={this.setValid}
-        />
-      </div>
-    ) : (
-      <Redirect to="/profile" />
+    return (
+      // this.props.cookies.get("userID") === "undefined" ||
+      //   this.props.cookies.get("userID") === undefined ||
+      //   this.props.cookies.get("userID") === "" ? (
+      <>
+        <Helmet>
+          <title>Storybook Academy | Login</title>
+        </Helmet>
+        <div className="LoginPage">
+          <Login
+            email={this.state.email}
+            setEmail={this.setEmail}
+            password={this.state.password}
+            setPassword={this.setPassword}
+            handleLogin={this.handleLogin}
+            validateEmail={this.validateEmail}
+            valid={this.state.valid}
+            setValid={this.setValid}
+            submit={this.state.submit}
+          />
+        </div>
+      </>
     );
+    // : (
+    //   <Redirect to="/profile" />
+    // );
   }
 }
 

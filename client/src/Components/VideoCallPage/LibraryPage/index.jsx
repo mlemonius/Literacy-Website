@@ -5,16 +5,58 @@ import {
   ListItem,
   Divider,
   ListItemText,
-  ListItemAvatar,
-  Avatar,
+  Button,
   Typography,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
 } from "@material-ui/core";
 import "./libraryPage.css";
 import { connect } from "react-redux";
 import { bindActionCreators } from "redux";
-import { setActiveStory } from "../../actions/credentialActions";
+import { setActiveStory } from "../../../actions/credentialActions";
 import axios from "axios";
 import { withCookies, Cookies } from "react-cookie";
+import sample from "../../../Data/children.jpg";
+
+function CustomizedDialog(props) {
+  const { handleOpen, open, story, handleChooseStory } = props;
+
+  return (
+    <Dialog open={open} onClose={() => handleOpen(false)} maxWidth="lg">
+      <DialogTitle>
+        <Typography variant="h3">{story.title}</Typography>
+      </DialogTitle>
+      <DialogContent>
+        <Typography style={{ fontSize: 25 }}>Author: {story.author}</Typography>
+        <Typography style={{ fontSize: 25 }}>Pages: {story.pages}</Typography>
+        <img
+          // src={story.image}
+          src={sample}
+          alt="thumbnail"
+          style={{
+            width: 200,
+            height: 200,
+            margin: 20,
+          }}
+        />
+        <div style={{ fontSize: 20, marginTop: 15 }}>{story.description}</div>
+      </DialogContent>
+      <DialogActions>
+        <Button variant="primary" onClick={() => handleOpen(false)}>
+          Back
+        </Button>
+        <Button
+          variant="primary"
+          onClick={() => handleChooseStory(story.title)}
+        >
+          Read
+        </Button>
+      </DialogActions>
+    </Dialog>
+  );
+}
 
 class LibraryPage extends Component {
   static propTypes = {
@@ -22,6 +64,13 @@ class LibraryPage extends Component {
   };
   state = {
     titles: [],
+    open: false,
+    chosenStory: {
+      title: "",
+      description: "",
+      author: "",
+      ages: [""],
+    },
   };
 
   getTitles = () => {
@@ -32,17 +81,27 @@ class LibraryPage extends Component {
     });
   };
 
-  componentDidMount() {
+  componentDidMount = () => {
     this.getTitles();
-  }
+  };
 
-  handleChooseStory = (id, title) => {
-    this.props.setActiveStory(id, title);
+  handleChooseStory = (title) => {
+    this.props.setActiveStory(title);
     this.props.cookies.set("activeStory", title, {
       path: "/",
       maxAge: 86400,
+      sameSite: "none",
+      secure: true,
     });
-    this.props.history.push("/read-story");
+    this.props.toggleLeft("read-story");
+  };
+
+  handleOpen = (action) => {
+    this.setState({ open: action });
+  };
+
+  handlePreview = (story) => {
+    this.setState({ open: true, chosenStory: story });
   };
 
   render() {
@@ -60,7 +119,7 @@ class LibraryPage extends Component {
                 <ListItem
                   alignItems="flex-start"
                   onClick={() => {
-                    this.handleChooseStory(index, story.title);
+                    this.handlePreview(story);
                   }}
                   style={{ cursor: "pointer" }}
                   className="lib-story"
@@ -81,14 +140,11 @@ class LibraryPage extends Component {
                           Author: {story.author}
                         </Typography>
 
-                        <Typography variant="body2">
-                          Publisher: {story.publisher}
+                        <Typography variant="body1">
+                          Pages: {story.pages}
                         </Typography>
-                        <Typography variant="body2">
-                          Illustrator: {story.illustrator}
-                        </Typography>
-                        <Typography variant="body2">
-                          {story.description}
+                        <Typography variant="body1">
+                          Ages: {story.ages[0]} and {story.ages[1]}
                         </Typography>
                       </React.Fragment>
                     }
@@ -99,6 +155,12 @@ class LibraryPage extends Component {
             ))}
           </List>
         </div>
+        <CustomizedDialog
+          handleOpen={this.handleOpen}
+          open={this.state.open}
+          story={this.state.chosenStory}
+          handleChooseStory={this.handleChooseStory}
+        />
       </>
     );
   }
