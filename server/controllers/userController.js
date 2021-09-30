@@ -342,7 +342,7 @@ const returnProfiles = async (req, res) => {
       foundUser.profiles.map(async (profile, index, profilesList) => {    // for each profile, attach the an image to the profile by calling to the Aws S3 
         const bucketParams = {          //find the image that match the profile
           Bucket: 'library.stories',
-          Key: `profileImages/${profile.animal.toLowerCase()}_-_${profile.color.toLowerCase()}1024_1.jpg`
+          Key: `profileImages/${profile.color.toLowerCase()}_${profile.animal.toLowerCase()}.png`
         }
         await addImageToProfile(bucketParams, profile) // add image to the given profile
       })
