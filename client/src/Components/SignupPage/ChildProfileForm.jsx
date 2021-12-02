@@ -45,18 +45,22 @@ class ChildProfileForm extends Component {
     age: "",
     color: "",
     animal: "",
+    nickname: "",
     valid: false,
     open: false,
     submit: false,
+    match: false,
   };
 
   componentDidUpdate = (prevProps, prevState) => {
     if (
-      prevState.valid === false &&
-      prevState.submit === false &&
+      !prevState.valid &&
+      !prevState.submit &&
+      !prevState.match &&
       this.state.age !== "" &&
       this.state.color !== "" &&
-      this.state.animal !== ""
+      this.state.animal !== "" &&
+      this.state.nickname !== ""
     ) {
       this.setState({ valid: true });
     }
@@ -67,7 +71,12 @@ class ChildProfileForm extends Component {
   };
 
   handleClose = () => {
-    this.setState({ open: false });
+    this.setState({ open: false, match: false });
+  };
+
+  handleNickname = (e) => {
+    if (e.key !== "Enter" && e.keyCode !== 13 && e.which !== 13)
+      this.setState({ nickname: e.target.value });
   };
 
   handleAge = (e) => {
@@ -80,10 +89,11 @@ class ChildProfileForm extends Component {
     this.setState({ animal: e.target.value });
   };
 
-  handleSubmit = () => {
+  handleSubmit = async () => {
     if (this.state.valid) {
       this.setState({ submit: true });
       const info = {
+        name: this.state.nickname,
         age: this.state.age,
         color: this.state.color,
         animal: this.state.animal,
@@ -94,30 +104,39 @@ class ChildProfileForm extends Component {
           ? this.props.userID
           : this.props.cookies.get("userID");
 
-      axios({
+      const response = await axios({
         method: "post",
         url: `/server/user/${id}/profile`,
         data: qs.stringify(info),
         headers: {
           "content-type": "application/x-www-form-urlencoded;charset=utf-8",
         },
-      }).then((response) => {
-        if (response.status === 200) {
-          if ((response.data.message = "success")) {
-            this.props.setNewProfile(
-              response.data.profileID,
-              this.state.color,
-              this.state.animal,
-              this.state.age
-            );
-            this.props.history.push("/congrats");
-          } else {
-            this.setState({ submit: false });
-          }
-        } else {
-          this.setState({ submit: false });
-        }
       });
+      if (response.status === 200) {
+        if ((response.data.message = "success")) {
+          this.props.setNewProfile(
+            response.data.profileID,
+            this.state.nickname,
+            this.state.color,
+            this.state.animal,
+            this.state.age
+          );
+          this.props.history.push("/congrats");
+        } else if ((response.data.message = "match")) {
+          this.setState({ submit: false, match: true, nickname: "" }, () =>
+            this.handleClickOpen()
+          );
+        }
+      } else {
+        this.setState({
+          submit: false,
+          age: "",
+          color: "",
+          animal: "",
+          nickname: "",
+          valid: false,
+        });
+      }
     } else {
       this.handleClickOpen();
     }
@@ -129,7 +148,7 @@ class ChildProfileForm extends Component {
         <Helmet>
           <title>Storybook Academy | Create New Child Profile</title>
         </Helmet>
-        <div style={{ margin: 20, padding: 10 }}>
+        <div className="Child-form-div" style={{ margin: 0, padding: 30 }}>
           <Typography className="Storybook-Academy-header">
             Welcome to Storybook Academy
           </Typography>
@@ -138,6 +157,16 @@ class ChildProfileForm extends Component {
           </Typography>
           <form>
             <Grid container style={{ paddingTop: 15 }}>
+              <Grid item xs={12} style={{ paddingBottom: 10 }}>
+                <Typography>Give yourself a unique nickname:</Typography>
+                <input
+                  type="text"
+                  required
+                  id="nickname"
+                  name="nickname"
+                  onChange={this.handleNickname}
+                />
+              </Grid>
               <Grid item xs={12} style={{ paddingBottom: 10 }}>
                 <Typography>How old are you?</Typography>
                 {ages.map((item) => (
@@ -188,6 +217,7 @@ class ChildProfileForm extends Component {
           <button
             onClick={this.handleSubmit}
             disabled={this.state.submit}
+            className="child-form-submit-button"
             style={
               this.state.submit
                 ? {
@@ -205,15 +235,19 @@ class ChildProfileForm extends Component {
             aria-labelledby="alert-dialog-title"
             aria-describedby="alert-dialog-description"
           >
-            <DialogTitle id="alert-dialog-title">Forget anything?</DialogTitle>
+            <DialogTitle id="alert-dialog-title">
+              There is something wrong!
+            </DialogTitle>
             <DialogContent>
               <DialogContentText id="alert-dialog-description">
-                Please Answer All The Questions!
+                {!this.state.match
+                  ? "Please Answer All The Questions!"
+                  : "Your nickname is not available. Please use another name!"}
               </DialogContentText>
             </DialogContent>
             <DialogActions>
               <Button onClick={this.handleClose} color="primary" autoFocus>
-                Absolutely!
+                OKAY
               </Button>
             </DialogActions>
           </Dialog>

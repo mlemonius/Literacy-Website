@@ -76,6 +76,24 @@
   margin: auto;
 }
 
+.Child-form-div {
+  background-color: #d1efff;
+  margin: 0;
+  padding: 20px;
+}
+
+.child-form-submit-button {
+  border: none;
+  outline: none;
+  width: 125px;
+  padding: 15px 0;
+  color: #e6a57d;
+  font-size: 16px;
+  letter-spacing: 1px;
+  background: #0f3d7d;
+  cursor: pointer;
+}
+
 .library-col {
   margin: auto;
 }
@@ -86,8 +104,10 @@
 
 .MuiTypography-root.Storybook-Academy-header {
   font-size: 40px;
+  color: #0f3d7d;
 }
 
 .MuiTypography-root.greetings-header {
   font-size: 20px;
+  color: #e6a57d;
 }

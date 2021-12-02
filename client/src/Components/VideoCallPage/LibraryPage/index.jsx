@@ -150,7 +150,6 @@ class LibraryPage extends Component {
                     }
                   />
                 </ListItem>
-                <Divider variant="inset" component="li" />
               </>
             ))}
           </List>

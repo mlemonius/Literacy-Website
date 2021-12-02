@@ -5,6 +5,10 @@
   margin-top: 5%;
 }
 
+.friendslist-outerdiv h1 {
+  color: #0f3d7d;
+}
+
 .friendslist-innerdiv {
   margin: auto;
   padding: 10px;

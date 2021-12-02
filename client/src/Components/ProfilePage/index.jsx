@@ -107,7 +107,7 @@ class ProfilePage extends Component {
             >
               <Link
                 to="/meetings"
-                onClick={() => this.handleChooseProfile(child._id)}
+                onClick={() => this.handleChooseProfile(child.name)}
               >
                 <Typography
                   className="profile-home-id-text"
@@ -118,7 +118,7 @@ class ProfilePage extends Component {
                     marginTop: 20,
                   }}
                 >
-                  ID: {child._id}
+                  ID: {child.name}
                 </Typography>
                 <img
                   src={`data:image/jpeg;base64,${child.icon}`}

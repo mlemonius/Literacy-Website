@@ -1,19 +1,19 @@
 .library-page-header {
   text-align: center;
   padding-top: 25px;
+  color: #0f3d7d;
 }
 .lib-story {
   margin: 1%;
   max-width: 98%;
 }
 .lib-story:hover {
-  background-color: #fbeeee;
+  opacity: 0.75;
 }
 
 .library-page-block {
-  background-color: #f1bcbb;
+  background-color: #e6a57d;
   margin: 5%;
-  border: 1px solid #aec6cf;
   border-radius: 25px;
   box-shadow: 50px 50px 70px -20px rgba(0, 0, 0, 0.8);
 }

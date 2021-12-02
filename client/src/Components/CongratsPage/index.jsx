@@ -38,7 +38,7 @@ const CongratsPage = (props) => {
           PLEASE WRITE THIS DOWN
         </Typography>
         <div>
-          <Link to="/">
+          <Link to="/profile">
             <button id="profile-congrat-enter-btn">Enter Home</button>
           </Link>
         </div>

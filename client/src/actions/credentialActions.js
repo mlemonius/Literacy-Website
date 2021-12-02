@@ -67,11 +67,11 @@ export const setActiveStory = (id, title) => {
   };
 };
 
-export const setFriendEmail = (email) => {
+export const setFriendName = (name) => {
   return {
-    type: "SETFRIENDEMAIL",
+    type: "SETFRIENDNAME",
     payload: {
-      email: email,
+      name: name,
     },
   };
 };
