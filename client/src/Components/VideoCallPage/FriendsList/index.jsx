@@ -3,30 +3,32 @@ import { useDispatch, useSelector } from "react-redux";
 import axios from "axios";
 import { Button } from "@material-ui/core";
 import "./friendslist.css";
-import { setFriendEmail } from "../../../actions/credentialActions";
+import { setFriendName } from "../../../actions/credentialActions";
 import { useCookies } from "react-cookie";
 import qs from "qs";
 
 const FrdsList = (props) => {
   const [fList, setFList] = useState([]);
-  const userID = useSelector((state) => state.userInfo.userID);
+  const profileID = useSelector((state) => state.userInfo.currentProfile);
   const [cookies] = useCookies();
   const dispatch = useDispatch();
 
   useEffect(() => {
     async function fetchData() {
-      const id = userID !== "" ? userID : cookies.userID;
-      const response = await axios.get(`/server/user/${id}/students`);
-      if (response.data.message === "success") setFList(response.data.students);
+      const id =
+        profileID.name !== undefined ? profileID.name : cookies.profileID;
+      const response = await axios.get(`/server/user/${id}/friends`);
+      if (response.data.message === "success") setFList(response.data.friends);
     }
     fetchData();
   }, []);
 
   useEffect(() => {
     async function fetchData() {
-      const id = userID !== "" ? userID : cookies.userID;
-      const response = await axios.get(`/server/user/${id}/students`);
-      if (response.data.message === "success") setFList(response.data.students);
+      const id =
+        profileID.name !== undefined ? profileID.name : cookies.profileID;
+      const response = await axios.get(`/server/user/${id}/friends`);
+      if (response.data.message === "success") setFList(response.data.friends);
     }
     fetchData();
   }, [props.resetKey]);
@@ -35,11 +37,11 @@ const FrdsList = (props) => {
     <div key={props.resetKey} className="friendslist-innerdiv">
       {fList.map((friend, index) => (
         <div className="friend-line" key={index} onClick={() => {}}>
-          {friend.email + "\n(" + friend._id + ")"}
+          {friend.name}
           <span>
             <Button
               onClick={() => {
-                dispatch(setFriendEmail(friend.email));
+                dispatch(setFriendName(friend.name));
                 props.toggleRight("calling");
               }}
             >
@@ -55,7 +57,7 @@ const FrdsList = (props) => {
 const AddFriend = (props) => {
   const [input, setInput] = useState("");
   const inputRef = useRef(null);
-  const userID = useSelector((state) => state.userInfo.userID);
+  const profile = useSelector((state) => state.userInfo.currentProfile);
   const [cookies] = useCookies();
 
   useEffect(() => {
@@ -69,10 +71,10 @@ const AddFriend = (props) => {
   const handleAddfriend = async (e) => {
     e.preventDefault();
 
-    const id = userID !== "" ? userID : cookies.userID;
+    const id = profile.name !== undefined ? profile.name : cookies.profileID;
     const response = await axios.post(
-      `/server/user/${id}/student`,
-      qs.stringify({ email: input, username: id }),
+      `/server/user/addFriend`,
+      qs.stringify({ profileToAdd: input, profile: id }),
       {
         headers: {
           "content-type": "application/x-www-form-urlencoded;charset=utf-8",
@@ -112,6 +114,7 @@ function EnterRoom(props) {
   const [roomID, setRoomID] = useState("");
   const submitRoomID = () => {
     props.joinRoom(roomID);
+    props.toggleRight("calling");
   };
   return (
     <div className="enter-room-div">
@@ -133,7 +136,7 @@ function FriendsList(props) {
       <h1 style={{ fontSize: 60 }}>Friends List</h1>
       <AddFriend resetKey={resetKey} setResetKey={setResetKey} />
       <FrdsList key={resetKey} toggleRight={props.toggleRight} />
-      <EnterRoom joinRoom={props.joinRoom} />
+      <EnterRoom joinRoom={props.joinRoom} toggleRight={props.toggleRight} />
     </div>
   );
 }

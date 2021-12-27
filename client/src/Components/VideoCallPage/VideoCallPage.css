@@ -1,5 +1,7 @@
 .videocall-page-outerdiv {
-  margin: 5px;
+  padding: 10px;
+  background-color: #d1efff;
+  height: 100vh;
 }
 
 .videocall-page-leftdiv {

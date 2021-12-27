@@ -8,7 +8,7 @@ import { useCookies } from "react-cookie";
 const VideoCall = (props) => {
   const [hostURL, setHostURL] = useState("");
   const username = useSelector((state) => state.userInfo.userID);
-  const friendEmail = useSelector((state) => state.userInfo.friendEmail);
+  const friendName = useSelector((state) => state.userInfo.friendName);
   const [cookies] = useCookies();
 
   useEffect(() => {
@@ -19,7 +19,7 @@ const VideoCall = (props) => {
           url: "/server/user/send",
           data: qs.stringify({
             username: username === "" ? cookies.userID : username,
-            email: friendEmail,
+            callee: friendName,
           }),
           headers: {
             "content-type": "application/x-www-form-urlencoded;charset=utf-8",
@@ -27,13 +27,15 @@ const VideoCall = (props) => {
         });
         if (response.data.message === "success") {
           setHostURL(response.data.hostRoomUrl);
+        } else {
+          props.toggleRight("friends-list");
         }
       }
       fetchData();
     } else {
       setHostURL(`https://storybookacademy101.whereby.com/${props.roomID}`);
     }
-  }, [username, friendEmail]);
+  }, [username, friendName]);
 
   return (
     <div className="videocall-iframe-div">

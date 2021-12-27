@@ -36,7 +36,7 @@ const Footer = () => {
           {/* Footer Bottom */}
           <div className="footer-bottom">
             <p className="text-xs-center">
-              &copy;{new Date().getFullYear()} Literacy Website - All Rights
+              &copy;{new Date().getFullYear()} STORYBOOK ACADEMY - All Rights
               Reserved
             </p>
           </div>
