@@ -193,7 +193,7 @@ const addStudent = async (req, res) => {
     } else {
       const foundID = foundUser.students.find(student => student._id.toString() === foundStudent._id.toString())  // find if the user already added student 
       if (foundID === undefined) { // if not exists then add the student to the student list of user
-        await foundUser.students.push({_id: foundStudent._id })
+        foundUser.students.push({_id: foundStudent._id })
         await foundUser.save().catch(err => { console.log("Saving user error when adding student: " + err) })
         foundStudent.teacher = foundUser._id // currently there could be chances that parent of student could also be the teacher of that student as well
         await foundStudent.save().catch(err => console.log("Add teacher to the student profile error: " + err))
