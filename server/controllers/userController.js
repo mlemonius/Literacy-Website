@@ -6,6 +6,7 @@ const passport = require("passport")
 import s3 from "../aws/s3.js"
 import User from "../models/userModel.js"
 import Otp from "../models/otpModel.js"
+import Profile from "../models/profileModel.js"
 const { Auth } = require("two-step-auth")
 import nodemailer from "nodemailer"
 import axios from "axios"
@@ -121,49 +122,46 @@ const verifyEmailForSignup = async (req, res) => {
 }
 
 
-const addProfile = async (req, res) => {
+const addProfile = async (req, res) => {  // done
   const userID = req.params.userID
 
-  if (!req.body.age || !req.body.color || !req.body.animal) {
+  if (!req.body.age || !req.body.color || !req.body.animal || !req.body.name) {
     return res.json({ message: "missing body" })
   }
 
   const {
     age,
     color,
-    animal
+    animal,
+    name
   } = req.body
 
   try {
-    const foundUser = await User.findById({ _id: userID }).catch(err => { console.log("Finding user error when adding profile: " + err) })
+    let foundUser = await User.findById({ _id: userID }).catch(err => { console.log("Finding user error when adding profile: " + err) })
     if (foundUser == null) {
       res.json({
         message: "invalid",
         profileID: null
       })
     } else {
-      const matchProfile = foundUser.profiles.find((profile, index) => {   // find the matching profile
-        if (profile.age == age && profile.color == color && profile.animal == animal) {
-          return true;
-        }
-      });
-      if (matchProfile == undefined) { //if the profile does not match the existing one add new profile
-        const childProfile = {
+      const matchProfile = await Profile.findOne({name: name}).catch(err => console.log("Find the profile name error: " + err))
+      if (matchProfile == undefined || matchProfile == null) { //if the profile does not match the existing one add new profile
+        const childProfile = new Profile({
+          name: name,
           age: age,
           color: color,
-          animal: animal
-        }
-        foundUser.profiles.push(childProfile)   
-        const savedUser = await foundUser.save().catch(err => { console.log("Saving user error when adding profile: " + err) })
-        const foundProfiles = await User.findById(savedUser._id, 'profiles').catch(err => { console.log("Finding profiles error: " + err) })
-        const childObject = foundProfiles.profiles.find((object, index) => { //search for profile in order to get the  profile id
-          if (object.age == age && object.color == color && object.animal == animal) {
-            return true
-          }
-        });
+          animal: animal,
+          parent: foundUser._id
+        })
+
+        await childProfile.save().catch(err => console.log("Saving profile error: " + err))
+        foundUser.profiles.push({_id: childProfile._id})
+        await foundUser.save()
+        //foundUser = await User.findById({_id: foundUser._id}).populate("profiles")
         res.json({
           message: "success",
-          profileID: childObject._id
+          profileID: childProfile.name,
+          //profile: foundUser
         })
       } else {
         res.json({
@@ -182,38 +180,62 @@ const addProfile = async (req, res) => {
 const addStudent = async (req, res) => {
   const userID = req.params.userID
   try {
-    if (!req.body.email) {
+    if (!req.body.student) {
       return res.json({ message: "missing body" })
     }
-    const email = req.body.email.toLowerCase()
+    const student = req.body.student
 
     const foundUser = await User.findById({ _id: userID }).catch(err => { console.log("Finding user error when adding student: " + err) }) // find the user the wants to add friend 
-    const foundStudent = await User.findOne({ username: email }).catch(err => { console.log("Finding student error when adding student: " + err) }) // find the student that user wants to add friend
+    const foundStudent = await Profile.findOne({ name: student }).populate("parent").catch(err => { console.log("Finding student error when adding student: " + err) }) // find the student that user wants to add friend
 
-    if (foundUser == null || foundStudent == null || foundUser.username == foundStudent.email) {
+    if (foundUser == null || foundStudent == null || foundStudent.parent === foundUser._id) {  // student and user both have to exist first, and teacher cannot add his/her own child as a student.
       res.json({ message: "invalid" })
     } else {
-      const foundEmail = foundUser.students.find((student, index) => { // find email of the student that user wants to add
-        if (student.email == email) {
-          return true
-        }
-      })
-      if (foundEmail == undefined) { // if not exists then add the student to the student list of user
-        foundUser.students.push({ email: email, _id: foundStudent._id })
-        const savedUser = await foundUser.save().catch(err => { console.log("Saving user error when adding student: " + err) })
-
-        foundStudent.students.push({ email: foundUser.username, _id: foundUser._id }) // the student also adds the user in its student list to be bi-directional
-        await foundStudent.save().catch(err => console.log("Saving student error when adding user: " + err))
-
-        const foundStudents = await User.findById(savedUser._id, 'students').catch(err => { console.log("Finding students error: " + err) }) // retrieve back the student list from the user
-        const childObject = foundStudents.students.find((object, index) => { //search for student to get the student id 
-          if (object.email == email) {
-            return true
-          }
-        });
+      const foundID = foundUser.students.find(student => student._id.toString() === foundStudent._id.toString())  // find if the user already added student 
+      if (foundID === undefined) { // if not exists then add the student to the student list of user
+        foundUser.students.push({_id: foundStudent._id })
+        await foundUser.save().catch(err => { console.log("Saving user error when adding student: " + err) })
+        foundStudent.teacher = foundUser._id // currently there could be chances that parent of student could also be the teacher of that student as well
+        await foundStudent.save().catch(err => console.log("Add teacher to the student profile error: " + err))
         res.json({
           message: "success",
-          studentID: childObject._id
+          studentID: foundStudent.name,
+          //user: foundUser
+        })
+      } else {
+        res.json({ message: "match" })
+      }
+    }
+  } catch (err) {
+    console.log(err)
+  }
+}
+
+const addFriend = async (req, res) => {
+  try {
+    if (!req.body.profile || !req.body.profileToAdd) {
+      return res.json({ message: "missing body" })
+    }
+    const profile = req.body.profile
+    const profileToAdd = req.body.profileToAdd
+
+    const foundProfile = await Profile.findOne({ name: profile }).populate("parent").catch(err => { console.log("Finding profile error when adding friend: " + err) }) // find the profile
+    const foundProfileToAdd = await Profile.findOne({ name: profileToAdd }).populate("parent").catch(err => { console.log("Finding friend to add error : " + err) }) // find profile to add
+
+    if (foundProfile == null || foundProfileToAdd == null || profile === profileToAdd || foundProfile.parent === foundProfileToAdd.parent) {  // student and user both have to exist first, they cannot add friend to themselves and 2 profiles with the same parent cannot be friends.
+      res.json({ message: "invalid" })
+    } else {
+      const foundFriend = foundProfile.friends.find(friend => friend._id.toString() === foundProfileToAdd._id.toString()) // find if the user already added friend to this profile
+      //console.log(foundFriend)
+      if (foundFriend === undefined) { // if not exists then add friend
+        foundProfile.friends.push({_id: foundProfileToAdd._id })
+        await foundProfile.save().catch(err => { console.log("Saving friend error when adding friend: " + err) })
+
+        foundProfileToAdd.friends.push({_id: foundProfile._id })
+        await foundProfileToAdd.save().catch(err => { console.log("Saving friend error when adding friend: " + err) })
+        res.json({
+          message: "success",
+          //user: foundUser
         })
       } else {
         res.json({ message: "match" })
@@ -226,7 +248,7 @@ const addStudent = async (req, res) => {
 
 const returnStudents = async (req, res) => {
   const userID = req.params.userID
-  const foundUser = await User.findById({ _id: userID }).catch(err => {       
+  const foundUser = await User.findById({ _id: userID }).populate("students").catch(err => {       
     console.log("Finding user error when returning students: " + err)
   })
   if (foundUser != null) {
@@ -312,7 +334,7 @@ const resetPassword = async (req, res) => {
 
 const returnProfiles = async (req, res) => {
   const userID = req.params.userID
-  const foundUser = await User.findById({ _id: userID }).lean().catch(err => {       // lean(): foundUser can be modified locally (not attached to the db), find the user based on the given user id
+  const foundUser = await User.findById({ _id: userID }).populate("profiles").lean().catch(err => {       // lean(): foundUser can be modified locally (not attached to the db), find the user based on the given user id
     console.log("Finding user error when returning profiles: " + err)
   })
   if (foundUser != null) { // if exists
@@ -320,7 +342,7 @@ const returnProfiles = async (req, res) => {
       foundUser.profiles.map(async (profile, index, profilesList) => {    // for each profile, attach the an image to the profile by calling to the Aws S3 
         const bucketParams = {          //find the image that match the profile
           Bucket: 'library.stories',
-          Key: `profileImages/${profile.animal.toLowerCase()}_-_${profile.color.toLowerCase()}1024_1.jpg`
+          Key: `profileImages/${profile.color.toLowerCase()}_${profile.animal.toLowerCase()}.png`
         }
         await addImageToProfile(bucketParams, profile) // add image to the given profile
       })
@@ -336,6 +358,16 @@ const returnProfiles = async (req, res) => {
       message: "invalid",
       profiles: null
     })
+  }
+}
+
+const returnFriends = async (req, res) => {
+  const profileID = req.params.profileID
+  const foundProfile = await Profile.findOne({name: profileID}).populate("friends", "-_id name age color animal").catch(err => console.log("Finding profile id error when returning friends: " + error))
+  if(foundProfile !== null) {
+    res.json({message: "success", friends: foundProfile.friends})
+  }else {
+    res.json({message: "invalid", friends: null})
   }
 }
 
@@ -372,14 +404,14 @@ const authenticateUser = (req, res) => {
   }
 }
 
-const sendEmailToStudent = async (req, res) => {
+const sendEmailToCallee = async (req, res) => {
 
-  if (!req.body.email || !req.body.username) {
+  if (!req.body.callee || !req.body.username) {
     return res.json({ message: "missing body" })
   }
 
-  const { email, username } = req.body
-  const foundUser = await User.findOne({ username: email.toLowerCase() }).catch(err => { console.log("Finding user error: " + err) }) // find the user
+  const { callee, username } = req.body
+  const foundCallee = await Profile.findOne({ name: callee }).populate("parent").catch(err => { console.log("Finding callee error: " + err) }) // find the user
 
   const foundCaller = await User.findById({ _id: username }).catch(err => console.log("Finding caller error: " + err))// find the student that user wants to call
 
@@ -400,14 +432,14 @@ const sendEmailToStudent = async (req, res) => {
     }
   }
 
-  if (foundUser !== null && foundCaller !== null) {
+  if (foundCallee !== null && foundCaller !== null) {
     axios.post("https://api.whereby.dev/v1/meetings", requestBody, configBody).then(response => {  // call the whereby api to create the room to call
       if (response.status == 201) {
         const mailOptions = {  // use this email to send the room url to the callee
           from: 'readpalishere@gmail.com',
-          to: `${email}`,
+          to: `${foundCallee.parent.username}`,
           subject: 'Reading Time',
-          html: `<h1>Hey friend</h1><p>Please go to this link: <b>${response.data.roomUrl}</b> to join the call with your Readpal!</p>`
+          html: `<h1>Hey friend</h1><p>Please paste this line on the join call box: <b>${response.data.roomUrl.slice(40)}</b> to join the call with your Readpal!</p>`
         }
 
         transporter.sendMail(mailOptions, function (error) {
@@ -438,5 +470,7 @@ export {
   authenticateUser,
   addStudent,
   returnStudents,
-  sendEmailToStudent
+  sendEmailToCallee,
+  addFriend,
+  returnFriends
 }
