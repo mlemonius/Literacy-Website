@@ -5,6 +5,7 @@ const initial = {
   yourChildren: [],
   friends: [],
   activeStory: {},
+  friendName: "",
 };
 
 const userInfo = (state = initial, action) => {
@@ -45,6 +46,11 @@ const userInfo = (state = initial, action) => {
       return {
         ...state,
         activeStory: action.payload,
+      };
+    case "SETFRIENDNAME":
+      return {
+        ...state,
+        friendName: action.payload.name,
       };
     case "LOGOUT":
       return initial;

@@ -12,7 +12,7 @@ import {
 } from "../../actions/credentialActions";
 import axios from "axios";
 import { withCookies, Cookies } from "react-cookie";
-import { Redirect } from "react-router-dom";
+import { Helmet } from "react-helmet";
 
 class ProfilePage extends Component {
   static propTypes = {
@@ -21,6 +21,7 @@ class ProfilePage extends Component {
 
   state = {
     userID: this.props.cookies.get("userID") || "",
+    validSession: true,
   };
 
   getProfiles = () => {
@@ -32,14 +33,25 @@ class ProfilePage extends Component {
   };
 
   handleLogout = () => {
-    axios.get("/server/user/logout").then((response) => {
-      if (response.data.message === "success") {
-        this.props.logout();
-        this.props.cookies.remove("userID");
-        this.props.cookies.remove("profileID");
-        this.props.history.push("/login");
-      }
-    });
+    axios
+      .get("/server/user/logout", {
+        withCredentials: true,
+      })
+      .then((response) => {
+        if (response.data.message === "success") {
+          this.props.logout();
+          this.props.cookies.remove("userID");
+          this.props.cookies.remove("profileID");
+          this.props.cookies.set("connect.sid", "", {
+            path: "/",
+            maxAge: 0,
+            sameSite: "none",
+            secure: true,
+          });
+          this.props.cookies.remove("connect.sid");
+          this.props.history.push("/login");
+        }
+      });
   };
 
   handleChooseProfile = (id) => {
@@ -47,17 +59,36 @@ class ProfilePage extends Component {
     this.props.cookies.set("profileID", id, {
       path: "/",
       maxAge: 86400,
+      sameSite: "none",
+      secure: true,
     });
   };
 
   componentDidMount = () => {
+    this.authenticate();
     this.getProfiles();
+    setInterval(() => this.authenticate(), 60000 * 10);
+  };
+
+  authenticate = async () => {
+    const response = await axios.post(
+      "/server/user/authenticate",
+      {},
+      {
+        withCredentials: true,
+      }
+    );
+    if (response.data.message !== "success") {
+      this.props.history.push("/login");
+    }
   };
 
   render() {
-    if (this.state.userID === "") return <Redirect to="/login" />;
-    else
-      return (
+    return (
+      <>
+        <Helmet>
+          <title>Storybook Academy | Profile</title>
+        </Helmet>
         <div className="profile-home-block">
           <Typography className="profile-home-header">
             Please select who is reading today
@@ -75,8 +106,8 @@ class ProfilePage extends Component {
               }}
             >
               <Link
-                to="/library"
-                onClick={() => this.handleChooseProfile(child._id)}
+                to="/meetings"
+                onClick={() => this.handleChooseProfile(child.name)}
               >
                 <Typography
                   className="profile-home-id-text"
@@ -87,7 +118,7 @@ class ProfilePage extends Component {
                     marginTop: 20,
                   }}
                 >
-                  ID: {child._id}
+                  ID: {child.name}
                 </Typography>
                 <img
                   src={`data:image/jpeg;base64,${child.icon}`}
@@ -111,7 +142,8 @@ class ProfilePage extends Component {
             </button>
           </div>
         </div>
-      );
+      </>
+    );
   }
 }
 

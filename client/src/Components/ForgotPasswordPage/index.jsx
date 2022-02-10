@@ -10,7 +10,7 @@ import {
 import "./forgotPassword.css";
 import axios from "axios";
 import qs from "qs";
-
+import { Helmet } from "react-helmet";
 class ForgotPassword extends Component {
   state = {
     email: "",
@@ -32,7 +32,6 @@ class ForgotPassword extends Component {
 
   componentDidUpdate = (prevProps, prevState) => {
     if (!prevState.validStep1 && this.validateEmail(this.state.email)) {
-      console.log(this.state.email);
       this.setState({ validStep1: true });
     }
 
@@ -49,7 +48,6 @@ class ForgotPassword extends Component {
     if (this.state.validStep1) {
       axios({
         method: "post",
-        // url: "https://secure-bastion-85489.herokuapp.com/server/forgot",
         url: "/server/user/forgot",
         data: qs.stringify({
           email: this.state.email,
@@ -58,7 +56,6 @@ class ForgotPassword extends Component {
           "content-type": "application/x-www-form-urlencoded;charset=utf-8",
         },
       }).then((response) => {
-        console.log(response);
         if (response.status === 200) {
           if (response.data.message === "success") {
             this.setState({ next: true });
@@ -77,7 +74,6 @@ class ForgotPassword extends Component {
     if (this.state.validStep2) {
       axios({
         method: "patch",
-        // url: "https://secure-bastion-85489.herokuapp.com/server/reset",
         url: "/server/user/reset",
         data: qs.stringify({
           otp: this.state.otp,
@@ -112,7 +108,10 @@ class ForgotPassword extends Component {
 
   render() {
     return (
-      <React.Fragment>
+      <>
+        <Helmet>
+          <title>Storybook Academy | Forgot Password</title>
+        </Helmet>
         {this.state.next ? (
           <section className="forgotPassword">
             <div
@@ -183,7 +182,7 @@ class ForgotPassword extends Component {
             </Button>
           </DialogActions>
         </Dialog>
-      </React.Fragment>
+      </>
     );
   }
 }

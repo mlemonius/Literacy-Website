@@ -19,16 +19,33 @@
   margin: auto;
   text-align: center;
   padding: 25px;
+  height: 100vh;
+  background-color: #d1efff;
+}
+
+.profile-done-block button {
+  border: none;
+  outline: none;
+  width: 50%;
+  margin-left: 25%;
+  margin-right: 25%;
+  padding: 15px 0;
+  color: #e6a57d;
+  font-size: 16px;
+  letter-spacing: 1px;
+  background: #0f3d7d;
+  cursor: pointer;
 }
 
 .MuiTypography-root.profile-congrat-header {
   font-size: 35px;
-  color: teal;
+  color: #0f3d7d;
 }
 
 .MuiTypography-root.profile-congrat-text {
   font-size: 28px;
   margin-bottom: 30px;
+  color: #e6a57d;
 }
 
 .MuiTypography-root.profile-greetings-text {

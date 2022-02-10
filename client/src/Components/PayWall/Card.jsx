@@ -9,7 +9,7 @@ const Card = (props) => {
         <img src={props.imgsrc} alt="children" className="card-img-top" />
       </div>
       <div className="card-body text-dark">
-        <h4 className="card-title">{props.header}</h4>
+        <h1 className="card-title">{props.header}</h1>
         <ul className="list-unstyled card-text text-secodary">
           {props.content.map((item) => (
             <li key={keyId++}>{item}</li>

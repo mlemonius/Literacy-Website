@@ -66,3 +66,12 @@ export const setActiveStory = (id, title) => {
     },
   };
 };
+
+export const setFriendName = (name) => {
+  return {
+    type: "SETFRIENDNAME",
+    payload: {
+      name: name,
+    },
+  };
+};
