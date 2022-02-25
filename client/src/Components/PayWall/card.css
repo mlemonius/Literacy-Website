@@ -1,0 +1,60 @@
+@media only screen and (min-device-width: 375px) and (max-device-width: 667px) and (-webkit-min-device-pixel-ratio: 2) {
+  .card {
+    width: 20rem;
+    margin: 5px;
+  }
+}
+@media only screen and (min-device-width: 768px) and (max-device-width: 1024px) and (-webkit-min-device-pixel-ratio: 2) {
+  .card {
+    width: 17rem;
+  }
+}
+@media only screen and (min-width: 1025px) and (-webkit-min-device-pixel-ratio: 2) {
+  .card {
+    width: 22rem;
+  }
+}
+.card {
+  width: 22rem;
+}
+
+.card:hover {
+  box-shadow: 5px 10px 20px 1px rgba(0, 0, 0, 0.253) !important;
+}
+
+.card-body {
+  padding: 3rem 0 !important;
+}
+
+.card-text {
+  font-size: 0.9rem;
+  padding: 0.4rem 1.9rem;
+  color: rgba(100, 100, 100);
+}
+
+.container-fluid .row {
+  padding-top: 0px;
+}
+
+.card-img-top {
+  transform: scale(1);
+  transition: transform 0.5s ease;
+}
+
+.card-img-top:hover {
+  transform: scale(1.4);
+}
+
+.overflow {
+  overflow: hidden;
+}
+
+span.price-span {
+  font-size: 50px;
+}
+
+.period-span {
+  font-size: 15px;
+  color: rgba(150, 150, 150, 0.7);
+  margin: 5px;
+}

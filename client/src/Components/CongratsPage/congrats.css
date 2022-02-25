@@ -1,0 +1,67 @@
+/* Mobiles size */
+
+@media only screen and (min-device-width: 375px) and (max-device-width: 767px) and (-webkit-min-device-pixel-ratio: 2) {
+}
+
+/* --- */
+/* Tablets size */
+
+@media only screen and (min-device-width: 768px) and (max-device-width: 1024px) and (-webkit-min-device-pixel-ratio: 2) {
+}
+
+/* --- */
+/* Desktops size */
+
+@media only screen and (min-width: 1020px) and (-webkit-min-device-pixel-ratio: 2) {
+}
+
+.profile-done-block {
+  margin: auto;
+  text-align: center;
+  padding: 25px;
+  height: 100vh;
+  background-color: #d1efff;
+}
+
+.profile-done-block button {
+  border: none;
+  outline: none;
+  width: 50%;
+  margin-left: 25%;
+  margin-right: 25%;
+  padding: 15px 0;
+  color: #e6a57d;
+  font-size: 16px;
+  letter-spacing: 1px;
+  background: #0f3d7d;
+  cursor: pointer;
+}
+
+.MuiTypography-root.profile-congrat-header {
+  font-size: 35px;
+  color: #0f3d7d;
+}
+
+.MuiTypography-root.profile-congrat-text {
+  font-size: 28px;
+  margin-bottom: 30px;
+  color: #e6a57d;
+}
+
+.MuiTypography-root.profile-greetings-text {
+  font-size: 20px;
+  margin: 50px;
+}
+
+#profile-congrat-enter-btn {
+  width: 230px;
+  font-size: 20px;
+  margin: 10px;
+  height: 80px;
+}
+#profile-congrat-create-btn {
+  width: 230px;
+  font-size: 20px;
+  margin: 10px;
+  height: 80px;
+}
